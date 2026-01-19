@@ -1,17 +1,12 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* Define custom dark variant for class-based dark mode */
+/* Dark mode variant for class-based toggling */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Define CSS variables for colors and fonts */
-:root {
-  /* Font families */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  
-  /* Colors - Light Mode */
+/* Theme configuration */
+@theme {
+  /* Primary color scale */
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
@@ -24,166 +19,86 @@
   --color-primary-900: #1e3a8a;
   --color-primary-950: #172554;
   
-  /* Background colors - Light Mode */
-  --color-bg-base: #ffffff;
-  --color-bg-muted: #f9fafb;
-  --color-bg-subtle: #f3f4f6;
-  
-  /* Text colors - Light Mode */
-  --color-text-base: #111827;
-  --color-text-muted: #6b7280;
-  --color-text-subtle: #9ca3af;
-  
-  /* Border colors - Light Mode */
-  --color-border-base: #e5e7eb;
-  --color-border-muted: #f3f4f6;
-  
-  /* Shadow colors - Light Mode */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
-}
-
-/* Configure Tailwind theme to use our CSS variables */
-@theme {
-  /* Colors */
-  --color-blue-50: var(--color-primary-50);
-  --color-blue-100: var(--color-primary-100);
-  --color-blue-200: var(--color-primary-200);
-  --color-blue-300: var(--color-primary-300);
-  --color-blue-400: var(--color-primary-400);
-  --color-blue-500: var(--color-primary-500);
-  --color-blue-600: var(--color-primary-600);
-  --color-blue-700: var(--color-primary-700);
-  --color-blue-800: var(--color-primary-800);
-  --color-blue-900: var(--color-primary-900);
-  --color-blue-950: var(--color-primary-950);
-  
   /* Fonts */
-  --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
-  --font-mono: var(--font-mono);
-  
-  /* Background colors */
-  --color-white: var(--color-bg-base);
-  --color-gray-50: var(--color-bg-muted);
-  --color-gray-100: var(--color-bg-subtle);
-  
-  /* Text colors */
-  --color-gray-900: var(--color-text-base);
-  --color-gray-500: var(--color-text-muted);
-  --color-gray-400: var(--color-text-subtle);
-  
-  /* Border colors */
-  --color-gray-200: var(--color-border-base);
-  --color-gray-100: var(--color-border-muted);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-/* Dark mode CSS variables */
-.dark {
-  color-scheme: dark;
-  
-  /* Background colors - Dark Mode */
-  --color-bg-base: #111827;
-  --color-bg-muted: #1f2937;
-  --color-bg-subtle: #374151;
-  
-  /* Text colors - Dark Mode */
-  --color-text-base: #f9fafb;
-  --color-text-muted: #d1d5db;
-  --color-text-subtle: #9ca3af;
-  
-  /* Border colors - Dark Mode */
-  --color-border-base: #4b5563;
-  --color-border-muted: #374151;
-  
-  /* Shadow colors - Dark Mode */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Custom CSS for the blog */
+/* Base styles */
 html {
   scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-bg-base);
-  color: var(--color-text-base);
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Responsive table styles for markdown content */
+/* Dark mode colors */
+.dark {
+  color-scheme: dark;
+}
+
+/* Prose enhancements */
+.prose {
+  --tw-prose-body: theme(colors.gray.700);
+  --tw-prose-headings: theme(colors.gray.900);
+  --tw-prose-links: theme(colors.blue.600);
+  --tw-prose-code: theme(colors.gray.900);
+  --tw-prose-pre-bg: theme(colors.gray.100);
+}
+
+.dark .prose {
+  --tw-prose-body: theme(colors.gray.300);
+  --tw-prose-headings: theme(colors.white);
+  --tw-prose-links: theme(colors.blue.400);
+  --tw-prose-code: theme(colors.gray.100);
+  --tw-prose-pre-bg: theme(colors.gray.800);
+}
+
+/* Responsive tables in prose */
 .prose table {
   display: block;
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
 }
 
 .prose table th {
-  background-color: var(--color-bg-subtle);
-  color: var(--color-text-base);
-  font-weight: 600;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  border: 1px solid var(--color-border-base);
+  background-color: theme(colors.gray.100);
 }
 
-.prose table td {
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--color-border-base);
-  vertical-align: top;
+.dark .prose table th {
+  background-color: theme(colors.gray.800);
 }
 
 .prose table tr:nth-child(even) {
-  background-color: var(--color-bg-muted);
+  background-color: theme(colors.gray.50);
 }
 
-.prose table tr:hover {
-  background-color: var(--color-bg-subtle);
+.dark .prose table tr:nth-child(even) {
+  background-color: theme(colors.gray.800/50);
 }
 
-/* Add a visual indicator that the table is scrollable */
-.prose table::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
-  background: linear-gradient(to right, transparent, rgba(0,0,0,0.1));
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
+/* Custom scrollbar for tables */
 .prose table::-webkit-scrollbar {
   height: 6px;
 }
 
 .prose table::-webkit-scrollbar-track {
-  background: var(--color-bg-muted);
+  background: theme(colors.gray.200);
   border-radius: 3px;
 }
 
 .prose table::-webkit-scrollbar-thumb {
-  background-color: var(--color-border-base);
+  background: theme(colors.gray.400);
   border-radius: 3px;
 }
 
-/* Apply Tailwind utility classes based on our CSS variables */
-.bg-white { background-color: var(--color-bg-base); }
-.dark .bg-gray-900 { background-color: var(--color-bg-base); }
-.text-gray-900 { color: var(--color-text-base); }
-.dark .text-white { color: var(--color-text-base); }
-.text-gray-500 { color: var(--color-text-muted); }
-.dark .text-gray-400 { color: var(--color-text-muted); }
-.border-gray-200 { border-color: var(--color-border-base); }
-.dark .border-gray-700 { border-color: var(--color-border-base); }
-.hover\:bg-gray-100:hover { background-color: var(--color-bg-subtle); }
-.dark .hover\:bg-gray-700:hover { background-color: var(--color-bg-subtle); }
+.dark .prose table::-webkit-scrollbar-track {
+  background: theme(colors.gray.700);
+}
+
+.dark .prose table::-webkit-scrollbar-thumb {
+  background: theme(colors.gray.500);
+}

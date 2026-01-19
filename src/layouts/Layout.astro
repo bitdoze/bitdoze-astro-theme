@@ -65,63 +65,11 @@ const {
    
     <meta name="generator" content={Astro.generator} />
     
-    <!-- Critical CSS to prevent FOUC -->
+    <!-- Critical CSS -->
     <style is:inline>
-      /* Critical styles to prevent layout shifts */
-      body {
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 0.2s ease;
-      }
-      body.loading {
-        opacity: 0;
-      }
-      /* Critical prose styles */
-      .prose {
-        max-width: 65ch;
-        color: inherit;
-      }
-      .prose img {
-        margin: 0 auto;
-      }
-      .prose p, .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-        margin-top: 1.25em;
-        margin-bottom: 1.25em;
-      }
-      .prose pre {
-        overflow-x: auto;
-        background-color: #f3f4f6;
-        border-radius: 0.375rem;
-        padding: 1rem;
-      }
-      .dark .prose pre {
-        background-color: #1f2937;
-      }
-      .dark body {
-        background-color: #111827;
-        color: #fff;
-      }
-      main {
-        flex: 1 0 auto;
-      }
-      .max-w-5xl {
-        max-width: 64rem;
-        margin-left: auto;
-        margin-right: auto;
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-      @media (min-width: 640px) {
-        .max-w-5xl {
-          padding-left: 1.5rem;
-          padding-right: 1.5rem;
-        }
-      }
+      body { margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+      .dark body { background-color: #111827; color: #fff; }
+      main { flex: 1 0 auto; }
     </style>
     
     <!-- SEO Component -->
@@ -142,63 +90,11 @@ const {
   
     
   </head>
-  <body class="loading bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen flex flex-col">
-    <!-- Script to prevent FOUC -->
-    <script is:inline>
-      // Remove loading class when CSS is loaded
-      document.body.classList.add('loading');
-      
-      // Function to check if stylesheets are loaded
-      function checkStylesheetsLoaded() {
-        const styleSheets = document.styleSheets;
-        let cssLoaded = false;
-        
-        for (let i = 0; i < styleSheets.length; i++) {
-          // Check if the stylesheet is our global.css
-          if (styleSheets[i].href && styleSheets[i].href.includes('global.css')) {
-            try {
-              // If we can access rules, the stylesheet is loaded
-              if (styleSheets[i].cssRules.length > 0) {
-                cssLoaded = true;
-                break;
-              }
-            } catch (e) {
-              // CORS error or stylesheet not loaded yet
-              continue;
-            }
-          }
-        }
-        
-        return cssLoaded;
-      }
-      
-      function revealContent() {
-        document.body.classList.remove('loading');
-      }
-      
-      // Check if stylesheets are already loaded
-      if (checkStylesheetsLoaded()) {
-        revealContent();
-      } else {
-        // If not loaded yet, wait for DOMContentLoaded and check again
-        document.addEventListener('DOMContentLoaded', function() {
-          if (checkStylesheetsLoaded()) {
-            revealContent();
-          } else {
-            // If still not loaded, set a timeout as fallback
-            setTimeout(revealContent, 100);
-          }
-        });
-        
-        // Fallback in case other methods fail
-        window.addEventListener('load', revealContent);
-      }
-    </script>
-    <!-- Full-width header -->
+  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen flex flex-col">
     <Header />
     
     <!-- Main content area with conditional width -->
-    <main class="flex-grow w-full">
+    <main class="grow w-full">
       <div class={wideContent ? "w-full" : "max-w-5xl mx-auto px-4 sm:px-6"}>
         <slot />
       </div>

@@ -1,20 +1,41 @@
 ---
-type Props = {
+interface Props {
   url: string;
   label: string;
-};
+}
+
 const { url, label } = Astro.props;
+
+// Extract video ID for thumbnail
+const videoId = url.match(/(?:embed\/|v=|youtu\.be\/)([^?&]+)/)?.[1];
+const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '';
 ---
 
-<div class="aspect-video">
-  <iframe
-    class="w-full h-full"
-    loading="lazy"
-    src={url}
-    title={label}
-    frame-border="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen
-  >
-  </iframe>
+<div class="youtube-embed aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
+  {thumbnail && (
+    <button 
+      class="youtube-play w-full h-full group"
+      data-src={url}
+      aria-label={`Play: ${label}`}
+    >
+      <img src={thumbnail} alt="" class="w-full h-full object-cover" loading="lazy" />
+      <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+        <svg class="w-16 h-16 text-white/90 group-hover:text-white group-hover:scale-110 transition-all" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+    </button>
+  )}
 </div>
+
+<script>
+  document.querySelectorAll('.youtube-play').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const src = this.getAttribute('data-src');
+      const container = this.closest('.youtube-embed');
+      if (container && src) {
+        container.innerHTML = `<iframe class="w-full h-full" src="${src}?autoplay=1" title="${this.getAttribute('aria-label')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+      }
+    });
+  });
+</script>

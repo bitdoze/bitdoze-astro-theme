@@ -1,144 +1,39 @@
 ---
-export interface Props {
+interface Props {
   label: string;
-  group: string;
-  expanded?: string;
+  group?: string;
+  expanded?: boolean;
 }
 
-const { label, group, expanded = "false" } = Astro.props;
-const isExpanded = expanded === "true";
-const accordionId = `accordion-${label.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toString(36).substring(2, 9)}`;
+const { label, group = 'default', expanded = false } = Astro.props;
+const id = `acc-${label.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toString(36).slice(2, 7)}`;
 ---
 
-<div class="accordion-item mb-4 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-  <h3>
-    <button
-      id={`${accordionId}-header`}
-      class="accordion-header flex justify-between items-center w-full p-4 text-left bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-      aria-expanded={isExpanded}
-      aria-controls={`${accordionId}-panel`}
-      data-accordion-target={`${accordionId}-panel`}
-      data-group={group}
-    >
-      <span class="font-medium text-gray-900 dark:text-white">{label}</span>
-      <svg 
-        class="w-5 h-5 transition-transform duration-200 text-gray-500 dark:text-gray-400" 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        stroke-width="2" 
-        stroke-linecap="round" 
-        stroke-linejoin="round"
-      >
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    </button>
-  </h3>
-  <div
-    id={`${accordionId}-panel`}
-    class="accordion-panel overflow-hidden transition-all duration-300 max-h-0"
-    aria-labelledby={`${accordionId}-header`}
-    role="region"
-  >
-    <div class="p-4 bg-white dark:bg-gray-900 prose dark:prose-invert prose-lg !max-w-none">
-      <slot />
-    </div>
+<details class="accordion group border border-gray-200 dark:border-gray-700 rounded-lg mb-3" data-group={group} open={expanded}>
+  <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg list-none">
+    <span class="font-medium text-gray-900 dark:text-white">{label}</span>
+    <svg class="w-5 h-5 text-gray-500 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M6 9l6 6 6-6"/>
+    </svg>
+  </summary>
+  <div class="p-4 prose dark:prose-invert max-w-none">
+    <slot />
   </div>
-</div>
+</details>
 
 <script>
-  // Initialize accordions
-  function initAccordions() {
-    document.querySelectorAll('.accordion-header').forEach(header => {
-      const targetId = header.getAttribute('data-accordion-target');
-      const panel = document.getElementById(targetId);
-      const isExpanded = header.getAttribute('aria-expanded') === 'true';
-      
-      // Set initial state
-      if (isExpanded && panel) {
-        panel.style.maxHeight = panel.scrollHeight + 'px';
-        header.querySelector('svg')?.classList.add('rotate-180');
-      }
-      
-      // Remove existing event listener to prevent duplicates
-      header.removeEventListener('click', toggleAccordion);
-      
-      // Add click event listener
-      header.addEventListener('click', toggleAccordion);
-    });
-    
-    // Handle content changes that might affect height
-    window.addEventListener('resize', updateExpandedPanels);
-  }
-  
-  // Function to toggle accordion state
-  function toggleAccordion() {
-    const header = this;
-    const isCurrentlyExpanded = header.getAttribute('aria-expanded') === 'true';
-    const group = header.getAttribute('data-group');
-    const targetId = header.getAttribute('data-accordion-target');
-    const currentPanel = document.getElementById(targetId);
-    
-    // Close other accordions in the same group
-    if (group && !isCurrentlyExpanded) {
-      document.querySelectorAll(`.accordion-header[data-group="${group}"]`).forEach(groupHeader => {
-        if (groupHeader !== header && groupHeader.getAttribute('aria-expanded') === 'true') {
-          const groupPanelId = groupHeader.getAttribute('data-accordion-target');
-          const groupPanel = document.getElementById(groupPanelId);
-          groupHeader.setAttribute('aria-expanded', 'false');
-          groupHeader.querySelector('svg')?.classList.remove('rotate-180');
-          if (groupPanel) groupPanel.style.maxHeight = '0px';
-        }
-      });
-    }
-    
-    // Toggle current accordion
-    header.setAttribute('aria-expanded', !isCurrentlyExpanded ? 'true' : 'false');
-    header.querySelector('svg')?.classList.toggle('rotate-180');
-    
-    if (currentPanel) {
-      if (isCurrentlyExpanded) {
-        currentPanel.style.maxHeight = '0px';
-      } else {
-        currentPanel.style.maxHeight = `${currentPanel.scrollHeight}px`;
-      }
-    }
-  }
-  
-  // Function to update heights of expanded panels
-  function updateExpandedPanels() {
-    document.querySelectorAll('.accordion-header[aria-expanded="true"]').forEach(header => {
-      const targetId = header.getAttribute('data-accordion-target');
-      const panel = document.getElementById(targetId);
-      if (panel) {
-        panel.style.maxHeight = `${panel.scrollHeight}px`;
+  document.querySelectorAll('.accordion').forEach(acc => {
+    acc.addEventListener('toggle', (e) => {
+      if ((e.target as HTMLDetailsElement).open) {
+        const group = (e.target as HTMLElement).dataset.group;
+        document.querySelectorAll(`.accordion[data-group="${group}"]`).forEach(other => {
+          if (other !== e.target) (other as HTMLDetailsElement).open = false;
+        });
       }
     });
-  }
-  
-  // Run initialization functions at various lifecycle points
-  document.addEventListener('DOMContentLoaded', initAccordions);
-  document.addEventListener('astro:after-swap', initAccordions);
-  document.addEventListener('astro:page-load', initAccordions);
-  
-  // Initialize immediately if the document is already interactive
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(initAccordions, 1);
-  }
-  
-  // Also add a window load event for good measure
-  window.addEventListener('load', initAccordions);
+  });
 </script>
 
 <style>
-  .accordion-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-  }
-  
-  .accordion-header svg.rotate-180 {
-    transform: rotate(180deg);
-  }
+  summary::-webkit-details-marker { display: none; }
 </style>

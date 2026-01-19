@@ -1,70 +1,35 @@
 ---
-// ListCheck component for fancy checkmark lists
+
 ---
 
-<div class="list-check-container my-6">
-  <div class="prose dark:prose-invert">
-    <slot />
-  </div>
+<div class="list-check my-6 prose dark:prose-invert">
+  <slot />
 </div>
 
 <style>
-  /* Reset list styles */
-  .list-check-container :global(ul) {
-    list-style-type: none !important;
+  .list-check :global(ul) {
+    list-style: none !important;
     padding-left: 0 !important;
-    margin-left: 0 !important;
   }
   
-  /* Custom styling for list items inside ListCheck */
-  .list-check-container :global(li) {
+  .list-check :global(li) {
     position: relative;
-    padding-left: 2rem !important;
-    margin-bottom: 0.75rem !important;
-    color: #374151;
-    list-style-type: none !important;
+    padding-left: 1.75rem !important;
+    margin-bottom: 0.5rem;
   }
 
-  .list-check-container :global(li::before) {
-    content: "" !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0.25rem !important;
-    width: 1.25rem !important;
-    height: 1.25rem !important;
-    background-color: #3b82f6 !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='3'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7' /%3E%3C/svg%3E") !important;
-    background-size: 14px !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
+  .list-check :global(li::before) {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    background: #3b82f6 url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/10px no-repeat;
+    border-radius: 50%;
   }
 
-  /* Dark mode support */
-  :global(.dark) .list-check-container :global(li) {
-    color: #d1d5db;
-  }
-
-  :global(.dark) .list-check-container :global(li::before) {
-    background-color: #2563eb !important;
-  }
-
-  /* Support for nested content */
-  .list-check-container :global(li strong) {
-    color: #1f2937;
-    font-weight: 600;
-  }
-
-  :global(.dark) .list-check-container :global(li strong) {
-    color: #f3f4f6;
-  }
-  
-  /* Override any markdown bullets */
-  .list-check-container :global(li::marker) {
-    display: none !important;
-    content: "" !important;
+  :global(.dark) .list-check :global(li::before) {
+    background-color: #2563eb;
   }
 </style>

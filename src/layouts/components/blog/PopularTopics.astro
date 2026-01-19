@@ -3,115 +3,131 @@ import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 
 export interface Props {
-  tags?: string[];
-  postsPerTag?: number;
+    tags?: string[];
+    postsPerTag?: number;
 }
 
-const { 
-  tags = ["Jamstack", "astro", "carrd"], 
-  postsPerTag = 5 
-} = Astro.props;
+const { tags = ["Jamstack", "astro", "carrd"], postsPerTag = 5 } = Astro.props;
 
 // Get all posts
 const allPosts = await getCollection("posts");
 
 // Sort posts by date (most recent first)
 const sortedPosts = allPosts.sort((a, b) => {
-  const dateA = new Date(a.data.date || "");
-  const dateB = new Date(b.data.date || "");
-  return dateB.getTime() - dateA.getTime();
+    const dateA = new Date(a.data.date || "");
+    const dateB = new Date(b.data.date || "");
+    return dateB.getTime() - dateA.getTime();
 });
 
 // Helper function to slugify text
 function slugify(text: string): string {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-");
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^\w\-]+/g, "")
+        .replace(/\-\-+/g, "-");
 }
 
 // Get posts for each tag
 const tagPosts = tags.map((tag) => ({
-  tag,
-  posts: sortedPosts
-    .filter((post) => post.data.tags?.map((t: string) => slugify(t)).includes(slugify(tag)))
-    .slice(0, postsPerTag),
+    tag,
+    posts: sortedPosts
+        .filter((post) =>
+            post.data.tags
+                ?.map((t: string) => slugify(t))
+                .includes(slugify(tag)),
+        )
+        .slice(0, postsPerTag),
 }));
 ---
 
-<section class="py-12 bg-gradient-to-b from-gray-850 to-white dark:bg-gradient-to-b dark:from-gray-800 dark:to-black">
-  <div class="container mx-auto px-4">
-    <h2 class="text-3xl font-bold text-center mb-10 text-gray-900 dark:text-gray-100">Popular Topics</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {
-        tagPosts.map(({ tag, posts }) => (
-          <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 transition-transform duration-400 hover:transform hover:scale-[1.01]">
-            <div class="flex items-center mb-4">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 capitalize">{tag}</h3>
-              <div class="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs rounded-full">
-                {posts.length}
-              </div>
-            </div>
-            <div class="divide-y divide-gray-100 dark:divide-gray-700">
-              {posts.map((post) => (
-                <a
-                  href={`/${post.slug}/`}
-                  class="flex items-center gap-4 group hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg py-3 first:pt-0 last:pb-0"
-                >
-                  <div class="relative flex-shrink-0 w-20 overflow-hidden rounded-lg shadow-sm">
-                    <div class="aspect-[16/9]">
-                      {post.data.image && (
-                        <Image
-                          src={post.data.image}
-                          alt={post.data.title}
-                          width={80}
-                          height={45}
-                          class="object-cover w-full h-full transition-transform duration-400 group-hover:scale-110"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      )}
+<section
+    class="py-12 bg-linear-to-b from-gray-50 to-white dark:bg-linear-to-b dark:from-gray-800 dark:to-gray-900"
+>
+    <div class="container mx-auto px-4">
+        <h2
+            class="text-3xl font-bold text-center mb-10 text-gray-900 dark:text-gray-100"
+        >
+            Popular Topics
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {
+                tagPosts.map(({ tag, posts }) => (
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 transition-transform duration-400 hover:transform hover:scale-[1.01]">
+                        <div class="flex items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 capitalize">
+                                {tag}
+                            </h3>
+                            <div class="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+                                {posts.length}
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                            {posts.map((post) => (
+                                <a
+                                    href={`/${post.slug}/`}
+                                    class="flex items-center gap-4 group hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg py-3 first:pt-0 last:pb-0"
+                                >
+                                    <div class="relative shrink-0 w-20 overflow-hidden rounded-lg shadow-sm">
+                                        <div class="aspect-video">
+                                            {post.data.image && (
+                                                <Image
+                                                    src={post.data.image}
+                                                    alt={post.data.title}
+                                                    width={80}
+                                                    height={45}
+                                                    class="object-cover w-full h-full transition-transform duration-400 group-hover:scale-110"
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div class="grow min-w-0">
+                                        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+                                            {post.data.title}
+                                        </h4>
+                                        {post.data.date && (
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                {new Date(
+                                                    post.data.date,
+                                                ).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                })}
+                                            </p>
+                                        )}
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                            <a
+                                href={`/tags/${slugify(tag)}/`}
+                                class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 group"
+                            >
+                                <span class="group-hover:underline">
+                                    View all {tag} posts
+                                </span>
+                                <svg
+                                    class="w-4 h-4 ml-1 group-hover:translate-x-0.5"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M5 12h14" />
+                                    <path d="M12 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
                     </div>
-                  </div>
-                  <div class="flex-grow min-w-0">
-                    <h4 class="text-sm font-medium text-gray-800 dark:text-gray-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
-                      {post.data.title}
-                    </h4>
-                    {post.data.date && (
-                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {new Date(post.data.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}
-                      </p>
-                    )}
-                  </div>
-                </a>
-              ))}
-            </div>
-            <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
-              <a
-                href={`/tags/${slugify(tag)}/`}
-                class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 group"
-              >
-                <span class="group-hover:underline">View all {tag} posts</span>
-                <svg
-                  class="w-4 h-4 ml-1 group-hover:translate-x-0.5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M5 12h14" />
-                  <path d="M12 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </div>
-        ))
-      }
+                ))
+            }
+        </div>
     </div>
-  </div>
 </section>

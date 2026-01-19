@@ -1,95 +1,44 @@
 ---
 import { Icon } from 'astro-icon/components';
-import socialData from '@config/social.json';
+import social from '@config/social.json';
 
-// Filter out empty social links
-const socialLinks = Object.entries(socialData)
-  .filter(([_, url]) => url && url.trim() !== ''); // Show all non-empty social links
+const socialLinks = Object.entries(social).filter(([_, url]) => url?.trim());
 
-// Map social platforms to their respective icon names and colors
-const socialIcons = {
-  facebook: { icon: 'mdi:facebook', color: 'bg-blue-600' },
-  twitter: { icon: 'mdi:twitter', color: 'bg-blue-500' },
-  instagram: { icon: 'mdi:instagram', color: 'bg-pink-600' },
-  youtube: { icon: 'mdi:youtube', color: 'bg-red-600' },
-  linkedin: { icon: 'mdi:linkedin', color: 'bg-blue-700' },
-  github: { icon: 'mdi:github', color: 'bg-gray-800' },
-  gitlab: { icon: 'mdi:gitlab', color: 'bg-orange-600' },
-  medium: { icon: 'mdi:medium', color: 'bg-green-700' },
-  codepen: { icon: 'mdi:codepen', color: 'bg-gray-900' },
-  bitbucket: { icon: 'mdi:bitbucket', color: 'bg-blue-800' },
-  dribbble: { icon: 'mdi:dribbble', color: 'bg-pink-500' },
-  behance: { icon: 'mdi:behance', color: 'bg-blue-900' },
-  pinterest: { icon: 'mdi:pinterest', color: 'bg-red-700' },
-  soundcloud: { icon: 'mdi:soundcloud', color: 'bg-orange-500' },
-  tumblr: { icon: 'mdi:tumblr', color: 'bg-blue-800' },
-  reddit: { icon: 'mdi:reddit', color: 'bg-orange-600' },
-  vk: { icon: 'mdi:vk', color: 'bg-blue-600' },
-  whatsapp: { icon: 'mdi:whatsapp', color: 'bg-green-500' },
-  snapchat: { icon: 'mdi:snapchat', color: 'bg-yellow-400' },
-  vimeo: { icon: 'mdi:vimeo', color: 'bg-blue-700' },
-  tiktok: { icon: 'mdi:music', color: 'bg-black' },
-  email: { icon: 'mdi:email', color: 'bg-red-500' },
-  phone: { icon: 'mdi:phone', color: 'bg-green-600' },
-  website: { icon: 'mdi:web', color: 'bg-purple-600' },
-  rss: { icon: 'mdi:rss', color: 'bg-orange-500' }
+const iconMap: Record<string, string> = {
+  facebook: 'mdi:facebook', twitter: 'mdi:twitter', instagram: 'mdi:instagram',
+  youtube: 'mdi:youtube', linkedin: 'mdi:linkedin', github: 'mdi:github',
+  reddit: 'mdi:reddit', whatsapp: 'mdi:whatsapp', email: 'mdi:email'
 };
 ---
 
-<section class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-lg">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6">
-    <div class="py-12 md:py-20">
-      <div class="text-center pb-10 md:pb-16">
-        <h1 class="text-5xl md:text-[3.50rem] font-bold leading-tighter tracking-tighter mb-4 font-heading text-gray-900 dark:text-white">
-          Welcome to
-          <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-indigo-500 sm:whitespace-nowrap"
-            >Bit Doze</span
+<section class="py-12 md:py-20 text-center">
+  <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">
+    Welcome to <span class="bg-linear-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">Bit Doze</span>
+  </h1>
+  <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
+    Join the community to find out more about VPS, blogging, CMS.
+  </p>
+  
+  {socialLinks.length > 0 && (
+    <div class="flex justify-center gap-3">
+      {socialLinks.map(([platform, url]) => {
+        const isBluesky = (url as string).includes('bsky.app');
+        return (
+          <a
+            href={url as string}
+            class="w-11 h-11 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-blue-500 hover:text-white transition-all hover:scale-110"
+            aria-label={platform}
           >
-        </h1>
-        <div class="max-w-3xl mx-auto">
-          <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            Join the community to find out more about, VPS, blogging, CMS.
-          </p>
-        </div>
-
-        <div class="flex justify-center gap-4">
-          {socialLinks.map(([platform, url]) => {
-            const { icon, color } = socialIcons[platform] || { icon: 'mdi:link', color: 'bg-gray-600' };
-            
-            // Special case for Bluesky which isn't in the standard icon set
-            if (url.includes('bsky.app')) {
-              return (
-                <a
-                  href={url}
-                  class="group inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-sky-500 dark:hover:bg-sky-600 transition-all duration-300 hover:scale-110"
-                  aria-label="Bluesky"
-                >
-                  <svg 
-                    class="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300" 
-                    viewBox="0 0 512 512"
-                    fill="currentColor"
-                  >
-                    <path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z"/>
-                  </svg>
-                </a>
-              );
-            }
-            
-            return (
-              <a
-                href={url}
-                class={`group inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 hover:${color} dark:hover:${color} transition-all duration-300 hover:scale-110`}
-                aria-label={platform.charAt(0).toUpperCase() + platform.slice(1)}
-              >
-                <Icon 
-                  name={icon} 
-                  class="w-6 h-6 text-gray-600 dark:text-gray-300 group-hover:text-white transition-colors duration-300" 
-                />
-              </a>
-            );
-          })}
-        </div>
-      </div>
+            {isBluesky ? (
+              <svg class="w-5 h-5" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z"/>
+              </svg>
+            ) : (
+              <Icon name={iconMap[platform] || 'mdi:link'} class="w-5 h-5" />
+            )}
+          </a>
+        );
+      })}
     </div>
-  </div>
+  )}
 </section>
