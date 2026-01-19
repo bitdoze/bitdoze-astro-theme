@@ -69,7 +69,9 @@ const tagPosts = tags.map((tag) => ({
                           alt={post.data.title}
                           width={80}
                           height={45}
-                          class="object-cover w-full h-fulltransition-transform duration-400 group-hover:scale-110"
+                          class="object-cover w-full h-full transition-transform duration-400 group-hover:scale-110"
+                          loading="lazy"
+                          decoding="async"
                         />
                       )}
                     </div>

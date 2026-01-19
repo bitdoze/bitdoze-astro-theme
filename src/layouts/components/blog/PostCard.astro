@@ -23,9 +23,11 @@ const isPartOfSeries = series && Array.isArray(series) && series.length === 2;
       <Image 
         src={image} 
         alt={title} 
-        class="w-full h-full object-cover transition-transform duration-400hover:scale-105"
+        class="w-full h-full object-cover transition-transform duration-400 hover:scale-105"
         width={640}
         height={360}
+        loading="lazy"
+        decoding="async"
       />
     </a>
   )}

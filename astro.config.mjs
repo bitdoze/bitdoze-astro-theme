@@ -6,6 +6,8 @@ import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
 import path from 'path';
 
+const sitemapFilter = (page) => !page.includes('/page/') && !page.includes('/search');
+
 // https://astro.build/config
 export default defineConfig({
   // Set the site URL for production
@@ -36,5 +38,20 @@ export default defineConfig({
   },
   
   // Configure Astro integrations
-  integrations: [mdx(), icon(), sitemap()]
+  integrations: [
+    mdx(),
+    icon(),
+    sitemap({
+      filter: sitemapFilter,
+      changefreq: 'weekly',
+      priority: 0.7,
+      lastmod: new Date(),
+    }),
+  ],
+  
+  // Prefetch links on hover for faster navigation
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: 'hover',
+  },
 });

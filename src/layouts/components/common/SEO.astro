@@ -225,8 +225,9 @@ try {
   <meta name="robots" content="index, follow" />
 )}
 
-<!-- RSS Feed -->
-<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} RSS Feed`} href="/rss.xml" /> 
+<!-- RSS Feed autodiscovery -->
+<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} RSS Feed`} href="/rss.xml" />
+<link rel="feed" type="application/rss+xml" title={`${siteConfig.title} RSS Feed`} href="/rss.xml" /> 
 
 <!-- Schema.org JSON-LD -->
 <script type="application/ld+json" set:html={JSON.stringify(schema)} />

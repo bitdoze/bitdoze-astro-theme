@@ -37,7 +37,8 @@ import { siteConfig } from '@config/site'; // Import siteConfig
   </div>
 </Layout>
 
-<script is:inline>
+<script>
+  import Fuse from 'fuse.js';
   // Loading spinner HTML
   const SPINNER = `<div class="flex justify-center py-10">
     <svg class="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -236,5 +237,4 @@ import { siteConfig } from '@config/site'; // Import siteConfig
   });
 </script>
 
-<!-- Import Fuse.js from CDN -->
-<script is:inline src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
