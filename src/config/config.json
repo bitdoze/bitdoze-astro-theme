@@ -1,5 +1,8 @@
 {
   "site": {
+    "title": "DEALIZI-Deals Made Easy",
+    "base_url": "https://dealizi.com",
+    "logo_text": "Dealizi"
     "trailing_slash": true,
     "favicon": "/favicon.ico"
   },
@@ -8,6 +11,8 @@
   },
 
   "metadata": {
+    "meta_author": "Tiago Morais",
+    "meta_description": "The home of the easiest deals online - discover, compare, and save with Dealizi.",
   },
 
   "params": {
@@ -15,8 +20,8 @@
   },
 
   "contactinfo": {
-    "address": "Your Address",
-    "email": "your.email@example.com",
-    "phone": "+1 234 567 8900"
+    "address": "DEALIZI ONLINE",
+    "email": "tigas165@gmail.com",
+    "phone": ""
   }
 }
