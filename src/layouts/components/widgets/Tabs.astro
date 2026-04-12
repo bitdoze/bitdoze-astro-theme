@@ -21,7 +21,7 @@
       panels.forEach((panel, i) => {
         const name = panel.getAttribute('data-name') || `Tab ${i + 1}`;
         const btn = document.createElement('button');
-        btn.className = `tab-btn px-4 py-2 text-sm font-medium transition-colors ${i === 0 ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'}`;
+        btn.className = `tab-btn px-4 py-2 text-sm font-medium transition-colors ${i === 0 ? 'border-b-2 border-orange-500 text-orange-600 dark:border-indigo-400 dark:text-indigo-400' : 'text-gray-500 hover:text-orange-600 dark:text-gray-400 dark:hover:text-indigo-400'}`;
         btn.setAttribute('role', 'tab');
         btn.textContent = name;
         
@@ -29,9 +29,9 @@
         
         btn.onclick = () => {
           tabList.querySelectorAll('.tab-btn').forEach(b => {
-            b.className = 'tab-btn px-4 py-2 text-sm font-medium transition-colors text-gray-500 hover:text-gray-700 dark:text-gray-400';
+            b.className = 'tab-btn px-4 py-2 text-sm font-medium transition-colors text-gray-500 hover:text-orange-600 dark:text-gray-400 dark:hover:text-indigo-400';
           });
-          btn.className = 'tab-btn px-4 py-2 text-sm font-medium transition-colors border-b-2 border-blue-600 text-blue-600';
+          btn.className = 'tab-btn px-4 py-2 text-sm font-medium transition-colors border-b-2 border-orange-500 text-orange-600 dark:border-indigo-400 dark:text-indigo-400';
           panels.forEach(p => p.classList.add('hidden'));
           panel.classList.remove('hidden');
         };

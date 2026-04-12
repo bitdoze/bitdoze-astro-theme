@@ -14,7 +14,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
           type="text" 
           id="search-input" 
           placeholder="Search for articles..." 
-          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white brand-focus"
           autocomplete="off"
         />
         <div class="absolute right-3 top-3 text-gray-400">
@@ -41,7 +41,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
   import Fuse from 'fuse.js';
   // Loading spinner HTML
   const SPINNER = `<div class="flex justify-center py-10">
-    <svg class="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <svg class="animate-spin h-10 w-10 brand-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
     </svg>
@@ -157,7 +157,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
           tagsHtml = `
             <div class="flex flex-wrap gap-2 mt-3">
               ${post.tags.slice(0, 3).map(tag => `
-                <a href="/tags/${tag.toLowerCase()}/" class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors duration-300">
+                <a href="/tags/${tag.toLowerCase()}/" class="px-2 py-1 rounded-full text-xs brand-soft-bg brand-soft-hover transition-colors duration-300">
                   #${tag}
                 </a>
               `).join('')}
@@ -166,7 +166,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
         }
         
         article.innerHTML = `
-          <a href="/${post.slug}/" class="block">
+          <a href="/${post.slug}/" class="block group">
             ${imageHtml}
             <div class="p-4">
               <div class="flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400 mb-3">
@@ -179,7 +179,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
                 ${categoriesHtml}
               </div>
               
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover-brand-accent transition-colors duration-300">
                 ${post.title}
               </h3>
               

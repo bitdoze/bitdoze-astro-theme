@@ -57,7 +57,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
           <span class="flex items-center gap-1">
             <Icon name="mdi:folder" class="w-4 h-4" />
             {categories.map((cat: string, i: number) => (
-              <><a href={`/categories/${cat.toLowerCase()}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{cat}</a>{i < categories.length - 1 && ', '}</>
+              <><a href={`/categories/${cat.toLowerCase()}/`} class="brand-accent-hover">{cat}</a>{i < categories.length - 1 && ', '}</>
             ))}
           </span>
         )}
@@ -65,7 +65,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
           <span class="flex items-center gap-1">
             <Icon name="mdi:account" class="w-4 h-4" />
             {authors.map((author: string, i: number) => (
-              <><a href={`/authors/${author.toLowerCase()}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{author}</a>{i < authors.length - 1 && ', '}</>
+              <><a href={`/authors/${author.toLowerCase()}/`} class="brand-accent-hover">{author}</a>{i < authors.length - 1 && ', '}</>
             ))}
           </span>
         )}
@@ -84,7 +84,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
       {tags?.length > 0 && (
         <div class="flex flex-wrap gap-2">
           {tags.map((tag: string) => (
-            <a href={`/tags/${tag.toLowerCase()}/`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-blue-100 dark:hover:bg-blue-900">
+            <a href={`/tags/${tag.toLowerCase()}/`} class="px-3 py-1 rounded-full text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 brand-soft-hover">
               #{tag}
             </a>
           ))}
@@ -98,7 +98,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
       <PostHeadings headings={headings} />
     </div>
     
-    <div class="prose prose-lg dark:prose-invert prose-blue max-w-none">
+    <div class="prose prose-lg dark:prose-invert max-w-none">
       <slot />
     </div>
     

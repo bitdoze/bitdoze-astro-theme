@@ -34,6 +34,149 @@ body {
   font-family: var(--font-sans);
 }
 
+:root {
+  --brand-orange-100: #ffedd5;
+  --brand-orange-200: #fed7aa;
+  --brand-orange-500: #f97316;
+  --brand-orange-600: #ea580c;
+  --brand-orange-700: #c2410c;
+  --brand-indigo-500: #6366f1;
+  --brand-indigo-400: #818cf8;
+  --brand-indigo-300: #a5b4fc;
+}
+
+.brand-accent {
+  color: var(--brand-orange-600);
+}
+
+:where(.dark) .brand-accent {
+  color: var(--brand-indigo-400);
+}
+
+.brand-accent-hover {
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.brand-accent-hover:hover,
+.brand-accent-hover:focus-visible {
+  color: var(--brand-orange-600);
+}
+
+:where(.dark) .brand-accent-hover:hover,
+:where(.dark) .brand-accent-hover:focus-visible {
+  color: var(--brand-indigo-400);
+}
+
+.brand-accent-hover-strong {
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.brand-accent-hover-strong:hover,
+.brand-accent-hover-strong:focus-visible {
+  color: var(--brand-orange-700);
+}
+
+:where(.dark) .brand-accent-hover-strong:hover,
+:where(.dark) .brand-accent-hover-strong:focus-visible {
+  color: var(--brand-indigo-300);
+}
+
+.group:hover .group-hover-brand-accent {
+  color: var(--brand-orange-600);
+}
+
+:where(.dark) .group:hover .group-hover-brand-accent {
+  color: var(--brand-indigo-400);
+}
+
+.brand-soft-bg {
+  background-color: var(--brand-orange-100);
+  color: var(--brand-orange-700);
+}
+
+:where(.dark) .brand-soft-bg {
+  background-color: rgba(99, 102, 241, 0.18);
+  color: var(--brand-indigo-300);
+}
+
+.brand-soft-hover {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.brand-soft-hover:hover,
+.brand-soft-hover:focus-visible {
+  background-color: var(--brand-orange-200);
+  color: var(--brand-orange-700);
+}
+
+:where(.dark) .brand-soft-hover:hover,
+:where(.dark) .brand-soft-hover:focus-visible {
+  background-color: rgba(99, 102, 241, 0.28);
+  color: #c7d2fe;
+}
+
+.brand-border-soft {
+  border-color: rgba(249, 115, 22, 0.22);
+}
+
+:where(.dark) .brand-border-soft {
+  border-color: rgba(129, 140, 248, 0.25);
+}
+
+.brand-gradient-bg {
+  background-image: linear-gradient(90deg, var(--brand-orange-500), var(--brand-indigo-500));
+}
+
+.brand-focus {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.brand-focus:focus,
+.brand-focus:focus-visible {
+  outline: none;
+  border-color: rgba(249, 115, 22, 0.55);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.18);
+}
+
+:where(.dark) .brand-focus:focus,
+:where(.dark) .brand-focus:focus-visible {
+  border-color: rgba(129, 140, 248, 0.55);
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+.brand-button-solid {
+  background-image: linear-gradient(135deg, var(--brand-orange-500), var(--brand-indigo-500));
+  color: #fff;
+  transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.brand-button-solid:hover,
+.brand-button-solid:focus-visible {
+  filter: saturate(1.05) brightness(0.97);
+  box-shadow: 0 12px 24px -16px rgba(99, 102, 241, 0.7);
+}
+
+.brand-button-outline {
+  border-color: var(--brand-orange-500);
+  color: var(--brand-orange-600);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.brand-button-outline:hover,
+.brand-button-outline:focus-visible {
+  background-color: var(--brand-orange-100);
+}
+
+:where(.dark) .brand-button-outline {
+  border-color: var(--brand-indigo-400);
+  color: var(--brand-indigo-300);
+}
+
+:where(.dark) .brand-button-outline:hover,
+:where(.dark) .brand-button-outline:focus-visible {
+  background-color: rgba(99, 102, 241, 0.14);
+}
+
 /* Dark mode colors */
 .dark {
   color-scheme: dark;
@@ -43,7 +186,7 @@ body {
 .prose {
   --tw-prose-body: theme(colors.gray.700);
   --tw-prose-headings: theme(colors.gray.900);
-  --tw-prose-links: theme(colors.blue.600);
+  --tw-prose-links: var(--brand-orange-600);
   --tw-prose-code: theme(colors.gray.900);
   --tw-prose-pre-bg: theme(colors.gray.100);
 }
@@ -51,7 +194,7 @@ body {
 .dark .prose {
   --tw-prose-body: theme(colors.gray.300);
   --tw-prose-headings: theme(colors.white);
-  --tw-prose-links: theme(colors.blue.400);
+  --tw-prose-links: var(--brand-indigo-400);
   --tw-prose-code: theme(colors.gray.100);
   --tw-prose-pre-bg: theme(colors.gray.800);
 }

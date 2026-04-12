@@ -110,7 +110,6 @@ Tailor the theme to your needs by updating the following configuration files:
     *   Update `src/config/social.json` with your social media profile URLs.
 5.  **Other Specific Configurations (`src/config/config.json`)**:
     *   The `src/config/config.json` file holds some remaining specific parameters:
-        *   `site.favicon`: Path to your `.ico` favicon.
         *   `site.trailing_slash`: Whether to use trailing slashes in URLs (Astro also handles this).
         *   `params.contact_form_action`: URL endpoint for the contact form (if used).
         *   `contactinfo`: Your address, email, and phone number for display.

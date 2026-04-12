@@ -50,19 +50,19 @@ const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentInde
     {seriesPosts.map((post, index) => (
       <div class="flex items-center">
         <div class="flex-shrink-0 mr-3">
-          <div class={`w-7 h-7 rounded-full flex items-center justify-center ${post.slug === currentSlug ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}>
+          <div class={`w-7 h-7 rounded-full flex items-center justify-center ${post.slug === currentSlug ? 'brand-gradient-bg text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}>
             {index + 1}
           </div>
         </div>
         <div class="grow">
           {post.slug === currentSlug ? (
-            <span class="font-medium text-blue-600 dark:text-blue-400">
+            <span class="font-medium brand-accent">
               {post.data.title}
             </span>
           ) : (
             <a 
               href={`/${post.slug}/`} 
-              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              class="text-gray-700 dark:text-gray-300 brand-accent-hover transition-colors"
             >
               {post.data.title}
             </a>
@@ -74,7 +74,7 @@ const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentInde
   
   <div class="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between">
     {prevPost ? (
-      <a href={`/${prevPost.slug}/`} class="flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+      <a href={`/${prevPost.slug}/`} class="flex items-center text-xs brand-accent brand-accent-hover-strong transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -85,7 +85,7 @@ const nextPost = currentIndex < seriesPosts.length - 1 ? seriesPosts[currentInde
     )}
     
     {nextPost ? (
-      <a href={`/${nextPost.slug}/`} class="flex items-center text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+      <a href={`/${nextPost.slug}/`} class="flex items-center text-xs brand-accent brand-accent-hover-strong transition-colors">
         Next: {nextPost.data.title}
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

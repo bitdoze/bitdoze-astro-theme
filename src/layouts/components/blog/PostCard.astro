@@ -40,7 +40,7 @@ const isPartOfSeries = series && Array.isArray(series) && series.length === 2;
           {categories.map((category: string) => (
             <a 
               href={`/categories/${category.toLowerCase()}/`} 
-              class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+              class="text-xs font-medium px-2 py-1 rounded-full brand-soft-bg brand-soft-hover"
             >
               {category}
             </a>
@@ -60,7 +60,7 @@ const isPartOfSeries = series && Array.isArray(series) && series.length === 2;
     
     <!-- Title -->
     <h2 class="text-xl font-bold mb-2 text-gray-900 dark:text-white line-clamp-2" >
-      <a href={`/${slug}/`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+      <a href={`/${slug}/`} class="brand-accent-hover transition-colors">
         {title}
       </a>
     </h2>

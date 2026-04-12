@@ -32,7 +32,7 @@ const tableOfContents = buildToc(headings);
 <div class="toc-container relative bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md border border-gray-100 dark:border-gray-700">
   <div class="flex justify-between items-center mb-3">
     <h2 class="text-lg font-bold text-gray-800 dark:text-gray-500">Table of Contents</h2>
-    <button id="toc-toggle" aria-label="Toggle table of contents" aria-expanded="true" class="text-gray-500 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <button id="toc-toggle" aria-label="Toggle table of contents" aria-expanded="true" class="text-gray-500 dark:text-gray-300 brand-accent-hover brand-focus p-1 rounded-md focus:outline-none">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
       </svg>
@@ -42,8 +42,8 @@ const tableOfContents = buildToc(headings);
     <ul class="text-sm [&_li]:pt-2 list-disc underline underline-offset-4 decoration-gray-300 dark:decoration-gray-500">
       {
         tableOfContents.map((heading) => (
-          <li class="hover:text-blue-500 dark:hover:text-blue-100">
-            <a href={"#" + heading.slug} class="text-gray-600 dark:text-gray-400 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{heading.text}</a>
+          <li class="brand-accent-hover-strong">
+            <a href={"#" + heading.slug} class="text-gray-600 dark:text-gray-400 font-medium brand-accent-hover transition-colors">{heading.text}</a>
             {heading.subheadings.length > 0 && (
               <ul class="pl-5 list-disc">
                 {heading.subheadings.map((heading) => (

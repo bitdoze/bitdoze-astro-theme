@@ -33,7 +33,7 @@ const { title, description, meta_title, image, what_i_do } = entry.data;
           <div class="mt-8">
             <a 
               href="/contact" 
-              class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300 font-medium inline-block"
+              class="px-6 py-3 brand-button-solid rounded-md duration-300 font-medium inline-block"
             >
               Get In Touch
             </a>
@@ -50,7 +50,7 @@ const { title, description, meta_title, image, what_i_do } = entry.data;
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
         {what_i_do.items.map((item: any) => (
           <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-            {item.icon && <i class={`${item.icon} text-3xl text-blue-600 dark:text-blue-400 mb-4`}></i>}
+            {item.icon && <i class={`${item.icon} text-3xl brand-accent mb-4`}></i>}
             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">{item.title}</h3>
             <p class="text-gray-700 dark:text-gray-300">{item.description}</p>
           </div>

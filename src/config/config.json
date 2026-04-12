@@ -1,7 +1,6 @@
 {
   "site": {
     "trailing_slash": true,
-    "favicon": "/favicon.ico",
     "title": "hieupn blog",
     "description": "A description of my awesome site.",
     "base_url": "https://hieupn.com"

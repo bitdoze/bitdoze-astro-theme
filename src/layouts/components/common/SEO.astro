@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from '@config/site';
+import faviconUrl from '@assets/favicons/hieupn_logo_better.svg?url';
 
 export interface Props {
   title?: string;
@@ -144,7 +145,7 @@ if (article && publishISODate) {
       "name": siteConfig.title, // Updated from siteConfig.name
       "logo": {
         "@type": "ImageObject",
-        "url": safeUrl("/favicon.svg", Astro.site) // Use Astro.site
+        "url": safeUrl(faviconUrl, Astro.site)
       }
     },
     "mainEntityOfPage": {

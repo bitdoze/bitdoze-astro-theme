@@ -52,12 +52,12 @@ const formatAuthorName = (name) => {
           class="flex items-center justify-between p-5 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
         >
           <div class="flex items-center">
-            <Icon name="mdi:account" class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" />
+            <Icon name="mdi:account" class="w-6 h-6 brand-accent mr-3" />
             <span class="font-medium text-gray-900 dark:text-white">
               {formatAuthorName(name)}
             </span>
           </div>
-          <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+          <span class="text-xs font-medium px-2.5 py-0.5 rounded-full brand-soft-bg">
             {count} {count === 1 ? 'post' : 'posts'}
           </span>
         </a>

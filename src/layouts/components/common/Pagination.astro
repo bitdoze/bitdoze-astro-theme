@@ -92,7 +92,7 @@ const getPageUrl = (pageNum: number) => {
             <a 
               href={getPageUrl(pageNum as number)} 
               class={`px-3 py-2 rounded-md ${currentPage === pageNum 
-                ? 'bg-blue-600 text-white dark:bg-blue-700 font-medium' 
+                ? 'brand-button-solid text-white font-medium' 
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-700'} transition-colors`}
               aria-current={currentPage === pageNum ? 'page' : undefined}
             >
