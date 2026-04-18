@@ -1,28 +1,75 @@
 ---
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
 import Hero from '@components/widgets/Hero.astro';
 import Layout from '@layouts/Layout.astro';
-import PostCard from '@components/blog/PostCard.astro';
-import PopularTopics from '@components/blog/PopularTopics.astro';
+import { formatDate } from '@utils/date';
 import { siteConfig } from '@config/site';
 
-const brandGradient = {
-  start: '#f97316',
-  end: '#6366f1',
-};
+// Fetch posts
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const sortedPosts = posts.sort(
+  (a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime()
+);
 
-// Get all blog posts and sort by date (newest first)
-const posts = await getCollection('posts', ({ data }) => {
-  return !data.draft;
-});
+const featuredPost = sortedPosts[0];
+const sideRecent = sortedPosts.slice(1, 4);
 
-// Sort posts by date (newest first)
-const sortedPosts = posts.sort((a, b) => {
-  return new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime();
-});
+// Aggregate stats
+const allCategories = new Set<string>();
+const allTags = new Set<string>();
+const allAuthors = new Set<string>();
+for (const post of posts) {
+  (post.data.categories || []).forEach((c: string) => allCategories.add(c));
+  (post.data.tags || []).forEach((t: string) => allTags.add(t));
+  (post.data.authors || []).forEach((a: string) => allAuthors.add(a));
+}
 
-// Get the latest 6 posts for the homepage
-const latestPosts = sortedPosts.slice(0, 6);
+const stats = [
+  { label: 'Articles', value: posts.length, icon: 'mdi:notebook-edit-outline' },
+  { label: 'Categories', value: allCategories.size, icon: 'mdi:folder-multiple-outline' },
+  { label: 'Topics', value: allTags.size, icon: 'mdi:tag-multiple-outline' },
+  { label: 'Authors', value: allAuthors.size, icon: 'mdi:account-group-outline' },
+];
+
+// Helpers
+function slugify(text: string): string {
+  return text.toString().toLowerCase().trim()
+    .replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-');
+}
+
+const featuredSlug = featuredPost?.data.canonical
+  ? new URL(featuredPost.data.canonical).pathname.split('/').filter(Boolean).pop()
+  : featuredPost?.slug;
+
+// Explore cards data
+const exploreCards = [
+  {
+    href: '/categories/',
+    title: 'Categories',
+    description: 'Browse posts by topic',
+    icon: 'mdi:shape-outline',
+  },
+  {
+    href: '/authors/',
+    title: 'Authors',
+    description: 'Meet the content creators',
+    icon: 'mdi:account-multiple-outline',
+  },
+  {
+    href: '/tags/',
+    title: 'Tags',
+    description: 'Find content by keywords',
+    icon: 'mdi:tag-outline',
+  },
+  {
+    href: '/series/',
+    title: 'Series',
+    description: 'Multi-part deep dives',
+    icon: 'mdi:book-open-variant',
+  },
+];
 ---
 
 <Layout
@@ -30,97 +77,245 @@ const latestPosts = sortedPosts.slice(0, 6);
   description={siteConfig.description}
   wideContent={true}
 >
-  <main class="w-full py-8">
+  <main class="w-full">
     <!-- Hero Section -->
-    <Hero /> 
-        <!-- Browse Categories Section -->
-        <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div class="text-center mb-8">
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">Explore Content</h2>
-            <p class="text-lg text-gray-700 dark:text-gray-300">
-              Browse our content by category, author, or tag
-            </p>
+    <Hero />
+
+    <!-- Stats Section -->
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 mb-16">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map(({ label, value, icon }) => (
+          <div class="relative p-5 rounded-xl bg-white dark:bg-gray-800 border brand-border-soft shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg brand-soft-bg flex items-center justify-center shrink-0">
+                <Icon name={icon} class="w-5 h-5" />
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">{value}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{label}</div>
+              </div>
+            </div>
           </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <a 
-              href="/categories/" 
-              class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700 text-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="url(#index-category-gradient)">
-                <defs>
-                  <linearGradient id="index-category-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color={brandGradient.start} />
-                    <stop offset="100%" stop-color={brandGradient.end} />
-                  </linearGradient>
-                </defs>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Categories</h3>
-              <p class="text-gray-600 dark:text-gray-400">Browse posts by topic</p>
-            </a>
-            
-            <a 
-              href="/authors/" 
-              class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700 text-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="url(#index-author-gradient)">
-                <defs>
-                  <linearGradient id="index-author-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color={brandGradient.start} />
-                    <stop offset="100%" stop-color={brandGradient.end} />
-                  </linearGradient>
-                </defs>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Authors</h3>
-              <p class="text-gray-600 dark:text-gray-400">Meet our content creators</p>
-            </a>
-            
-            <a 
-              href="/tags/" 
-              class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700 text-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4" fill="none" viewBox="0 0 24 24" stroke="url(#index-tag-gradient)">
-                <defs>
-                  <linearGradient id="index-tag-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color={brandGradient.start} />
-                    <stop offset="100%" stop-color={brandGradient.end} />
-                  </linearGradient>
-                </defs>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Tags</h3>
-              <p class="text-gray-600 dark:text-gray-400">Find content by specific topics</p>
-            </a>
-          </div>
-        </section>
-    
-    <!-- Blog Posts Section -->
-    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Latest Articles</h2>
-        <a href="/blog/" class="font-medium flex items-center gap-1 hover:opacity-80 transition-opacity">
-          <span class="bg-linear-to-r from-orange-500 to-indigo-500 bg-clip-text text-transparent">View All</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="url(#index-arrow-gradient)">
-            <defs>
-              <linearGradient id="index-arrow-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color={brandGradient.start} />
-                <stop offset="100%" stop-color={brandGradient.end} />
-              </linearGradient>
-            </defs>
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-          </svg>
-        </a>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {latestPosts.map((post) => (
-          <PostCard post={post} />
         ))}
       </div>
     </section>
-    
 
+    <!-- Featured + Recent Section -->
+    {featuredPost && (
+      <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+          <div>
+            <span class="inline-block text-xs font-bold uppercase tracking-wider brand-accent mb-2">
+              The archive
+            </span>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+              Featured Article
+            </h2>
+          </div>
+          <a
+            href="/blog/"
+            class="group font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+          >
+            <span class="bg-linear-to-r from-orange-500 to-indigo-500 bg-clip-text text-transparent">
+              View All
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 ml-1 group-hover:translate-x-0.5 transition-transform"
+              viewBox="0 0 20 20"
+              fill="url(#index-view-all-gradient)"
+            >
+              <defs>
+                <linearGradient id="index-view-all-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f97316" />
+                  <stop offset="100%" stop-color="#6366f1" />
+                </linearGradient>
+              </defs>
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="grid lg:grid-cols-5 gap-8">
+          <!-- Featured card (spans 3 cols) -->
+          <a
+            href={`/${featuredSlug}/`}
+            class="lg:col-span-3 group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 border brand-border-soft shadow-md hover:shadow-xl transition-all duration-400"
+          >
+            {featuredPost.data.image && (
+              <div class="relative aspect-[16/10] overflow-hidden">
+                <Image
+                  src={featuredPost.data.image}
+                  alt={featuredPost.data.title}
+                  width={960}
+                  height={600}
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  loading="eager"
+                />
+                <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent"></div>
+                <div class="absolute top-4 left-4 flex items-center gap-2">
+                  <span class="px-3 py-1 rounded-full text-xs font-bold text-white brand-gradient-bg shadow-lg">
+                    Featured
+                  </span>
+                  {featuredPost.data.categories?.[0] && (
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/90 text-gray-800 backdrop-blur-sm">
+                      {featuredPost.data.categories[0]}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+            <div class="p-6 md:p-8">
+              <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:brand-accent transition-colors">
+                {featuredPost.data.title}
+              </h3>
+              {featuredPost.data.description && (
+                <p class="text-gray-600 dark:text-gray-300 line-clamp-2 mb-5">
+                  {featuredPost.data.description}
+                </p>
+              )}
+              <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                <div class="flex items-center gap-4">
+                  {featuredPost.data.authors?.[0] && (
+                    <span class="flex items-center gap-1.5">
+                      <Icon name="mdi:account-circle-outline" class="w-4 h-4" />
+                      {featuredPost.data.authors[0]}
+                    </span>
+                  )}
+                  {featuredPost.data.date && (
+                    <span class="flex items-center gap-1.5">
+                      <Icon name="mdi:calendar-outline" class="w-4 h-4" />
+                      {formatDate(featuredPost.data.date)}
+                    </span>
+                  )}
+                </div>
+                <span class="brand-accent font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                  Read
+                  <Icon name="mdi:arrow-right" class="w-4 h-4" />
+                </span>
+              </div>
+            </div>
+          </a>
+
+          <!-- Side recent posts (spans 2 cols) -->
+          <div class="lg:col-span-2 flex flex-col gap-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <Icon name="mdi:clock-outline" class="w-5 h-5 brand-accent" />
+              Recently Published
+            </h3>
+            {sideRecent.map((post) => {
+              const slug = post.data.canonical
+                ? new URL(post.data.canonical).pathname.split('/').filter(Boolean).pop()
+                : post.slug;
+              return (
+                <a
+                  href={`/${slug}/`}
+                  class="group flex gap-4 p-3 rounded-xl bg-white dark:bg-gray-800 border brand-border-soft hover:shadow-md transition-all"
+                >
+                  {post.data.image && (
+                    <div class="shrink-0 w-24 h-20 rounded-lg overflow-hidden">
+                      <Image
+                        src={post.data.image}
+                        alt={post.data.title}
+                        width={96}
+                        height={80}
+                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div class="min-w-0 flex flex-col justify-between py-0.5">
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:brand-accent transition-colors">
+                      {post.data.title}
+                    </h4>
+                    {post.data.date && (
+                      <span class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+                        <Icon name="mdi:calendar-outline" class="w-3 h-3" />
+                        {formatDate(post.data.date)}
+                      </span>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Explore Section -->
+    <section class="bg-gray-50 dark:bg-gray-800/50 border-y brand-border-soft py-16 mb-20">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <span class="inline-block text-xs font-bold uppercase tracking-wider brand-accent mb-2">
+            Navigate the blog
+          </span>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+            Explore Content
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Pick your preferred way to discover articles — by category, author, tag, or series.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {exploreCards.map(({ href, title, description, icon }) => (
+            <a
+              href={href}
+              class="group relative overflow-hidden p-6 rounded-xl bg-white dark:bg-gray-800 border brand-border-soft shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="absolute inset-x-0 top-0 h-1 brand-gradient-bg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div class="w-12 h-12 rounded-lg brand-soft-bg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Icon name={icon} class="w-6 h-6" />
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:brand-accent transition-colors">
+                {title}
+              </h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                {description}
+              </p>
+              <Icon
+                name="mdi:arrow-top-right"
+                class="absolute top-4 right-4 w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:brand-accent group-hover:rotate-12 transition-all"
+              />
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      <div class="relative overflow-hidden rounded-2xl brand-gradient-bg p-8 md:p-12 text-white text-center">
+        <div aria-hidden="true" class="absolute inset-0 opacity-20">
+          <div class="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-white/30 blur-3xl"></div>
+          <div class="absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-white/20 blur-3xl"></div>
+        </div>
+        <div class="relative">
+          <h2 class="text-3xl md:text-4xl font-bold mb-3">
+            Let's build something together
+          </h2>
+          <p class="text-lg text-white/90 max-w-2xl mx-auto mb-6">
+            Got a question, an idea, or just want to say hi? I'm always open to a good conversation about code and the web.
+          </p>
+          <div class="flex flex-wrap gap-3 justify-center">
+            <a
+              href="/contact/"
+              class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold bg-white text-gray-900 hover:bg-gray-100 transition-colors"
+            >
+              <Icon name="mdi:email-outline" class="w-5 h-5" />
+              Get in touch
+            </a>
+            <a
+              href="/about/"
+              class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold border-2 border-white/80 text-white hover:bg-white/10 transition-colors"
+            >
+              Learn more
+              <Icon name="mdi:arrow-right" class="w-5 h-5" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </Layout>
