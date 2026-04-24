@@ -6,6 +6,6 @@ export interface Props {
 const { name } = Astro.props;
 ---
 
-<div class="tab-panel prose dark:prose-invert prose-lg !max-w-none" data-name={name}>
+<div class="tab-panel hidden prose dark:prose-invert prose-lg !max-w-none" data-name={name}>
   <slot />
 </div>

@@ -2,15 +2,13 @@
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { formatDate } from '@utils/date';
+import { getPostUrl, slugify } from '@utils/slug';
 import SeriesBadge from './SeriesBadge.astro';
 
 const { post } = Astro.props;
 const { title, description, image, date, categories, authors, series } = post.data;
 
-// Extract the slug from the canonical URL or use the file name
-const slug = post.data.canonical 
-  ? new URL(post.data.canonical).pathname.split('/').filter(Boolean).pop()
-  : post.slug;
+const postUrl = getPostUrl(post);
 
 // Check if post is part of a series
 const isPartOfSeries = series && Array.isArray(series) && series.length === 2;
@@ -19,7 +17,7 @@ const isPartOfSeries = series && Array.isArray(series) && series.length === 2;
 <article class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform duration-400 hover:transform hover:scale-[1.02]" >
   <!-- Post Image -->
   {image && (
-    <a href={`/${slug}/`} class="block overflow-hidden aspect-video">
+    <a href={postUrl} class="block overflow-hidden aspect-video">
       <Image 
         src={image} 
         alt={title} 
@@ -39,7 +37,7 @@ const isPartOfSeries = series && Array.isArray(series) && series.length === 2;
         <div class="flex flex-wrap gap-2">
           {categories.map((category: string) => (
             <a 
-              href={`/categories/${category.toLowerCase()}/`} 
+              href={`/categories/${slugify(category)}/`} 
               class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
             >
               {category}
@@ -60,7 +58,7 @@ const isPartOfSeries = series && Array.isArray(series) && series.length === 2;
     
     <!-- Title -->
     <h2 class="text-xl font-bold mb-2 text-gray-900 dark:text-white line-clamp-2" >
-      <a href={`/${slug}/`} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+      <a href={postUrl} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
         {title}
       </a>
     </h2>

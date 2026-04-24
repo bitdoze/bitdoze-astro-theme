@@ -1,9 +1,20 @@
 import { getCollection } from 'astro:content';
 import { formatDate } from '@utils/date';
+import { getPostSlug } from '@utils/slug';
+
+const MAX_INDEXED_CONTENT_LENGTH = 1200;
+
+function excerptContent(content = '') {
+  return content
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, MAX_INDEXED_CONTENT_LENGTH);
+}
 
 export async function GET() {
   // Get all posts
-  const posts = await getCollection('posts');
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
 
   // Format posts for search
   const searchData = posts.map(post => {
@@ -15,21 +26,22 @@ export async function GET() {
     } : null;
     
     return {
-      slug: post.slug,
+      slug: getPostSlug(post),
       title: post.data.title,
       description: post.data.description || '',
       date: post.data.date ? formatDate(post.data.date) : '',
       image: imageData,
       categories: post.data.categories || [],
       tags: post.data.tags || [],
-      content: post.body
+      content: excerptContent(post.body)
     };
   });
 
   return new Response(JSON.stringify(searchData), {
     status: 200,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=3600'
     }
   });
 }

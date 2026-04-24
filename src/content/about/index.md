@@ -1,7 +1,7 @@
 ---
 title: "About"
 meta_title: "About"
-image: "/src/assets/images/avatar-placeholder.svg"
+image: "/images/avatar-placeholder.svg"
 draft: false
 
 what_i_do:

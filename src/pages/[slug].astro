@@ -1,21 +1,22 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
+import { entryIdToSlug } from "@utils/slug";
 // Import all widget components for MDX files
 import * as MarkdownComponents from '@layouts/components/MarkdownComponents.astro';
 
 export async function getStaticPaths() {
   const pages = await getCollection("pages");
   return pages
-    .filter(page => page.slug !== "404")
+    .filter(page => entryIdToSlug(page) !== "404")
     .map(page => ({
-      params: { slug: page.slug },
+      params: { slug: entryIdToSlug(page) },
       props: { page },
     }));
 }
 
 const { page } = Astro.props;
-const { Content } = await page.render();
+const { Content } = await render(page);
 const { title, description, image } = page.data;
 
 // Make all components available to MDX content

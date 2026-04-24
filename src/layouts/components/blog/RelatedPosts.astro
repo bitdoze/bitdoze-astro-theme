@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import { formatDate } from '@utils/date';
+import { getPostSlug, getPostUrl, slugify } from '@utils/slug';
 
 interface Props {
   currentPost: any;
@@ -10,7 +11,8 @@ interface Props {
 
 const { currentPost, limit = 3 } = Astro.props;
 const allPosts = await getCollection('posts');
-const otherPosts = allPosts.filter(post => post.slug !== currentPost.slug);
+const currentSlug = getPostSlug(currentPost);
+const otherPosts = allPosts.filter(post => getPostSlug(post) !== currentSlug && !post.data.draft);
 
 function getRelatedPosts(current: any, posts: any[], max: number) {
   const currentTags = current.data.tags || [];
@@ -25,9 +27,12 @@ function getRelatedPosts(current: any, posts: any[], max: number) {
     return { post, score: tagMatches * 2 + catMatches };
   });
   
-  // Sort by score, then randomize ties
+  // Sort by score, then by date and title for deterministic builds.
   return scored
-    .sort((a, b) => b.score - a.score || Math.random() - 0.5)
+    .sort((a, b) => {
+      const dateDiff = new Date(b.post.data.date || 0).getTime() - new Date(a.post.data.date || 0).getTime();
+      return b.score - a.score || dateDiff || a.post.data.title.localeCompare(b.post.data.title);
+    })
     .slice(0, max)
     .map(s => s.post);
 }
@@ -42,7 +47,7 @@ const relatedPosts = getRelatedPosts(currentPost, otherPosts, limit);
     {relatedPosts.map((post) => (
       <article class="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
         {post.data.image && (
-          <a href={`/${post.slug}/`} class="block aspect-video overflow-hidden">
+          <a href={getPostUrl(post)} class="block aspect-video overflow-hidden">
             <Image 
               src={post.data.image} 
               alt={post.data.title} 
@@ -57,13 +62,13 @@ const relatedPosts = getRelatedPosts(currentPost, otherPosts, limit);
         
         <div class="p-4">
           {post.data.categories?.[0] && (
-            <a href={`/categories/${post.data.categories[0].toLowerCase()}/`} class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
+            <a href={`/categories/${slugify(post.data.categories[0])}/`} class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
               {post.data.categories[0]}
             </a>
           )}
           
           <h3 class="mt-2 text-lg font-bold text-gray-900 dark:text-white line-clamp-2">
-            <a href={`/${post.slug}/`} class="hover:text-blue-600 dark:hover:text-blue-400">
+            <a href={getPostUrl(post)} class="hover:text-blue-600 dark:hover:text-blue-400">
               {post.data.title}
             </a>
           </h3>

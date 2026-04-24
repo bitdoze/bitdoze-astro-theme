@@ -4,6 +4,7 @@ import Layout from '@layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 import Breadcrumb from '@layouts/components/common/Breadcrumb.astro';
 import { siteConfig } from '@config/site'; // Import siteConfig
+import { getPostUrl } from '@utils/slug';
 
 // Get all posts
 const allPosts = await getCollection('posts', ({ data }) => {
@@ -24,11 +25,11 @@ allPosts.forEach(post => {
     
     seriesMap.get(seriesName).push({
       title: post.data.title,
-      slug: post.slug,
       position: seriesPosition,
       date: post.data.date,
       description: post.data.description,
-      image: post.data.image
+      image: post.data.image,
+      url: getPostUrl(post),
     });
   }
 });
@@ -112,7 +113,7 @@ const breadcrumbs = [
                       {post.position}
                     </span>
                     <a 
-                      href={`/${post.slug}/`}
+                      href={post.url}
                       class="group"
                     >
                       <h3 class="flex items-center text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">

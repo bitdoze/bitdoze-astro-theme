@@ -1,15 +1,15 @@
 import { defineCollection, z } from "astro:content";
+import { glob } from "astro/loaders";
 
-// Post collection schema
 const postsCollection = defineCollection({
-  type: 'content',
+  loader: glob({ base: "./src/content/posts", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
       id: z.string().optional(),
       title: z.string(),
       meta_title: z.string().optional(),
       description: z.string().optional(),
-      date: z.date().optional(),
+      date: z.coerce.date().optional(),
       image: image(),
       authors: z.array(z.string()).default(["admin"]),
       categories: z.array(z.string()).default(["others"]),
@@ -20,9 +20,8 @@ const postsCollection = defineCollection({
     }),
 });
 
-// Author collection schema
 const authorsCollection = defineCollection({
-  type: 'content',
+  loader: glob({ base: "./src/content/authors", pattern: "**/[^_]*.{md,mdx}" }),
   schema: z.object({
     id: z.string().optional(),
     title: z.string(),
@@ -40,9 +39,8 @@ const authorsCollection = defineCollection({
   }),
 });
 
-// Pages collection schema
 const pagesCollection = defineCollection({
-  type: 'content',
+  loader: glob({ base: "./src/content/pages", pattern: "**/[^_]*.{md,mdx}" }),
   schema: z.object({
     id: z.string().optional(),
     title: z.string(),
@@ -54,9 +52,8 @@ const pagesCollection = defineCollection({
   }),
 });
 
-// About collection schema
 const aboutCollection = defineCollection({
-  type: 'content',
+  loader: glob({ base: "./src/content/about", pattern: "**/[^_]*.{md,mdx}" }),
   schema: z.object({
     title: z.string(),
     meta_title: z.string().optional(),
@@ -69,14 +66,13 @@ const aboutCollection = defineCollection({
         z.object({
           title: z.string(),
           description: z.string(),
-          icon: z.string().optional()
-        })
-      )
-    })
+          icon: z.string().optional(),
+        }),
+      ),
+    }),
   }),
 });
 
-// Export collections
 export const collections = {
   posts: postsCollection,
   pages: pagesCollection,

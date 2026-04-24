@@ -9,6 +9,7 @@ import SocialShare from '@layouts/components/blog/SocialShare.astro';
 import SeriesNav from '@layouts/components/widgets/SeriesNav.astro';
 import ReadingProgress from '@layouts/components/blog/ReadingProgress.astro';
 import Breadcrumb from '@layouts/components/common/Breadcrumb.astro';
+import { getPostSlug, slugify } from '@utils/slug';
 
 const { post, headings } = Astro.props;
 const { title, description, image, date, categories, authors, tags, series } = post.data;
@@ -20,7 +21,7 @@ const canonicalURL = Astro.site
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Blog', url: '/blog/' },
-  ...(categories?.length ? [{ name: categories[0], url: `/categories/${categories[0].toLowerCase()}/` }] : []),
+  ...(categories?.length ? [{ name: categories[0], url: `/categories/${slugify(categories[0])}/` }] : []),
   { name: title, url: canonicalURL }
 ];
 
@@ -57,7 +58,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
           <span class="flex items-center gap-1">
             <Icon name="mdi:folder" class="w-4 h-4" />
             {categories.map((cat: string, i: number) => (
-              <><a href={`/categories/${cat.toLowerCase()}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{cat}</a>{i < categories.length - 1 && ', '}</>
+              <><a href={`/categories/${slugify(cat)}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{cat}</a>{i < categories.length - 1 && ', '}</>
             ))}
           </span>
         )}
@@ -65,7 +66,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
           <span class="flex items-center gap-1">
             <Icon name="mdi:account" class="w-4 h-4" />
             {authors.map((author: string, i: number) => (
-              <><a href={`/authors/${author.toLowerCase()}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{author}</a>{i < authors.length - 1 && ', '}</>
+              <><a href={`/authors/${slugify(author)}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{author}</a>{i < authors.length - 1 && ', '}</>
             ))}
           </span>
         )}
@@ -84,7 +85,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
       {tags?.length > 0 && (
         <div class="flex flex-wrap gap-2">
           {tags.map((tag: string) => (
-            <a href={`/tags/${tag.toLowerCase()}/`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-blue-100 dark:hover:bg-blue-900">
+            <a href={`/tags/${slugify(tag)}/`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-blue-100 dark:hover:bg-blue-900">
               #{tag}
             </a>
           ))}
@@ -92,7 +93,7 @@ const hasSeries = series && Array.isArray(series) && series.length === 2;
       )}
     </header>
     
-    {hasSeries && <SeriesNav currentSlug={post.slug} seriesName={series[0]} seriesPosition={series[1]} />}
+    {hasSeries && <SeriesNav currentSlug={getPostSlug(post)} seriesName={series[0]} seriesPosition={series[1]} />}
     
     <div class="mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
       <PostHeadings headings={headings} />

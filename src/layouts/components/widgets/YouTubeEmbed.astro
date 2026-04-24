@@ -29,13 +29,23 @@ const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault
 </div>
 
 <script>
-  document.querySelectorAll('.youtube-play').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const src = this.getAttribute('data-src');
-      const container = this.closest('.youtube-embed');
+  if (!window.__youtubeEmbedInitialized) {
+    window.__youtubeEmbedInitialized = true;
+    document.addEventListener('click', (event) => {
+      const button = event.target instanceof Element ? event.target.closest('.youtube-play') : null;
+      if (!button) return;
+
+      const src = button.getAttribute('data-src');
+      const container = button.closest('.youtube-embed');
       if (container && src) {
-        container.innerHTML = `<iframe class="w-full h-full" src="${src}?autoplay=1" title="${this.getAttribute('aria-label')}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        const iframe = document.createElement('iframe');
+        iframe.className = 'w-full h-full';
+        iframe.src = `${src}?autoplay=1`;
+        iframe.title = button.getAttribute('aria-label') || 'YouTube video';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        container.replaceChildren(iframe);
       }
     });
-  });
+  }
 </script>

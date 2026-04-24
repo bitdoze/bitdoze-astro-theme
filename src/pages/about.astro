@@ -1,9 +1,13 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 
 const entry = await getEntry("about", "index");
-const { Content } = await entry.render();
+if (!entry) {
+  return Astro.redirect("/404/");
+}
+
+const { Content } = await render(entry);
 const { title, description, meta_title, image, what_i_do } = entry.data;
 ---
 

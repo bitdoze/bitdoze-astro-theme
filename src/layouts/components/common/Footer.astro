@@ -6,6 +6,7 @@ import menu from "@config/menu.json";
 import social from "@config/social.json";
 import { siteConfig } from "@config/site";
 import logoSVG from "@assets/favicons/bitdoze_logo_better.svg";
+import { getPostUrl } from "@utils/slug";
 
 const footerMenu = menu.footer;
 const socialLinks = Object.entries(social).filter(([_, url]) => url);
@@ -54,7 +55,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Latest Posts</h3>
         <div class="space-y-3">
           {recentPosts.map((post) => (
-            <a href={`/${post.slug}/`} class="flex gap-3 group">
+            <a href={getPostUrl(post)} class="flex gap-3 group">
               {post.data.image && (
                 <Image src={post.data.image} alt="" width={64} height={36} class="w-16 h-9 object-cover rounded flex-shrink-0" loading="lazy" />
               )}

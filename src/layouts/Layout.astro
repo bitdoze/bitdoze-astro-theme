@@ -43,27 +43,20 @@ const {
 
 <!DOCTYPE html>
 <html lang={siteConfig.lang}>
-  <!-- Add script to prevent flash of wrong theme -->
-  <script is:inline>
-    // This script runs immediately on page load to prevent flash of wrong theme
-    (function() {
-      // Check if dark mode is stored in localStorage or use system preference
-      if (localStorage.getItem('theme') === 'dark' || 
-          (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    })();
-  </script>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> {/* Updated path */}
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" /> {/* Added apple-touch-icon */}
    
     <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      (() => {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', savedTheme === 'dark' || (!savedTheme && prefersDark));
+      })();
+    </script>
     
     <!-- Critical CSS -->
     <style is:inline>
@@ -102,5 +95,15 @@ const {
     
     <!-- Full-width footer -->
     <Footer />
+    <script>
+      document.addEventListener('click', (event) => {
+        const toggle = event.target instanceof Element ? event.target.closest('[data-theme-toggle]') : null;
+        if (!toggle) return;
+
+        const isDark = !document.documentElement.classList.contains('dark');
+        document.documentElement.classList.toggle('dark', isDark);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+    </script>
   </body>
 </html>

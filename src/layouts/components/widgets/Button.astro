@@ -8,10 +8,12 @@ interface Props {
   url?: string;    // legacy
   variant?: 'solid' | 'outline';
   color?: 'blue' | 'green' | 'red' | 'purple' | 'gray';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   external?: boolean;
   icon?: string;
   iconPosition?: 'left' | 'right';
+  iconOnly?: boolean;
+  ariaLabel?: string;
 }
 
 const { 
@@ -21,14 +23,35 @@ const {
   size = 'md',
   external = false,
   icon,
-  iconPosition = 'left'
+  iconPosition = 'left',
+  iconOnly = false,
+  ariaLabel
 } = Astro.props;
 
 const btnText = text || label || '';
 const btnLink = link || url || '#';
 
-const sizes = { sm: 'text-sm px-3 py-1.5', md: 'px-4 py-2', lg: 'text-lg px-5 py-2.5' };
-const iconSizes = { sm: 'w-4 h-4', md: 'w-5 h-5', lg: 'w-6 h-6' };
+const sizes = {
+  xs: 'text-xs px-2.5 py-1.5',
+  sm: 'text-sm px-3 py-1.5',
+  md: 'px-4 py-2',
+  lg: 'text-lg px-5 py-2.5',
+  xl: 'text-xl px-6 py-3',
+};
+const iconOnlySizes = {
+  xs: 'p-1.5',
+  sm: 'p-2',
+  md: 'p-2.5',
+  lg: 'p-3',
+  xl: 'p-3.5',
+};
+const iconSizes = {
+  xs: 'w-3.5 h-3.5',
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5',
+  lg: 'w-6 h-6',
+  xl: 'w-7 h-7',
+};
 
 const colors = {
   blue: { solid: 'bg-blue-600 hover:bg-blue-700 text-white', outline: 'border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
@@ -43,13 +66,14 @@ const colors = {
   href={btnLink}
   class:list={[
     'not-prose inline-flex items-center gap-2 rounded-md font-medium transition-colors',
-    sizes[size],
+    iconOnly ? iconOnlySizes[size] : sizes[size],
     colors[color][variant],
     variant === 'outline' && 'border-2'
   ]}
+  aria-label={ariaLabel || (iconOnly ? btnText : undefined)}
   {...external && { target: '_blank', rel: 'noopener noreferrer' }}
 >
   {icon && iconPosition === 'left' && <Icon name={`mdi:${icon}`} class={iconSizes[size]} />}
-  {btnText}
-  {icon && iconPosition === 'right' && <Icon name={`mdi:${icon}`} class={iconSizes[size]} />}
+  {!iconOnly && btnText}
+  {icon && !iconOnly && iconPosition === 'right' && <Icon name={`mdi:${icon}`} class={iconSizes[size]} />}
 </a>

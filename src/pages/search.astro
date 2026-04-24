@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import Layout from '@layouts/Layout.astro';
 import { siteConfig } from '@config/site'; // Import siteConfig
 ---
@@ -39,6 +38,28 @@ import { siteConfig } from '@config/site'; // Import siteConfig
 
 <script>
   import Fuse from 'fuse.js';
+  const MAX_RESULTS = 12;
+
+  function escapeHtml(value = '') {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[char]);
+  }
+
+  function slugify(value = '') {
+    return String(value)
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
   // Loading spinner HTML
   const SPINNER = `<div class="flex justify-center py-10">
     <svg class="animate-spin h-10 w-10 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -47,12 +68,17 @@ import { siteConfig } from '@config/site'; // Import siteConfig
     </svg>
   </div>`;
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  async function initSearch() {
+    if (document.documentElement.dataset.searchInitialized === 'true') return;
+    document.documentElement.dataset.searchInitialized = 'true';
+
     // DOM elements
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
     const noResults = document.getElementById('no-results');
     const searchInfo = document.getElementById('search-info');
+
+    if (!searchInput || !searchResults || !noResults || !searchInfo) return;
     
     // Initialize variables
     let searchData = null;
@@ -84,8 +110,8 @@ import { siteConfig } from '@config/site'; // Import siteConfig
             'categories',
             'content'
           ],
-          includeMatches: true,
           minMatchCharLength: 2,
+          ignoreLocation: true,
           threshold: 0.5
         });
         
@@ -129,12 +155,13 @@ import { siteConfig } from '@config/site'; // Import siteConfig
           imageHtml = `
             <div class="aspect-video overflow-hidden">
               <img 
-                src="${imgSrc}" 
-                alt="${post.title}" 
+                src="${escapeHtml(imgSrc)}" 
+                alt="${escapeHtml(post.title)}" 
                 class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 width="${post.image.width || 400}"
                 height="${post.image.height || 225}"
                 loading="lazy"
+                decoding="async"
               />
             </div>
           `;
@@ -147,7 +174,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
               </svg>
-              <span>${post.categories.join(', ')}</span>
+              <span>${escapeHtml(post.categories.join(', '))}</span>
             </div>
           `;
         }
@@ -157,8 +184,8 @@ import { siteConfig } from '@config/site'; // Import siteConfig
           tagsHtml = `
             <div class="flex flex-wrap gap-2 mt-3">
               ${post.tags.slice(0, 3).map(tag => `
-                <a href="/tags/${tag.toLowerCase()}/" class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors duration-300">
-                  #${tag}
+                <a href="/tags/${slugify(tag)}/" class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors duration-300">
+                  #${escapeHtml(tag)}
                 </a>
               `).join('')}
             </div>
@@ -166,7 +193,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
         }
         
         article.innerHTML = `
-          <a href="/${post.slug}/" class="block">
+          <a href="/${escapeHtml(post.slug)}/" class="block">
             ${imageHtml}
             <div class="p-4">
               <div class="flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400 mb-3">
@@ -174,18 +201,18 @@ import { siteConfig } from '@config/site'; // Import siteConfig
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span>${post.date}</span>
+                  <span>${escapeHtml(post.date)}</span>
                 </div>
                 ${categoriesHtml}
               </div>
               
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300">
-                ${post.title}
+                ${escapeHtml(post.title)}
               </h3>
               
               ${post.description ? `
                 <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-                  ${post.description}
+                  ${escapeHtml(post.description)}
                 </p>
               ` : ''}
               
@@ -215,7 +242,7 @@ import { siteConfig } from '@config/site'; // Import siteConfig
       history.pushState(null, '', newRelativePathQuery);
       
       // Perform search
-      const results = fuse.search(query);
+      const results = fuse.search(query).slice(0, MAX_RESULTS);
       displayResults(results);
     }
     
@@ -234,7 +261,11 @@ import { siteConfig } from '@config/site'; // Import siteConfig
     
     // Fetch search data on page load
     fetchSearchData();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSearch, { once: true });
+  } else {
+    initSearch();
+  }
 </script>
-
-

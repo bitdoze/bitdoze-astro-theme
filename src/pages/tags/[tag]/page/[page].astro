@@ -5,6 +5,7 @@ import PostCard from '@components/blog/PostCard.astro';
 import Pagination from '@components/common/Pagination.astro';
 import { getPagination } from '@utils/pagination';
 import { siteConfig } from '@config/site';
+import { slugify } from '@utils/slug';
 
 export async function getStaticPaths({ paginate }) {
   const posts = await getCollection('posts', ({ data }) => {
@@ -33,7 +34,7 @@ export async function getStaticPaths({ paginate }) {
       
       return {
         params: { 
-          tag: tag.toLowerCase(),
+          tag: slugify(tag),
           page: page.toString()
         },
         props: { 
@@ -49,7 +50,7 @@ export async function getStaticPaths({ paginate }) {
 
 const { tag, posts, page, count } = Astro.props;
 const currentPage = parseInt(page);
-const basePath = `/tags/${tag.toLowerCase()}`;
+const basePath = `/tags/${slugify(tag)}`;
 
 // Get pagination data
 const { startIndex, endIndex, prevUrl, nextUrl, totalPages } = getPagination({ 

@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
+import { getPostUrl, slugify } from "@utils/slug";
 
 export interface Props {
     tags?: string[];
@@ -18,17 +19,6 @@ const sortedPosts = allPosts.sort((a, b) => {
     const dateB = new Date(b.data.date || "");
     return dateB.getTime() - dateA.getTime();
 });
-
-// Helper function to slugify text
-function slugify(text: string): string {
-    return text
-        .toString()
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/[^\w\-]+/g, "")
-        .replace(/\-\-+/g, "-");
-}
 
 // Get posts for each tag
 const tagPosts = tags.map((tag) => ({
@@ -67,7 +57,7 @@ const tagPosts = tags.map((tag) => ({
                         <div class="divide-y divide-gray-100 dark:divide-gray-700">
                             {posts.map((post) => (
                                 <a
-                                    href={`/${post.slug}/`}
+                                    href={getPostUrl(post)}
                                     class="flex items-center gap-4 group hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg py-3 first:pt-0 last:pb-0"
                                 >
                                     <div class="relative shrink-0 w-20 overflow-hidden rounded-lg shadow-sm">

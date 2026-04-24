@@ -3,7 +3,8 @@
 ---
 
 <button
-  id="themeToggle"
+  type="button"
+  data-theme-toggle
   class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 transition-colors duration-300"
   aria-label="Toggle dark mode"
 >
@@ -22,37 +23,3 @@
     ></path>
   </svg>
 </button>
-
-<script is:inline>
-  // Function to apply the theme based on localStorage or system preference
-  function applyTheme() {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }
-
-  // Apply theme on load
-  applyTheme();
-
-  // Initialize theme toggles only once
-  if (!window.themeToggleInitialized) {
-    window.themeToggleInitialized = true;
-    
-    // Add event listeners to all theme toggle buttons
-    document.addEventListener('DOMContentLoaded', () => {
-      const themeToggles = document.querySelectorAll("[id^='themeToggle']");
-      themeToggles.forEach(toggle => {
-        toggle.addEventListener("click", () => {
-          document.documentElement.classList.toggle("dark");
-          const isDark = document.documentElement.classList.contains("dark");
-          localStorage.setItem("theme", isDark ? "dark" : "light");
-        });
-      });
-    });
-  }
-</script>

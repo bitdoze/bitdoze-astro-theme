@@ -5,6 +5,7 @@ import PostCard from '@components/blog/PostCard.astro';
 import Pagination from '@components/common/Pagination.astro';
 import { getPagination } from '@utils/pagination';
 import { siteConfig } from '@config/site';
+import { slugify } from '@utils/slug';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => {
@@ -23,7 +24,7 @@ export async function getStaticPaths() {
     });
     
     return {
-      params: { category: category.toLowerCase() },
+      params: { category: slugify(category) },
       props: { 
         category,
         posts: categoryPosts,
@@ -34,7 +35,7 @@ export async function getStaticPaths() {
 }
 
 const { category, posts, count } = Astro.props;
-const basePath = `/categories/${category.toLowerCase()}`;
+const basePath = `/categories/${slugify(category)}`;
 
 // Get pagination data for first page
 const { postsPerPage } = getPagination({ 

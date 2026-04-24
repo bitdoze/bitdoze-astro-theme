@@ -1,7 +1,7 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '@config/site';
-import { formatDate } from '@utils/date';
+import { getPostUrl } from '@utils/slug';
 
 export async function GET(context) {
   const posts = await getCollection('posts');
@@ -19,7 +19,7 @@ export async function GET(context) {
       title: post.data.title,
       pubDate: post.data.date,
       description: post.data.description,
-      link: `/${post.slug}/`,
+      link: getPostUrl(post),
       categories: post.data.categories || [],
       // Optional custom data
       customData: post.data.tags ? 

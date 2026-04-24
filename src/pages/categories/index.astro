@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Layout from '@layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '@config/site';
+import { slugify } from '@utils/slug';
 
 // Get all blog posts
 const posts = await getCollection('posts', ({ data }) => {
@@ -19,7 +20,7 @@ const categoryCounts = categories.map(category => {
   return {
     name: category,
     count,
-    slug: category.toLowerCase()
+    slug: slugify(category)
   };
 }).sort((a, b) => b.count - a.count); // Sort by post count (descending)
 ---

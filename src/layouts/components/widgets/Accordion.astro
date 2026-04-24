@@ -6,7 +6,6 @@ interface Props {
 }
 
 const { label, group = 'default', expanded = false } = Astro.props;
-const id = `acc-${label.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toString(36).slice(2, 7)}`;
 ---
 
 <details class="accordion group border border-gray-200 dark:border-gray-700 rounded-lg mb-3" data-group={group} open={expanded}>
@@ -22,16 +21,22 @@ const id = `acc-${label.replace(/\s+/g, '-').toLowerCase()}-${Math.random().toSt
 </details>
 
 <script>
-  document.querySelectorAll('.accordion').forEach(acc => {
-    acc.addEventListener('toggle', (e) => {
-      if ((e.target as HTMLDetailsElement).open) {
-        const group = (e.target as HTMLElement).dataset.group;
+  if (!window.__accordionInitialized) {
+    window.__accordionInitialized = true;
+    document.addEventListener(
+      'toggle',
+      (e) => {
+        const target = e.target as HTMLDetailsElement;
+        if (!target.matches?.('.accordion') || !target.open) return;
+
+        const group = target.dataset.group;
         document.querySelectorAll(`.accordion[data-group="${group}"]`).forEach(other => {
-          if (other !== e.target) (other as HTMLDetailsElement).open = false;
+          if (other !== target) (other as HTMLDetailsElement).open = false;
         });
-      }
-    });
-  });
+      },
+      true,
+    );
+  }
 </script>
 
 <style>

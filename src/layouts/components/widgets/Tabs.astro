@@ -9,6 +9,16 @@
   </div>
 </div>
 
+<style>
+  .tabs-container :global(.tab-panel.hidden) {
+    display: none;
+  }
+
+  .tabs-container:not([data-tabs-ready]) .tab-panels > :global(.tab-panel:not(:first-child)) {
+    display: none;
+  }
+</style>
+
 <script>
   function initTabs() {
     document.querySelectorAll('.tabs-container').forEach(container => {
@@ -38,9 +48,16 @@
         
         tabList.appendChild(btn);
       });
+
+      container.setAttribute('data-tabs-ready', 'true');
     });
   }
-  
-  document.addEventListener('DOMContentLoaded', initTabs);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTabs, { once: true });
+  } else {
+    initTabs();
+  }
+
   document.addEventListener('astro:after-swap', initTabs);
 </script>

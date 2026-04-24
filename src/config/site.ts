@@ -17,7 +17,7 @@ export const siteConfig = {
   // SEO metadata from config.json:metadata
   author: "Your Name", // from config.json:metadata.meta_author
   description: "A modern, responsive blog theme for Astro with support for tags, categories, and series.", // from config.json:metadata.meta_description
-  ogImage: "/images/og-image.png", // from config.json:metadata.meta_image (replaces defaultImage)
+  ogImage: "/images/og-image.svg",
 
   // Pagination settings from config.json:settings
   postsPerPage: 11, // from config.json:settings.pagination

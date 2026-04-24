@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#111827"/>
+  <rect x="72" y="72" width="1056" height="486" rx="28" fill="#ffffff"/>
+  <text x="120" y="270" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="#111827">Bit Doze Astro Blog Theme</text>
+  <text x="120" y="360" font-family="Arial, sans-serif" font-size="34" fill="#374151">A modern, responsive Astro blog theme</text>
+  <rect x="120" y="420" width="260" height="8" fill="#2563eb"/>
+</svg>
