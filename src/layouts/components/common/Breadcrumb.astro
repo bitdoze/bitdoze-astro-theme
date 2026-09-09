@@ -16,20 +16,23 @@ const { items, className = "" } = Astro.props;
 ---
 
 <nav aria-label="Breadcrumb" class={`breadcrumb ${className}`}>
-  <ol class="flex flex-wrap items-center space-x-1 md:space-x-2 text-sm md:text-base">
+  <ol class="flex flex-nowrap items-center gap-0.5 overflow-x-auto rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/40 px-2.5 py-2 text-xs md:gap-1 md:rounded-xl md:px-4 md:py-2.5 md:text-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
     {items.map((item, index) => (
-      <li class="flex items-center">
+      <li class="flex min-w-0 items-center">
         {index > 0 && (
-          <Icon name="mdi:chevron-right" class="w-4 h-4 mx-1 text-gray-500 dark:text-gray-400" />
+          <Icon name="mdi:chevron-right" class="mx-2 h-3.5 w-3.5 md:h-4 md:w-4 shrink-0 text-gray-400 dark:text-gray-500" />
         )}
         {index === items.length - 1 ? (
-          <span class="text-gray-700 dark:text-gray-300" aria-current="page">{item.name}</span>
+          <span class="inline-flex max-w-full items-center overflow-hidden text-ellipsis whitespace-nowrap rounded-md border border-accent-200 dark:border-accent-800 bg-accent-50 dark:bg-accent-900/30 px-2 py-0.5 md:px-3 md:py-1 font-semibold text-accent-700 dark:text-accent-300 shadow-sm" aria-current="page" title={item.name}>{item.name}</span>
         ) : (
-          <a 
+          <a
             href={withBase(item.url)}
-            class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
+            class="inline-flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-0.5 md:px-2.5 md:py-1 font-medium text-accent-600 dark:text-accent-400 transition-colors hover:bg-accent-100 hover:text-accent-800 dark:hover:bg-accent-900/30 dark:hover:text-accent-300"
           >
-            {item.name}
+            {index === 0 && (
+              <Icon name="mdi:home" class="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" />
+            )}
+            <span>{item.name}</span>
           </a>
         )}
       </li>

@@ -1,0 +1,122 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getPublishedPosts, sortPostsByDate, type PostEntry } from '@utils/content';
+import { getPostSlug, getPostUrl, normalizeTaxonomy, taxonomySlug, withBase } from '@utils/slug';
+
+type PathEntry = { title: string; url: string };
+type Path = {
+  kind: 'series' | 'topic';
+  name: string;
+  meta: string;
+  entries: PathEntry[];
+  cta: string;
+  ctaUrl: string;
+};
+
+const posts = sortPostsByDate(await getPublishedPosts());
+
+// Series paths: parts in position order, cta starts at Part 1.
+const seriesGroups = new Map<string, PostEntry[]>();
+for (const post of posts) {
+  const series = post.data.series;
+  if (!series) continue;
+  const group = seriesGroups.get(series.name) ?? [];
+  group.push(post);
+  seriesGroups.set(series.name, group);
+}
+const seriesPaths: Path[] = [...seriesGroups.entries()].map(([name, group]) => {
+  const parts = [...group]
+    .sort((a, b) => (a.data.series?.position ?? 0) - (b.data.series?.position ?? 0))
+    .map((post) => ({ title: post.data.title, url: getPostUrl(post) }));
+  return {
+    kind: 'series',
+    name,
+    meta: `${parts.length}-part series`,
+    entries: parts.slice(0, 3),
+    cta: 'Start with Part 1',
+    ctaUrl: parts[0]?.url ?? withBase('/series/'),
+  };
+});
+
+// Topic paths: the three largest categories, newest posts first.
+const categoryCounts = new Map<string, number>();
+for (const post of posts) {
+  for (const category of post.data.categories ?? []) {
+    categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+  }
+}
+const topCategories = [...categoryCounts.entries()]
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  .slice(0, 3);
+const labelBySlug = new Map(normalizeTaxonomy(topCategories.map(([label]) => label)).map((t) => [t.slug, t.label]));
+const topicPaths: Path[] = topCategories.map(([category, count]) => {
+  const slug = taxonomySlug(category);
+  const entries = posts
+    .filter((post) => post.data.categories?.includes(category))
+    .slice(0, 3)
+    .map((post) => ({ title: post.data.title, url: getPostUrl(post) }));
+  return {
+    kind: 'topic',
+    name: labelBySlug.get(slug) ?? category,
+    meta: `${count} ${count === 1 ? 'guide' : 'guides'}`,
+    entries,
+    cta: 'Browse the topic',
+    ctaUrl: withBase(`/categories/${slug}/`),
+  };
+});
+
+const paths = [...seriesPaths, ...topicPaths];
+---
+
+{paths.length > 0 && (
+  <section id="learning-paths" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 scroll-mt-24">
+    <div class="mb-8">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Learning paths</h2>
+      <p class="mt-2 text-base text-gray-600 dark:text-gray-400">
+        Follow a series end to end, or go deep on one topic.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {paths.map((path) => (
+        <article class="flex flex-col rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-5">
+          <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <Icon
+              name={path.kind === 'series' ? 'mdi:bookshelf' : 'mdi:folder-outline'}
+              class="w-4 h-4 text-accent-600 dark:text-accent-400"
+            />
+            <span>{path.meta}</span>
+          </div>
+          <h3 class="mt-2 text-xl font-bold text-gray-900 dark:text-white">{path.name}</h3>
+          <ol class="mt-4 space-y-2.5">
+            {path.entries.map((entry, index) => (
+              <li class="flex items-start gap-3">
+                <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-100 dark:bg-accent-900/40 text-xs font-semibold text-accent-700 dark:text-accent-300">
+                  {index + 1}
+                </span>
+                <a
+                  href={entry.url}
+                  data-astro-prefetch
+                  class="text-sm font-medium leading-snug text-gray-700 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors line-clamp-2"
+                >
+                  {entry.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+          <a
+            href={path.ctaUrl}
+            data-astro-prefetch
+            class="group mt-4 inline-flex items-center gap-1 border-t border-gray-100 dark:border-gray-700/70 pt-4 text-sm font-semibold text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 transition-colors"
+          >
+            {path.cta}
+            <Icon
+              name="mdi:arrow-right"
+              class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
+            />
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+)}

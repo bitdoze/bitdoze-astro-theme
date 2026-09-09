@@ -4,6 +4,34 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-09
+
+A design release bringing the theme's reading and homepage experience in line with bitdoze.com: a sticky table-of-contents rail, a featured-post hero with learning paths, and a full token and card-language cleanup. No content or configuration contract changes.
+
+### Added
+
+- **Sticky TOC rail with mobile companion**: desktop right-rail table of contents with persisted collapse state and scrollspy highlighting, plus a floating action-button panel below `xl` with outside-click and Escape dismissal. Replaces the inline TOC box above the article.
+- **Code copy buttons** on article code blocks, with clipboard-plus-fallback copying, copied/error states, and reduced-motion support.
+- **Featured-post hero**: the newest post spotlights beside the headline, with a `Latest` chip, category, excerpt, author/date/reading-time meta, proof counts computed from real content, `Browse articles` and `Find your path` CTAs, and quiet social links. Falls back to a centered hero when the blog is empty.
+- **Learning paths section**: real series in position order plus the three largest categories, each with numbered entry links and a start/browse call to action.
+- **Author byline box** at the article end, with avatar, bio, and a link to more guides from the author.
+- **Reading time and updated stamp** in the article meta line.
+- **Branded text selection** in the accent tint for both themes.
+
+### Changed
+
+- **Article layout** follows the reference grid: `max-w-3xl` reading measure widening to a `16rem`/`18rem` TOC rail at `xl`/`2xl`, extrabold display title, description lede callout, bordered hero cover with rail-aware responsive sizes, and tags moved to the article end as capitalized pills.
+- **Breadcrumb is a pill trail**: muted hairline container with hidden-scrollbar horizontal scroll, home icon, hover-wash links, and the current title as a truncated accent pill.
+- **Related posts rebuilt on the reference design**: borderless whole-card links with zoom-on-hover covers, category badge, two-line title, and date-only meta.
+- **Popular Topics ported to the reference design**: band section with title and subline, accent-underlined tag headers with count badges, divided rows with bordered 16:9 thumbnails, and `View all {tag} posts` footers. Columns prefer unshown posts and backfill from shown ones so small blogs never render a hollow section.
+- **Homepage flow**: hero spotlight, Latest grid (featured post excluded, no repeats), learning paths, Explore cards, Popular Topics.
+- **Prose polish**: wash-style links, console-bordered code blocks, inline code chips, balanced headings, 5.5rem anchor offset, and bordered tables with row hover.
+- **Header is translucent** with backdrop blur; the search icon rests gray in dark mode.
+- **Footer social icons** use a shared icon map (Bluesky, website, address) so a configured profile never renders a missing icon.
+- **Notice callouts** use the full 1px tinted border and semantic `info`/`success`/`warning`/`danger` tokens instead of the side bar and literal colors.
+- **Token sweep**: remaining literal `blue-*` interactive colors (pagination, breadcrumb, share buttons, progress bar, series nav, topic badges, hero) moved to the identical `accent-*` scale; cards share one language (hairline border, `shadow-sm`, lift on hover).
+- **Reference image sizes everywhere**: card covers `640x360` with `widths [320, 480, 640]` and breakpoint `sizes`, related covers `400x225` (`[320, 400]`), list thumbnails `64x36`, hero feature `960x540`.
+
 ## [1.1.0] - 2026-09-09
 
 A focused hardening release implementing the community review (`astro6-review.md`). Publishing safety, accessible interactions, a consistent configuration contract, and a CI release gate.

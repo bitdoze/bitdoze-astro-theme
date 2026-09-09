@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { formatDate } from '@utils/date';
-import { getPostSlug, getPostUrl, taxonomySlug, withBase } from '@utils/slug';
+import { getPostSlug, getPostUrl } from '@utils/slug';
 import { getPublishedPosts } from '@utils/content';
 
 interface Props {
@@ -17,7 +17,7 @@ const otherPosts = allPosts.filter(post => getPostSlug(post) !== currentSlug);
 function getRelatedPosts(current: any, posts: any[], max: number) {
   const currentTags = current.data.tags || [];
   const currentCategories = current.data.categories || [];
-  
+
   // Score posts by relevance
   const scored = posts.map(post => {
     const postTags = post.data.tags || [];
@@ -26,7 +26,7 @@ function getRelatedPosts(current: any, posts: any[], max: number) {
     const catMatches = currentCategories.filter((c: string) => postCategories.includes(c)).length;
     return { post, score: tagMatches * 2 + catMatches };
   });
-  
+
   // Sort by score, then by date and title for deterministic builds.
   return scored
     .sort((a, b) => {
@@ -42,44 +42,50 @@ const relatedPosts = getRelatedPosts(currentPost, otherPosts, limit);
 
 <section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
   <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Related Posts</h2>
-  
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    {relatedPosts.map((post) => (
-      <article class="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-        {post.data.image && (
-          <a href={getPostUrl(post)} class="block aspect-video overflow-hidden">
-            <Image 
-              src={post.data.image} 
-              alt={post.data.title} 
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              width={400}
-              height={225}
-              loading="lazy"
-              decoding="async"
-            />
-          </a>
-        )}
-        
-        <div class="p-4">
-          {post.data.categories?.[0] && (
-            <a href={withBase(`/categories/${taxonomySlug(post.data.categories[0])}/`)} class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
-              {post.data.categories[0]}
-            </a>
-          )}
-          
-          <h3 class="mt-2 text-lg font-bold text-gray-900 dark:text-white line-clamp-2">
-            <a href={getPostUrl(post)} class="hover:text-blue-600 dark:hover:text-blue-400">
+    {relatedPosts.map((post) => {
+      const category = post.data.categories?.[0];
+
+      return (
+        <article class="group">
+          <a href={getPostUrl(post)} class="block">
+            {post.data.image && (
+              <div class="aspect-video overflow-hidden rounded-lg mb-3">
+                <Image
+                  src={post.data.image}
+                  alt={post.data.title}
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  width={400}
+                  height={225}
+                  widths={[320, 400]}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            )}
+
+            {category && (
+              <span class="inline-block text-xs font-medium px-2 py-1 bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-300 rounded-full mb-2">
+                {category}
+              </span>
+            )}
+
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors">
               {post.data.title}
-            </a>
-          </h3>
-          
-          {post.data.date && (
-            <time class="text-sm text-gray-500 dark:text-gray-400 mt-2 block" datetime={post.data.date.toISOString()}>
-              {formatDate(post.data.date)}
-            </time>
-          )}
-        </div>
-      </article>
-    ))}
+            </h3>
+
+            {post.data.date && (
+              <time
+                datetime={post.data.date.toISOString()}
+                class="text-sm text-gray-500 dark:text-gray-400 mt-2 block"
+              >
+                {formatDate(post.data.date)}
+              </time>
+            )}
+          </a>
+        </article>
+      );
+    })}
   </div>
 </section>

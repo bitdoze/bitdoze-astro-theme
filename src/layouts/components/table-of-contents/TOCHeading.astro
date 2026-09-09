@@ -1,26 +1,35 @@
 ---
-export type Heading = {
-  subheadings: Heading[];
-  depth: number;
-  slug: string;
-  text: string;
-};
+import type { TocItem } from "../../../utils/toc";
 
 interface Props {
-  heading: Heading;
+  heading: TocItem;
+  isSubheading?: boolean;
 }
-const { heading } = Astro.props;
+
+const { heading, isSubheading = false } = Astro.props;
 ---
 
-<li class="hover:text-blue-500 dark:hover:text-blue-100">
-  <a href={"#" + heading.slug} class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+<li>
+  <a
+    href={`#${heading.slug}`}
+    data-toc-link
+    data-slug={heading.slug}
+    class:list={[
+      "toc-link block rounded-lg transition-all duration-200 truncate",
+      "hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-accent-600 dark:hover:text-accent-400",
+      isSubheading
+        ? "py-1 px-3 text-xs text-gray-500 dark:text-gray-500"
+        : "py-1.5 px-3 text-sm text-gray-600 dark:text-gray-400"
+    ]}
+    title={heading.text}
+  >
     {heading.text}
   </a>
   {
     heading.subheadings.length > 0 && (
-      <ul class="pl-5">
+      <ul class="ml-3 mt-1 space-y-1 border-l border-gray-200 dark:border-gray-700">
         {heading.subheadings.map((subheading) => (
-          <Astro.self heading={subheading} />
+          <Astro.self heading={subheading} isSubheading />
         ))}
       </ul>
     )

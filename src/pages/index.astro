@@ -3,6 +3,7 @@ import Hero from "@components/widgets/Hero.astro";
 import Layout from "@layouts/Layout.astro";
 import PostCard from "@components/blog/PostCard.astro";
 import PopularTopics from "@components/blog/PopularTopics.astro";
+import LearningPaths from "@components/blog/LearningPaths.astro";
 import { siteConfig } from "@config/site";
 import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 import { getPostSlug, withBase } from "@utils/slug";
@@ -10,9 +11,17 @@ import { getPostSlug, withBase } from "@utils/slug";
 // Get all blog posts and sort by date (newest first)
 const sortedPosts = sortPostsByDate(await getPublishedPosts());
 
-// Latest grid first; its posts are excluded from Popular Topics below
-const latestPosts = sortedPosts.slice(0, 6);
-const latestSlugs = latestPosts.map((post) => getPostSlug(post));
+// The hero spotlights the newest post; the Latest grid shows what follows
+// so the front page never repeats itself.
+const featuredPost = sortedPosts[0];
+const latestPosts = featuredPost ? sortedPosts.slice(1, 7) : [];
+const latestSlugs = sortedPosts.slice(0, 7).map((post) => getPostSlug(post));
+
+const stats = {
+  guides: sortedPosts.length,
+  topics: new Set(sortedPosts.flatMap((post) => post.data.categories ?? [])).size,
+  authors: new Set(sortedPosts.flatMap((post) => post.data.authors ?? [])).size,
+};
 
 const { showTaxonomyCards, showPopularTopics } = siteConfig.homepage;
 
@@ -45,26 +54,31 @@ const exploreCards = [
 >
   <div class="w-full py-8">
     <!-- Hero Section -->
-    <Hero />
+    <Hero post={featuredPost} stats={stats} />
 
     <!-- Latest Articles Section -->
-    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-      <div class="flex justify-between items-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Latest Articles</h2>
-        <a href={withBase("/blog/")} class="text-accent-600 dark:text-accent-400 hover:underline font-medium flex items-center">
-          View All
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-          </svg>
-        </a>
-      </div>
+    {latestPosts.length > 0 && (
+      <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Latest Articles</h2>
+          <a href={withBase("/blog/")} class="text-accent-600 dark:text-accent-400 hover:underline font-medium flex items-center">
+            View All
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {latestPosts.map((post) => (
-          <PostCard post={post} />
-        ))}
-      </div>
-    </section>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {latestPosts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Learning Paths Section (series + top topics, with entry points) -->
+    <LearningPaths />
 
     <!-- Explore Section (compact taxonomy row) -->
     {showTaxonomyCards && (
@@ -80,7 +94,7 @@ const exploreCards = [
           {exploreCards.map((card) => (
             <a
               href={withBase(card.href)}
-              class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+              class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border border-gray-200 dark:border-gray-700"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 text-accent-600 dark:text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={card.iconPath} />
@@ -95,11 +109,9 @@ const exploreCards = [
       </section>
     )}
 
-    <!-- Popular Topics Section (deduped against the Latest grid) -->
+    <!-- Popular Topics Section (deduped against the hero and Latest grid) -->
     {showPopularTopics && (
-      <div class="mt-16">
-        <PopularTopics tags={["Jamstack", "astro", "ai"]} postsPerTag={5} excludeSlugs={latestSlugs} />
-      </div>
+      <PopularTopics tags={["Jamstack", "astro", "ai"]} postsPerTag={5} excludeSlugs={latestSlugs} />
     )}
   </div>
 </Layout>

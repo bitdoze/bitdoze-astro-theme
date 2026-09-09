@@ -9,6 +9,13 @@ import { getLatestPosts } from "@utils/content";
 
 const socialLinks = Object.entries(social).filter(([_, url]) => url);
 
+// Icon names that differ from the config key, with a neutral fallback so a
+// configured profile never renders a missing icon.
+const iconMap: Record<string, string> = {
+  website: 'mdi:web',
+  address: 'mdi:map-marker',
+};
+
 const footerMenu = menu.footer;
 const recentPosts = await getLatestPosts(3);
 ---
@@ -29,22 +36,31 @@ const recentPosts = await getLatestPosts(3);
         </p>
         {socialLinks.length > 0 && (
           <div class="flex gap-3 mt-4">
-            {socialLinks.map(([platform, url]) => (
-              <a href={withBase(url as string)} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400" aria-label={platform}>
-                <Icon name={`mdi:${platform}`} class="w-5 h-5" />
-              </a>
-            ))}
+            {socialLinks.map(([platform, url]) => {
+              const isBluesky = (url as string).includes('bsky.app');
+              return (
+                <a href={url as string} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-accent-600 dark:text-gray-400 dark:hover:text-accent-400" aria-label={platform}>
+                  {isBluesky ? (
+                    <svg class="w-5 h-5" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
+                      <path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z"/>
+                    </svg>
+                  ) : (
+                    <Icon name={iconMap[platform] || `mdi:${platform}`} class="w-5 h-5" />
+                  )}
+                </a>
+              );
+            })}
           </div>
         )}
       </div>
 
       <!-- Links -->
-      <nav>
+      <nav aria-label="Footer">
         <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
         <ul class="space-y-2">
           {footerMenu.map((item) => (
             <li>
-              <a href={withBase(item.url)} class="text-sm text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+              <a href={withBase(item.url)} class="text-sm text-gray-500 hover:text-accent-600 dark:text-gray-400 dark:hover:text-accent-400">
                 {item.name}
               </a>
             </li>
@@ -59,9 +75,9 @@ const recentPosts = await getLatestPosts(3);
           {recentPosts.map((post) => (
             <a href={getPostUrl(post)} class="flex gap-3 group">
               {post.data.image && (
-                <Image src={post.data.image} alt="" width={64} height={36} class="w-16 h-9 object-cover rounded flex-shrink-0" loading="lazy" />
+                <Image src={post.data.image} alt="" width={64} height={36} class="w-16 h-9 object-cover rounded flex-shrink-0" loading="lazy" decoding="async" />
               )}
-              <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+              <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-accent-600 dark:group-hover:text-accent-400 line-clamp-2">
                 {post.data.title}
               </span>
             </a>
