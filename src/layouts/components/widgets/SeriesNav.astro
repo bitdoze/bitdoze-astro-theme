@@ -3,12 +3,25 @@ import { getPostSlug, getPostUrl } from '@utils/slug';
 import { getPublishedPosts } from '@utils/content';
 
 export interface Props {
-  currentSlug: string;
+  /** Slug of the currently viewed post. Defaults to the current page path (base and trailing slashes stripped); an explicit prop always wins. */
+  currentSlug?: string;
   seriesName: string;
   seriesPosition: number;
 }
 
-const { currentSlug, seriesName, seriesPosition } = Astro.props;
+const { seriesName, seriesPosition } = Astro.props;
+
+// MDX authors don't have to guess their own slug: derive it from the page
+// path so the wrapper knows which entry is current.
+function slugFromPath(pathname: string): string {
+  const base = import.meta.env.BASE_URL;
+  let rest = pathname;
+  if (base && base !== "/" && rest.startsWith(base)) {
+    rest = rest.slice(base.length);
+  }
+  return rest.replace(/^\/+|\/+$/g, "");
+}
+const currentSlug = Astro.props.currentSlug ?? slugFromPath(Astro.url.pathname);
 
 const allPosts = await getPublishedPosts();
 

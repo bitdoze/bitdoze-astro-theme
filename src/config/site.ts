@@ -13,11 +13,21 @@ export const siteConfig = {
   description: "A modern, responsive blog theme for Astro with support for tags, categories, and series.",
   heroDescription: "Join the community to learn more about VPS hosting, blogging, and modern content management.",
   footerDescription: "Practical resources and tutorials for web developers and technology enthusiasts.",
-  ogImage: "/images/og-image.svg",
+  ogImage: "/images/og-image.png",
   postsPerPage: 11,
+  favicons: {
+    svg: "/favicon.svg",
+    ico: "/favicon.ico",
+  },
+  homepage: {
+    showTaxonomyCards: true,
+    showPopularTopics: true,
+  },
   noindex: {
     tags: true,
     categories: false,
     authors: false,
   },
 } as const;
+
+export type SiteConfig = typeof siteConfig;

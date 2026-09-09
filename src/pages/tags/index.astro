@@ -1,61 +1,60 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import { siteConfig } from '@config/site';
-import { slugify } from '@utils/slug';
-import { getPublishedPosts } from '@utils/content';
+import Layout from "@layouts/Layout.astro";
+import { siteConfig } from "@config/site";
+import { normalizeTaxonomy, taxonomySlug, withBase } from "@utils/slug";
+import { getPublishedPosts } from "@utils/content";
 
-// Get all blog posts
 const posts = await getPublishedPosts();
 
-// Get all unique tags and count posts for each
-const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
-const tagCounts = tags.map(tag => {
-  const count = posts.filter(post => 
-    post.data.tags && post.data.tags.includes(tag)
-  ).length;
-  
-  return {
-    name: tag,
-    count,
-    slug: slugify(tag)
-  };
-}).sort((a, b) => b.count - a.count); // Sort by post count (descending)
+// Dedupe by route slug so "Astro"/"astro" render one chip with a combined
+// count; the first raw label is kept for display.
+const tags = normalizeTaxonomy(posts.flatMap((post) => post.data.tags || []));
+const tagCounts = tags
+    .map(({ slug, label }) => ({
+        name: label,
+        count: posts.filter((post) =>
+            (post.data.tags || []).some((tag) => taxonomySlug(tag) === slug)
+        ).length,
+        slug,
+    }))
+    .sort((a, b) => b.count - a.count); // Sort by post count (descending)
 ---
 
-<Layout 
-  title={`Tags - ${siteConfig.title}`}
-  description="Browse all tags and topics on our blog"
+<Layout
+    title={`Tags - ${siteConfig.title}`}
+    description="Browse all tags and topics on our blog"
+    indexable={!siteConfig.noindex.tags}
 >
-  <div class="w-full py-8">
-    <header class="mb-10">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        Tags
-      </h1>
-      <p class="text-lg text-gray-700 dark:text-gray-300">
-        Browse posts by tag
-      </p>
-    </header>
-    
-    <div class="flex flex-wrap gap-3">
-      {tagCounts.map(({ name, count, slug }) => (
-        <a 
-          href={`/tags/${slug}/`}
-          class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
-        >
-          <span class="font-medium text-gray-900 dark:text-white">
-            #{name.charAt(0).toUpperCase() + name.slice(1)}
-          </span>
-          <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            {count}
-          </span>
-        </a>
-      ))}
+    <div class="w-full py-8">
+        <header class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Tags
+            </h1>
+            <p class="text-lg text-gray-700 dark:text-gray-300">
+                Browse posts by tag
+            </p>
+        </header>
+
+        <div class="flex flex-wrap gap-3">
+            {tagCounts.map(({ name, count, slug }) => (
+                <a
+                    href={withBase(`/tags/${slug}/`)}
+                    class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+                >
+                    <span class="font-medium text-gray-900 dark:text-white">
+                        #{name.charAt(0).toUpperCase() + name.slice(1)}
+                    </span>
+                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        {count}
+                    </span>
+                </a>
+            ))}
+        </div>
+
+        {tagCounts.length === 0 && (
+            <div class="text-center py-12">
+                <p class="text-gray-600 dark:text-gray-400">No tags found.</p>
+            </div>
+        )}
     </div>
-    
-    {tagCounts.length === 0 && (
-      <div class="text-center py-12">
-        <p class="text-gray-600 dark:text-gray-400">No tags found.</p>
-      </div>
-    )}
-  </div>
 </Layout>

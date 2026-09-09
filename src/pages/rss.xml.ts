@@ -17,9 +17,6 @@ export async function GET(context: APIContext) {
       description: post.data.description,
       link: getPostUrl(post),
       categories: post.data.categories || [],
-      // Optional custom data
-      customData: post.data.tags ? 
-        `<tags>${post.data.tags.join(',')}</tags>` : '',
     })),
     // Optional: customize the RSS output
     stylesheet: '/rss/styles.xsl',

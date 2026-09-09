@@ -3,17 +3,26 @@ import ThemeToggle from "./ThemeToggle.astro";
 import { Image } from "astro:assets";
 import menu from "@config/menu.json";
 import { siteConfig } from "@config/site";
+import { withBase } from "@utils/slug";
 
 const mainMenu = menu.main;
+// Menu URLs stay root-relative in menu.json: hrefs render through
+// withBase(), while the active state compares on the root-relative route
+// path (currentPath with the deploy base stripped).
+const basePrefix = import.meta.env.BASE_URL.replace(/\/+$/, "");
 const currentPath = Astro.url.pathname;
+const routePath =
+  basePrefix && currentPath.startsWith(basePrefix)
+    ? currentPath.slice(basePrefix.length) || "/"
+    : currentPath;
 const isCurrent = (url: string) =>
-  currentPath === url || (url !== "/" && currentPath.startsWith(url));
+  routePath === url || (url !== "/" && routePath.startsWith(url));
 ---
 
 <header class="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
-      <a href="/" class="flex-shrink-0">
+      <a href={withBase("/")} class="flex-shrink-0 py-2">
         <Image
           src={siteConfig.logo}
           alt={siteConfig.logoText}
@@ -27,7 +36,7 @@ const isCurrent = (url: string) =>
       <button 
         type="button" 
         id="mobile-menu-btn"
-        class="md:hidden p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        class="md:hidden p-2.5 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
         aria-controls="mobile-menu" 
         aria-expanded="false"
         aria-label="Toggle menu"
@@ -61,8 +70,9 @@ const isCurrent = (url: string) =>
                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg py-2 min-w-[180px]">
                   {item.children.map((child) => (
                     <a
-                      href={child.url}
-                      class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      href={withBase(child.url)}
+                      data-astro-prefetch
+                      class="block px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                       aria-current={isCurrent(child.url) ? "page" : undefined}
                     >
                       {child.name}
@@ -72,12 +82,12 @@ const isCurrent = (url: string) =>
               </div>
             </div>
           ) : (
-            <a href={item.url} class:list={['nav-link', { active: isCurrent(item.url) }]} aria-current={isCurrent(item.url) ? "page" : undefined}>
+            <a href={withBase(item.url)} data-astro-prefetch class:list={['nav-link', { active: isCurrent(item.url) }]} aria-current={isCurrent(item.url) ? "page" : undefined}>
               {item.name}
             </a>
           )
         ))}
-        <a href="/search/" class="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400" aria-label="Search">
+        <a href={withBase("/search/")} class="p-3 text-gray-500 hover:text-accent-600 dark:text-accent-400 dark:hover:text-accent-400" aria-label="Search">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -95,7 +105,7 @@ const isCurrent = (url: string) =>
           <div class="mobile-dropdown">
             <button
               type="button"
-              class="mobile-dropdown-btn w-full flex justify-between items-center py-2 text-gray-600 dark:text-gray-300"
+              class="mobile-dropdown-btn w-full flex justify-between items-center py-2.5 text-gray-600 dark:text-gray-300"
               aria-expanded="false"
               aria-controls={"mobile-submenu-" + index}
             >
@@ -106,20 +116,20 @@ const isCurrent = (url: string) =>
             </button>
             <div id={"mobile-submenu-" + index} class="mobile-dropdown-content hidden pl-4 space-y-1">
               {item.children.map((child) => (
-                <a href={child.url} class="block py-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400" aria-current={isCurrent(child.url) ? "page" : undefined}>
+                <a href={withBase(child.url)} data-astro-prefetch class="block py-2.5 text-gray-500 dark:text-gray-400 hover:text-accent-600 dark:hover:text-accent-400" aria-current={isCurrent(child.url) ? "page" : undefined}>
                   {child.name}
                 </a>
               ))}
             </div>
           </div>
         ) : (
-          <a href={item.url} class:list={['block py-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400', { 'text-blue-600 dark:text-blue-400': isCurrent(item.url) }]} aria-current={isCurrent(item.url) ? "page" : undefined}>
+          <a href={withBase(item.url)} data-astro-prefetch class:list={['block py-2.5 text-gray-600 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400', { 'text-accent-600 dark:text-accent-400': isCurrent(item.url) }]} aria-current={isCurrent(item.url) ? "page" : undefined}>
             {item.name}
           </a>
         )
       ))}
       <div class="flex items-center gap-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-        <a href="/search/" class="p-2 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400" aria-label="Search">
+        <a href={withBase("/search/")} class="p-3 text-gray-500 hover:text-accent-600 dark:text-accent-400 dark:hover:text-accent-400" aria-label="Search">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -133,8 +143,10 @@ const isCurrent = (url: string) =>
 <style>
   .nav-link {
     position: relative;
-    padding: 0.5rem 0.75rem;
+    /* 0.75rem vertical padding + 1.25rem line-height = 44px touch target */
+    padding: 0.75rem;
     font-size: 0.875rem;
+    line-height: 1.25rem;
     font-weight: 500;
     color: rgb(107 114 128);
     transition: color 0.2s;
@@ -142,7 +154,7 @@ const isCurrent = (url: string) =>
   
   .nav-link:hover,
   .nav-link.active {
-    color: rgb(37 99 235);
+    color: var(--color-accent-600);
   }
   
   :global(.dark) .nav-link {
@@ -151,7 +163,7 @@ const isCurrent = (url: string) =>
   
   :global(.dark) .nav-link:hover,
   :global(.dark) .nav-link.active {
-    color: rgb(96 165 250);
+    color: var(--color-accent-400);
   }
   
   .nav-link::after {
@@ -161,13 +173,13 @@ const isCurrent = (url: string) =>
     left: 0.75rem;
     right: 0.75rem;
     height: 2px;
-    background: rgb(37 99 235);
+    background: var(--color-accent-600);
     transform: scaleX(0);
     transition: transform 0.2s ease;
   }
   
   :global(.dark) .nav-link::after {
-    background: rgb(96 165 250);
+    background: var(--color-accent-400);
   }
   
   .nav-link:hover::after,
@@ -175,13 +187,11 @@ const isCurrent = (url: string) =>
     transform: scaleX(1);
   }
 
-  .desktop-dropdown:hover .desktop-dropdown-menu,
   .desktop-dropdown[data-open="true"] .desktop-dropdown-menu {
     opacity: 1;
     visibility: visible;
   }
 
-  .desktop-dropdown:hover .dropdown-icon,
   .desktop-dropdown[data-open="true"] .dropdown-icon {
     transform: rotate(180deg);
   }

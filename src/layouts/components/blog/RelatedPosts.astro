@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { formatDate } from '@utils/date';
-import { getPostSlug, getPostUrl, slugify } from '@utils/slug';
+import { getPostSlug, getPostUrl, taxonomySlug, withBase } from '@utils/slug';
 import { getPublishedPosts } from '@utils/content';
 
 interface Props {
@@ -62,7 +62,7 @@ const relatedPosts = getRelatedPosts(currentPost, otherPosts, limit);
         
         <div class="p-4">
           {post.data.categories?.[0] && (
-            <a href={`/categories/${slugify(post.data.categories[0])}/`} class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
+            <a href={withBase(`/categories/${taxonomySlug(post.data.categories[0])}/`)} class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">
               {post.data.categories[0]}
             </a>
           )}

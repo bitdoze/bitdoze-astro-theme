@@ -9,11 +9,12 @@ import SocialShare from '@layouts/components/blog/SocialShare.astro';
 import SeriesNav from '@layouts/components/widgets/SeriesNav.astro';
 import ReadingProgress from '@layouts/components/blog/ReadingProgress.astro';
 import Breadcrumb from '@layouts/components/common/Breadcrumb.astro';
-import { getPostSlug, slugify } from '@utils/slug';
+import { getPostSlug, slugify, taxonomySlug, withBase } from '@utils/slug';
 import { getPublishedAuthors } from '@utils/content';
+import { resolveAuthor, warnUnknownAuthor } from '@utils/authors';
 
 const { post, headings } = Astro.props;
-const { title, meta_title, description, image, imageAlt, date, updatedDate, categories, authors, tags, series, canonical } = post.data;
+const { title, meta_title, description, image, imageAlt, imageFit, date, updatedDate, categories, authors, tags, series, canonical } = post.data;
 
 const pageURL = Astro.site
   ? new URL(Astro.url.pathname, Astro.site).toString()
@@ -21,17 +22,20 @@ const pageURL = Astro.site
 const canonicalURL = canonical ?? pageURL;
 const primaryAuthor = authors?.[0];
 const authorEntry = primaryAuthor
-  ? (await getPublishedAuthors()).find((entry) => slugify(entry.data.title) === slugify(primaryAuthor))
+  ? resolveAuthor(primaryAuthor, await getPublishedAuthors())
   : undefined;
+if (primaryAuthor && !authorEntry) {
+  warnUnknownAuthor(primaryAuthor);
+}
 const schemaAuthor = primaryAuthor ? {
   name: authorEntry?.data.title ?? primaryAuthor,
-  url: Astro.site ? new URL('/authors/' + slugify(primaryAuthor) + '/', Astro.site).toString() : undefined,
+  url: Astro.site ? new URL(withBase('/authors/' + slugify(primaryAuthor) + '/'), Astro.site).toString() : undefined,
 } : undefined;
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Blog', url: '/blog/' },
-  ...(categories?.length ? [{ name: categories[0], url: `/categories/${slugify(categories[0])}/` }] : []),
+  ...(categories?.length ? [{ name: categories[0], url: `/categories/${taxonomySlug(categories[0])}/` }] : []),
   { name: title, url: pageURL }
 ];
 
@@ -50,6 +54,7 @@ const hasSeries = Boolean(series);
   tags={tags}
   categories={categories}
   breadcrumbs={breadcrumbs}
+  video={post.data.video ? { src: post.data.video } : undefined}
 >
   <ReadingProgress />
   
@@ -69,7 +74,7 @@ const hasSeries = Boolean(series);
           <span class="flex items-center gap-1">
             <Icon name="mdi:folder" class="w-4 h-4" />
             {categories.map((cat: string, i: number) => (
-              <><a href={`/categories/${slugify(cat)}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{cat}</a>{i < categories.length - 1 && ', '}</>
+              <><a href={withBase(`/categories/${taxonomySlug(cat)}/`)} class="hover:text-blue-600 dark:hover:text-blue-400">{cat}</a>{i < categories.length - 1 && ', '}</>
             ))}
           </span>
         )}
@@ -77,7 +82,7 @@ const hasSeries = Boolean(series);
           <span class="flex items-center gap-1">
             <Icon name="mdi:account" class="w-4 h-4" />
             {authors.map((author: string, i: number) => (
-              <><a href={`/authors/${slugify(author)}/`} class="hover:text-blue-600 dark:hover:text-blue-400">{author}</a>{i < authors.length - 1 && ', '}</>
+              <><a href={withBase(`/authors/${slugify(author)}/`)} class="hover:text-blue-600 dark:hover:text-blue-400">{author}</a>{i < authors.length - 1 && ', '}</>
             ))}
           </span>
         )}
@@ -88,15 +93,15 @@ const hasSeries = Boolean(series);
       {description && <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">{description}</p>}
       
       {image && (
-        <div class="rounded-lg overflow-hidden mb-8 aspect-video">
-          <Image src={image} alt={imageAlt ?? title} class="w-full h-full object-cover" widths={[640, 960, 1280]} sizes="(max-width: 1024px) 100vw, 1024px" width={1280} height={720} loading="eager" decoding="async" fetchpriority="high" />
+        <div class={`rounded-lg overflow-hidden mb-8 aspect-video ${imageFit === "contain" ? "bg-gray-100 dark:bg-gray-900" : ""}`}>
+          <Image src={image} alt={imageAlt ?? title} class={`w-full h-full ${imageFit === "contain" ? "object-contain" : "object-cover"}`} widths={[640, 960, 1280]} sizes="(max-width: 1024px) 100vw, 1024px" width={1280} height={720} loading="eager" decoding="async" fetchpriority="high" />
         </div>
       )}
       
       {tags?.length > 0 && (
         <div class="flex flex-wrap gap-2">
           {tags.map((tag: string) => (
-            <a href={`/tags/${slugify(tag)}/`} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-blue-100 dark:hover:bg-blue-900">
+            <a href={withBase(`/tags/${taxonomySlug(tag)}/`)} class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-blue-100 dark:hover:bg-blue-900">
               #{tag}
             </a>
           ))}
@@ -110,7 +115,7 @@ const hasSeries = Boolean(series);
       <PostHeadings headings={headings} />
     </div>
     
-    <div class="prose prose-lg dark:prose-invert prose-blue max-w-3xl mx-auto">
+    <div class="prose prose-lg dark:prose-invert prose-blue max-w-3xl mx-auto" data-reading-body>
       <slot />
     </div>
     

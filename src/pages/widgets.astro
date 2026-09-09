@@ -1,0 +1,172 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Accordion from "@components/widgets/Accordion.astro";
+import Button from "@components/widgets/Button.astro";
+import ListCheck from "@components/widgets/ListCheck.astro";
+import Notice from "@components/widgets/Notice.astro";
+import Tab from "@components/widgets/Tab.astro";
+import Tabs from "@components/widgets/Tabs.astro";
+import YouTubeEmbed from "@components/widgets/YouTubeEmbed.astro";
+import SeriesWidget from "@components/widgets/SeriesWidget.astro";
+
+const title = "Widgets & Markdown Specimen";
+const description =
+    "Live specimen of every markdown widget and typography style supported by this theme.";
+---
+
+<Layout title={title} description={description}>
+    <section class="py-12 max-w-3xl mx-auto">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{title}</h1>
+        <p class="text-lg text-gray-700 dark:text-gray-300 mb-12">{description}</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Tabs</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+            Two independent groups below; keyboard arrows, Home and End move between tabs.
+        </p>
+        <Tabs>
+            <Tab name="Install">
+                <p>Run <code>npm create astro@latest</code> and follow the prompts.</p>
+            </Tab>
+            <Tab name="Configure">
+                <p>Set <code>site</code> in <code>astro.config.mjs</code> for canonical URLs and RSS.</p>
+            </Tab>
+            <Tab name="Deploy">
+                <p>Push to your Git provider and enable the static build command.</p>
+            </Tab>
+        </Tabs>
+        <div class="h-6"></div>
+        <Tabs>
+            <Tab name="npm">
+                <p><code>npm run build</code> outputs the static site to <code>dist/</code>.</p>
+            </Tab>
+            <Tab name="pnpm">
+                <p><code>pnpm build</code> outputs the static site to <code>dist/</code>.</p>
+            </Tab>
+        </Tabs>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-4">Accordion</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+            Items sharing a <code>group</code> behave exclusively: opening one closes the others.
+            The first item starts open via <code>expanded={true}</code>.
+        </p>
+        <Accordion label="What is included?" group="specimen" expanded={true}>
+            <p>Every widget on this page ships with the theme and works in MDX out of the box.</p>
+        </Accordion>
+        <Accordion label="Can I add my own?" group="specimen">
+            <p>Drop an Astro component into <code>src/layouts/components/widgets/</code> and register it in <code>MarkdownComponents.astro</code>.</p>
+        </Accordion>
+        <Accordion label="Do widgets need JavaScript?" group="specimen">
+            <p>Only interactive ones. Tabs, Accordion, YouTubeEmbed and ReadingProgress load small inline scripts; the rest are pure markup.</p>
+        </Accordion>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-4">Notices</h2>
+        <Notice type="info" title="Info">
+            <p>Use info notices for neutral context and definitions.</p>
+        </Notice>
+        <Notice type="success" title="Success">
+            <p>Use success notices to confirm a completed step or a best practice.</p>
+        </Notice>
+        <Notice type="warning" title="Warning">
+            <p>Use warning notices for common mistakes and version caveats.</p>
+        </Notice>
+        <Notice type="error" title="Error">
+            <p>Use error notices for actions that are deprecated or must be avoided.</p>
+        </Notice>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-4">Check list</h2>
+        <ListCheck>
+            <ul>
+                <li>Markdown and MDX content collections</li>
+                <li>Taxonomy pages for tags, categories, authors and series</li>
+                <li>Search, RSS and JSON-LD structured data</li>
+                <li>Dark mode with no flash of the wrong theme</li>
+            </ul>
+        </ListCheck>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-4">Buttons</h2>
+        <div class="not-prose flex flex-wrap items-center gap-3 mb-4">
+            <Button text="Solid blue" link="/blog/" />
+            <Button text="Outline blue" link="/blog/" variant="outline" />
+            <Button text="Solid green" link="/blog/" color="green" />
+            <Button text="Outline red" link="/blog/" color="red" variant="outline" />
+            <Button text="Solid purple" link="/blog/" color="purple" />
+            <Button text="Outline gray" link="/blog/" color="gray" variant="outline" />
+        </div>
+        <div class="not-prose flex flex-wrap items-center gap-3 mb-4">
+            <Button text="Extra small" link="/blog/" size="xs" />
+            <Button text="Small" link="/blog/" size="sm" />
+            <Button text="Medium" link="/blog/" size="md" />
+            <Button text="Large" link="/blog/" size="lg" />
+            <Button text="Extra large" link="/blog/" size="xl" />
+        </div>
+        <div class="not-prose flex flex-wrap items-center gap-3">
+            <Button text="Left icon" link="/blog/" icon="rocket" />
+            <Button text="Right icon" link="/blog/" icon="arrow-right" iconPosition="right" />
+            <Button text="GitHub" link="https://github.com" icon="github" iconOnly external ariaLabel="GitHub repository" />
+            <Button text="RSS feed" link="/rss.xml" icon="rss" iconOnly ariaLabel="RSS feed" />
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-4">YouTube embed</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+            Click-to-load facade: nothing from YouTube loads before you press play. The first one
+            starts at 30 seconds via the watch URL's <code>t</code> parameter.
+        </p>
+        <YouTubeEmbed
+            url="https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s"
+            label="Sample video: Never Gonna Give You Up"
+        />
+        <div class="h-6"></div>
+        <YouTubeEmbed url="https://youtu.be/dQw4w9WgXcQ" label="Sample video shared via youtu.be link" />
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-4">Series navigator</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+            Rendered with only a series name and position — <code>currentSlug</code> defaults to the
+            current page path, so MDX authors never have to guess it.
+        </p>
+        <SeriesWidget seriesName="Astro Get Started" seriesPosition={2} />
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-12 mb-4">Typography</h2>
+        <div class="prose prose-lg dark:prose-invert max-w-none">
+            <h3>Heading three</h3>
+            <h4>Heading four</h4>
+            <p>
+                Body text with <code>inline code</code>, <a href="/blog/">a link</a>, <strong>bold</strong>
+                and <em>emphasis</em>. Prose styles keep long-form reading comfortable in both light
+                and dark mode.
+            </p>
+            <blockquote>
+                <p>A blockquote sets quoted material apart from the surrounding prose.</p>
+            </blockquote>
+            <ul>
+                <li>An unordered list item</li>
+                <li>Another item with nested content</li>
+            </ul>
+            <ol>
+                <li>An ordered list item</li>
+                <li>Another ordered item</li>
+            </ol>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Widget</th>
+                        <th>JavaScript</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tabs, Accordion, YouTubeEmbed</td>
+                        <td>Small inline script</td>
+                    </tr>
+                    <tr>
+                        <td>Notice, ListCheck, Button</td>
+                        <td>None</td>
+                    </tr>
+                </tbody>
+            </table>
+            <pre><code is:raw>export default {
+    // Code blocks get syntax highlighting from Shiki.
+    trailingSlash: "ignore",
+};</code></pre>
+        </div>
+    </section>
+</Layout>

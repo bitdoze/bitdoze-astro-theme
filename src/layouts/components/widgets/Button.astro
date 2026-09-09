@@ -29,7 +29,9 @@ const {
 } = Astro.props;
 
 const btnText = text || label || '';
-const btnLink = link || url || '#';
+const btnHref = [link, url]
+  .map((candidate) => candidate?.trim())
+  .find((candidate) => candidate && candidate !== '#');
 
 const sizes = {
   xs: 'text-xs px-2.5 py-1.5',
@@ -54,26 +56,34 @@ const iconSizes = {
 };
 
 const colors = {
-  blue: { solid: 'bg-blue-600 hover:bg-blue-700 text-white', outline: 'border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
-  green: { solid: 'bg-green-600 hover:bg-green-700 text-white', outline: 'border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20' },
-  red: { solid: 'bg-red-600 hover:bg-red-700 text-white', outline: 'border-red-600 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' },
-  purple: { solid: 'bg-purple-600 hover:bg-purple-700 text-white', outline: 'border-purple-600 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20' },
-  gray: { solid: 'bg-gray-600 hover:bg-gray-700 text-white', outline: 'border-gray-600 text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-900/20' },
+  blue: { solid: 'bg-accent-600 hover:bg-accent-700 text-white', outline: 'border-accent-600 text-accent-600 dark:border-accent-400 dark:text-accent-400 hover:bg-accent-50 dark:hover:bg-accent-900/20' },
+  green: { solid: 'bg-green-700 hover:bg-green-800 text-white', outline: 'border-green-700 text-green-700 dark:border-green-400 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' },
+  red: { solid: 'bg-red-600 hover:bg-red-700 text-white', outline: 'border-red-600 text-red-600 dark:border-red-400 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20' },
+  purple: { solid: 'bg-purple-600 hover:bg-purple-700 text-white', outline: 'border-purple-600 text-purple-600 dark:border-purple-400 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20' },
+  gray: { solid: 'bg-gray-600 hover:bg-gray-700 text-white', outline: 'border-gray-600 text-gray-600 dark:border-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/20' },
 };
+
+const btnClasses = [
+  'not-prose inline-flex items-center gap-2 rounded-md font-medium transition-colors',
+  iconOnly ? iconOnlySizes[size] : sizes[size],
+  colors[color][variant],
+  variant === 'outline' && 'border-2',
+];
+const btnAttrs: { href?: string; target?: string; rel?: string; type?: "button" } = btnHref
+  ? {
+      href: btnHref,
+      ...(external && { target: '_blank', rel: 'noopener noreferrer' }),
+    }
+  : { type: 'button' };
+const ButtonTag = btnHref ? 'a' : 'button';
 ---
 
-<a
-  href={btnLink}
-  class:list={[
-    'not-prose inline-flex items-center gap-2 rounded-md font-medium transition-colors',
-    iconOnly ? iconOnlySizes[size] : sizes[size],
-    colors[color][variant],
-    variant === 'outline' && 'border-2'
-  ]}
+<ButtonTag
+  class:list={btnClasses}
   aria-label={ariaLabel || (iconOnly ? btnText : undefined)}
-  {...external && { target: '_blank', rel: 'noopener noreferrer' }}
+  {...btnAttrs}
 >
   {icon && iconPosition === 'left' && <Icon name={`mdi:${icon}`} class={iconSizes[size]} />}
   {!iconOnly && btnText}
   {icon && !iconOnly && iconPosition === 'right' && <Icon name={`mdi:${icon}`} class={iconSizes[size]} />}
-</a>
+</ButtonTag>

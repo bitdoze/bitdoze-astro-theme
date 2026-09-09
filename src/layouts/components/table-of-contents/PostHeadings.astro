@@ -1,34 +1,18 @@
 ---
 import type { MarkdownHeading } from "astro";
-import type { Heading } from "./TOCHeading.astro";
 import TOCHeading from "./TOCHeading.astro";
+import { buildToc, type TocItem } from "../../../utils/toc";
 
 interface Props {
   headings: MarkdownHeading[];
 }
 
-function buildToc(headings: MarkdownHeading[]) {
-  const toc: Heading[] = [];
-  const parentHeadings = new Map();
-  headings
-    .filter((h) => h.depth <= 3)
-    .forEach((h) => {
-      const heading = { ...h, subheadings: [] };
-      parentHeadings.set(heading.depth, heading);
-      if (heading.depth === 2) {
-        toc.push(heading);
-      } else {
-        parentHeadings.get(heading.depth - 1).subheadings.push(heading);
-      }
-    });
-  return toc;
-}
-
 const { headings } = Astro.props;
 
-const tableOfContents = buildToc(headings);
+const tableOfContents: TocItem[] = buildToc(headings);
 ---
 
+{tableOfContents.length > 0 && (
 <div class="toc-container relative bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md border border-gray-100 dark:border-gray-700">
   <div class="flex justify-between items-center mb-3">
     <h2 class="text-lg font-bold text-gray-800 dark:text-gray-200">Table of Contents</h2>
@@ -57,6 +41,7 @@ const tableOfContents = buildToc(headings);
     </ul>
   </div>
 </div>
+)}
 
 <script>
   // Simple toggle functionality for table of contents

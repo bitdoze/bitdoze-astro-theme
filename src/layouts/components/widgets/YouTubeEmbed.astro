@@ -1,51 +1,84 @@
 ---
+import { parseYouTubeId } from "@utils/youtube";
+
 interface Props {
-  url: string;
-  label: string;
+    /** Any YouTube URL form (watch, youtu.be, embed, shorts) or a bare 11-char video ID. */
+    url: string;
+    label: string;
 }
 
 const { url, label } = Astro.props;
 
-// Extract video ID for thumbnail
-const videoId = url.match(/(?:embed\/|v=|youtu\.be\/)([^?&]+)/)?.[1];
-const thumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '';
+// Privacy boundary: before play, the only network request is a single
+// thumbnail fetch from img.youtube.com. No YouTube JavaScript or iframe is
+// loaded until the visitor actively presses play.
+const parsed = parseYouTubeId(url);
+const watchUrl = parsed
+    ? `https://www.youtube.com/watch?v=${parsed.id}${parsed.start ? `&t=${parsed.start}` : ""}`
+    : null;
+const embedSrc = parsed
+    ? `https://www.youtube.com/embed/${parsed.id}${parsed.start ? `?start=${parsed.start}` : ""}`
+    : null;
+const thumbnail = parsed ? `https://img.youtube.com/vi/${parsed.id}/maxresdefault.jpg` : null;
 ---
 
-<div class="youtube-embed aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
-  {thumbnail && (
-    <button 
-      class="youtube-play w-full h-full group"
-      data-src={url}
-      aria-label={`Play: ${label}`}
-    >
-      <img src={thumbnail} alt="" class="w-full h-full object-cover" loading="lazy" />
-      <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-        <svg class="w-16 h-16 text-white/90 group-hover:text-white group-hover:scale-110 transition-all" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      </div>
-    </button>
-  )}
-</div>
+{
+    parsed && embedSrc && thumbnail && watchUrl && (
+        <div class="youtube-embed aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
+            <button class="youtube-play w-full h-full group" data-src={embedSrc} data-title={label} aria-label={`Play: ${label}`}>
+                <img src={thumbnail} alt="" class="youtube-thumb w-full h-full object-cover" loading="lazy" />
+                <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                    <svg class="w-16 h-16 text-white/90 group-hover:text-white group-hover:scale-110 transition-all" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+            </button>
+            <noscript>
+                <a
+                    href={watchUrl}
+                    class="absolute inset-0 flex items-center justify-center bg-black/60 p-6 text-center font-medium text-white underline"
+                >
+                    Watch on YouTube: {label}
+                </a>
+            </noscript>
+        </div>
+    )
+}
 
 <script>
-  if (document.documentElement.dataset.youtubeEmbedInitialized !== 'true') {
-    document.documentElement.dataset.youtubeEmbedInitialized = 'true';
-    document.addEventListener('click', (event) => {
-      const button = event.target instanceof Element ? event.target.closest('.youtube-play') : null;
-      if (!button) return;
+    if (document.documentElement.dataset.youtubeEmbedInitialized !== "true") {
+        document.documentElement.dataset.youtubeEmbedInitialized = "true";
 
-      const src = button.getAttribute('data-src');
-      const container = button.closest('.youtube-embed');
-      if (container && src) {
-        const iframe = document.createElement('iframe');
-        iframe.className = 'w-full h-full';
-        iframe.src = `${src}?autoplay=1`;
-        iframe.title = button.getAttribute('aria-label') || 'YouTube video';
-        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        iframe.allowFullscreen = true;
-        container.replaceChildren(iframe);
-      }
-    });
-  }
+        document.addEventListener("click", (event) => {
+            const button = event.target instanceof Element ? event.target.closest(".youtube-play") : null;
+            if (!button) return;
+
+            const src = button.getAttribute("data-src");
+            const container = button.closest(".youtube-embed");
+            if (container && src) {
+                const iframe = document.createElement("iframe");
+                iframe.className = "w-full h-full";
+                // data-src is the canonical embed URL (possibly with ?start=N);
+                // autoplay joins with & so a query separator is never doubled.
+                iframe.src = `${src}${src.includes("?") ? "&" : "?"}autoplay=1`;
+                iframe.title = button.getAttribute("data-title") || "YouTube video";
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                iframe.allowFullscreen = true;
+                container.replaceChildren(iframe);
+            }
+        });
+
+        // Thumbnail failure recovery: image error events do not bubble, so
+        // listen in the capture phase. Dropping the img leaves the button-only
+        // state (play icon on the dark background), which still works.
+        document.addEventListener(
+            "error",
+            (event) => {
+                const img = event.target;
+                if (!(img instanceof HTMLImageElement) || !img.classList.contains("youtube-thumb")) return;
+                img.remove();
+            },
+            true,
+        );
+    }
 </script>

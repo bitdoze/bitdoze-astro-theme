@@ -1,16 +1,22 @@
 ---
 import SeriesNav from './SeriesNav.astro';
 
+interface Props {
+  /** Current post slug; defaults to the current page path (see SeriesNav). */
+  currentSlug?: string;
+  seriesName: string;
+  seriesPosition: number;
+}
+
 const { currentSlug, seriesName, seriesPosition } = Astro.props;
 
-// Check if we have all required props
-const hasSeries = seriesName && seriesPosition && currentSlug;
+const hasSeries = Boolean(seriesName && seriesPosition);
 ---
 
 {hasSeries && (
-  <SeriesNav 
-    currentSlug={currentSlug} 
-    seriesName={seriesName} 
-    seriesPosition={seriesPosition} 
+  <SeriesNav
+    currentSlug={currentSlug}
+    seriesName={seriesName}
+    seriesPosition={seriesPosition}
   />
 )}

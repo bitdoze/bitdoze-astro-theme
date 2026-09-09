@@ -4,7 +4,12 @@
 
 <script>
   const progressBar = document.querySelector<HTMLElement>('#reading-progress-bar');
-  const article = document.querySelector<HTMLElement>('article');
+  // Prefer the prose container PostLayout marks with data-reading-body, so the
+  // bar measures the actual reading body rather than the whole <article>
+  // including share links and recommendations.
+  const article =
+    document.querySelector<HTMLElement>('[data-reading-body]') ??
+    document.querySelector<HTMLElement>('article');
 
   if (progressBar && article) {
     let articleTop = 0;

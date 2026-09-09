@@ -2,26 +2,35 @@
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { formatDate } from '@utils/date';
-import { getPostUrl, slugify } from '@utils/slug';
+import { getPostUrl, taxonomySlug, withBase } from '@utils/slug';
 import SeriesBadge from './SeriesBadge.astro';
 
 const { post } = Astro.props;
-const { title, description, image, date, categories, authors, series } = post.data;
+const { title, description, image, imageFit, date, categories, authors, series } = post.data;
 
 const postUrl = getPostUrl(post);
 
 // Check if post is part of a series
 const isPartOfSeries = Boolean(series);
+
+// Coverless posts render a text-only card; "contain" letterboxes the cover instead of cropping it
+const coverWrapClass = `block overflow-hidden aspect-video ${imageFit === "contain" ? "bg-gray-100 dark:bg-gray-900" : ""}`;
+const coverImageClass = imageFit === "contain"
+  ? "w-full h-full object-contain"
+  : "w-full h-full object-cover transition-transform duration-400 hover:scale-105";
+const titleClass = image
+  ? "text-xl font-bold mb-2 text-gray-900 dark:text-white line-clamp-2"
+  : "text-2xl font-bold mb-2 text-gray-900 dark:text-white line-clamp-3";
 ---
 
 <article class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform duration-400 hover:transform hover:scale-[1.02]" >
   <!-- Post Image -->
   {image && (
-    <a href={postUrl} class="block overflow-hidden aspect-video">
+    <a href={postUrl} data-astro-prefetch class={coverWrapClass}>
       <Image 
         src={image} 
         alt={title} 
-        class="w-full h-full object-cover transition-transform duration-400 hover:scale-105"
+        class={coverImageClass}
         width={640}
         height={360}
         widths={[360, 640, 960]}
@@ -39,8 +48,8 @@ const isPartOfSeries = Boolean(series);
         <div class="flex flex-wrap gap-2">
           {categories.map((category: string) => (
             <a 
-              href={`/categories/${slugify(category)}/`} 
-              class="text-xs font-medium px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+              href={withBase(`/categories/${taxonomySlug(category)}/`)}
+              class="text-xs font-medium px-2 py-1 bg-accent-100 dark:bg-accent-900 text-accent-700 dark:text-accent-300 rounded-full hover:bg-accent-200 dark:hover:bg-accent-800 transition-colors"
             >
               {category}
             </a>
@@ -59,8 +68,8 @@ const isPartOfSeries = Boolean(series);
     </div>
     
     <!-- Title -->
-    <h2 class="text-xl font-bold mb-2 text-gray-900 dark:text-white line-clamp-2" >
-      <a href={postUrl} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+    <h2 class={titleClass}>
+      <a href={postUrl} data-astro-prefetch class="hover:text-accent-600 dark:hover:text-accent-400 transition-colors">
         {title}
       </a>
     </h2>

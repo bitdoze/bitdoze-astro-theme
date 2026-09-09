@@ -49,23 +49,36 @@ The theme includes several reusable components:
 - **PostLayout.astro**: Layout for blog posts with metadata and content
 - **Header/Footer**: Navigation and site information
 - **Pagination**: For navigating through multiple pages of content
-- **Search**: Client-side search functionality
+- **Search**: Client-side search functionality (requires JavaScript; the index covers roughly the first 4,000 characters of each post body — full-text indexing is deferred, see `src/pages/search.json.ts`)
 - **Author Card**: Display author information
 - **Post Card**: Display post previews in lists
 - **Tag/Category Cloud**: Display and filter by tags or categories
 
 ## Getting Started
 
+Work through the tasks below in order. Each step links to the reference section with the details.
+
+1. **Preview the theme.** Run `npm install && npm run dev` and open `http://localhost:4321`. Try the theme toggle, a mobile viewport, and the widget examples in the demo post `src/content/posts/artificial-intelligence-guide.mdx`.
+2. **Create your site.** The fastest path is GitHub's **Use this template** button; alternatively clone over HTTPS (`git clone https://github.com/bitdoze/bitdoze-astro-theme.git my-blog`). Install dependencies on Node 22.12 or newer (see [Installation](#installation)).
+3. **Rebrand.** Update `src/config/site.ts` (title, description, brand, hero and footer copy, `ogImage`, `postsPerPage`), then `src/config/menu.json` and `src/config/social.json` (see [Configuration](#configuration)).
+4. **Create your first content.** Add a post, an author, a series, and an ordinary page (see [Creating Content](#creating-content) and [Adding New Pages](#adding-new-pages)).
+5. **Remove demo content.** Delete the demo posts, authors, and pages you do not need; empty collections render as empty lists rather than failing. The About page is a dedicated content entry at `src/content/about/index.md` — replace it rather than leaving the placeholder.
+6. **Configure contact, origin, and SEO defaults.** Set a real contact endpoint (see [Contact form](#contact-form)), point `SITE_URL` at your production origin, and review the metadata defaults in `src/config/site.ts`.
+7. **Deploy and smoke-test.** Build and deploy (see [Deployment](#deployment)), then verify navigation, search, RSS, and the custom 404 page on the live host.
+8. **Update from a release.** Read [CHANGELOG.md](CHANGELOG.md) before pulling a new version; releases call out any changed configuration or content contracts.
+
 ### Prerequisites
 
-- Node.js 22.12.0 or newer
+- Node.js 22.12.0 or newer (declared in `package.json` `engines` and pinned in `.node-version`)
 - npm 10.8.2 or newer
+
+The theme targets **Astro 7.x**. When upgrading Astro, check [CHANGELOG.md](CHANGELOG.md) and update the official integrations together.
 
 ### Installation
 
-1. Clone this repository:
+1. Create your site from this theme — use GitHub's **Use this template** button, or clone over HTTPS:
    ```bash
-   git clone git@github.com:bitdoze/bitdoze-astro-theme.git my-blog
+   git clone https://github.com/bitdoze/bitdoze-astro-theme.git my-blog
    cd my-blog
    ```
 
@@ -103,6 +116,7 @@ Tailor the theme to your needs by updating the following configuration files:
 5.  **Contact Configuration (`src/config/config.json`)**:
     *   Set `params.contact_form_action` to your form endpoint.
     *   Add only the public address, email, and phone details you want displayed.
+    *   The default `"#"` action keeps the form disabled with a visible notice — see [Contact form](#contact-form).
 
 ### Creating Content
 
@@ -168,11 +182,37 @@ This theme uses **Tailwind CSS v4** for styling, which emphasizes a CSS-first, m
 
 **Advanced Customization (Optional):**
 
-While most styling can be managed through `src/styles/global.css`, if you need to make advanced Tailwind customizations (e.g., adding complex custom themes, other specific Tailwind plugins that require JS configuration, or modifying Tailwind's default settings extensively), you can create a `tailwind.config.js` file in the project root. The `@tailwindcss/vite` plugin should automatically detect and use this file. Refer to the [official Tailwind CSS documentation](https://tailwindcss.com/docs) for details on `tailwind.config.js` options.
+Tailwind CSS v4 is CSS-first and does **not** automatically detect a `tailwind.config.js` file. For most customization, stay in `src/styles/global.css` and use the CSS-first `@theme` directive:
+
+```css
+@theme {
+  --color-brand: #1d4ed8;
+}
+```
+
+If you need a legacy JavaScript config (for example, a Tailwind v3 plugin that requires JS configuration), load it explicitly with `@config` in `src/styles/global.css`:
+
+```css
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+```
+
+Refer to the [official Tailwind CSS documentation](https://tailwindcss.com/docs) for details on `@theme` and `@config`.
 
 ### Adding New Pages
 
 Create a new `.astro` file in the `src/pages/` directory. The file path will determine the URL.
+
+## Contact form
+
+The contact page renders a deliverable form only after you configure a real endpoint. While `params.contact_form_action` in `src/config/config.json` stays at its default `"#"`, the page shows a "not configured" notice and the submit button is disabled, so visitors cannot submit messages into the void.
+
+To go live:
+
+1. Set `params.contact_form_action` to an endpoint that accepts `POST` requests — your own backend or a form service.
+2. Add only the public address, email, and phone details you want displayed.
+
+This theme is static and ships no mailer. Handling submissions, success messages, and error recovery is the responsibility of the endpoint you configure.
 
 ## Deployment
 
@@ -182,17 +222,31 @@ Build your site for production:
 npm run build
 ```
 
+The static output is written to the `dist/` directory, ready to deploy to any static hosting platform. Build and serve on Node.js 22.12.0 or newer, matching the [prerequisites](#prerequisites).
+
 Run the complete local verification suite:
 
 ```bash
 npm run verify
 ```
 
-This runs Astro type checking, unit tests, and the production build. Draft and
-future-dated posts are excluded from routes, search, RSS, series navigation,
-and homepage widgets.
+This runs Astro type checking, unit tests, and the production build. Draft and future-dated posts are excluded from routes, search, RSS, series navigation, and homepage widgets.
 
-The built site will be in the `dist/` directory, ready to be deployed to your favorite hosting platform.
+Three things to configure on your host before going live:
+
+- **Root-domain or subpath hosting.** Root deployments work out of the box. Subpath deployments (for example `example.com/blog/`) are supported through Astro's `base` setting — navigation, taxonomy links, pagination, favicons, RSS autodiscovery, and search are base-aware, and this is covered by a `/theme/` smoke build. One caveat: absolute links you write yourself inside Markdown content (for example `[Blog](/blog/)`) are not rewritten; prefer root-relative content links on root deployments.
+- **Custom 404.** The theme ships `src/pages/404.astro` (content from `src/content/pages/404.md`). Configure your host to serve it for unknown routes with a real 404 status; `astro preview` behavior is not proof for every provider.
+- **Cache headers.** The `Cache-Control` header the search endpoint sets on its response is not portable across CDNs; most static hosts strip response headers from flat files. Configure caching for HTML, hashed assets, and `/search.json` in your host's settings.
+
+## Performance
+
+The theme stays lean by default: fully static pages, no client framework runtime, system font stacks, syntax highlighting done at build time, responsive covers that lazy-load in cards (the article cover loads eagerly), and a click-to-load facade for YouTube embeds instead of immediate iframes.
+
+Budget snapshot of the demo build, September 2026 (gzip estimates): shared CSS ~11 KB, and the client-side search bundle ~11 KB plus its JSON index (index size grows with your longest posts). The search page carries that bundle and is heavier than ordinary pages. These are build-output snapshots, not Core Web Vitals results; measure your own deployment.
+
+## Security
+
+Repository content — posts, pages, MDX, and configuration — is a trusted build input: it runs at build time like any other code in the project. Content from an external CMS or user submissions does not share that trust and needs its own validation and ingestion boundary before it reaches a build. To report a security issue, see [SECURITY.md](SECURITY.md).
 
 ## License
 

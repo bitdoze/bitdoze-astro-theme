@@ -1,0 +1,72 @@
+---
+import Layout from "@layouts/Layout.astro";
+import PostGrid from "./PostGrid.astro";
+import Pagination from "@components/common/Pagination.astro";
+import { siteConfig } from "@config/site";
+import { getArchivePage } from "@utils/pagination";
+import type { PostEntry } from "@utils/content";
+
+interface Props {
+    title: string;
+    description: string;
+    heading: string;
+    subline: string;
+    basePath: string;
+    posts: PostEntry[];
+    page: number;
+    indexable: boolean;
+    postsPerPage?: number;
+    emptyMessage?: string;
+}
+
+const {
+    title,
+    description,
+    heading,
+    subline,
+    basePath,
+    posts,
+    page,
+    indexable,
+    postsPerPage = siteConfig.postsPerPage,
+    emptyMessage = "No posts found.",
+} = Astro.props;
+
+// One pagination code path for every archive: page 1 renders on the index
+// route, deeper pages on the /page/N/ sibling.
+const { currentPage, totalPages, pagePosts, prevUrl, nextUrl } = getArchivePage({
+    page,
+    posts,
+    basePath,
+    postsPerPage,
+});
+
+const headerSubline = currentPage > 1
+    ? `Page ${currentPage} of ${totalPages} - ${subline}`
+    : subline;
+---
+
+<Layout title={title} description={description} indexable={indexable}>
+    <div class="w-full py-8">
+        <header class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                {heading}
+            </h1>
+            <p class="text-lg text-gray-700 dark:text-gray-300">
+                {headerSubline}
+            </p>
+        </header>
+
+        <slot name="lead" />
+
+        <PostGrid posts={pagePosts} emptyMessage={emptyMessage} />
+
+        <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            prevUrl={prevUrl}
+            nextUrl={nextUrl}
+            basePath={basePath}
+        />
+    </div>
+</Layout>

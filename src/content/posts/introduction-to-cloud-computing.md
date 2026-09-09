@@ -3,7 +3,6 @@ title: "Introduction to Cloud Computing"
 meta_title: "Cloud Computing Fundamentals: A Beginner's Guide"
 description: "Learn the basics of cloud computing, including service models, deployment types, and major providers in this comprehensive introduction."
 date: 2023-07-20
-image: "../../assets/images/cloud-computing.svg"
 authors: ["dragos"]
 categories: ["Cloud Computing"]
 tags: ["aws", "azure", "cloud", "infrastructure", "devops"]

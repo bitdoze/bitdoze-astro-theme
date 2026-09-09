@@ -18,6 +18,59 @@
   --color-primary-800: #1e40af;
   --color-primary-900: #1e3a8a;
   --color-primary-950: #172554;
+
+  /* Semantic accent scale. Values are copied 1:1 from Tailwind v4's default
+     blue palette, so `accent-*` renders pixel-identically to the `blue-*`
+     classes it replaces across components. Brand/interactive color goes
+     through `accent-*`; neutral grays intentionally stay literal (`gray-*`)
+     because they encode surface/text hierarchy rather than brand identity and
+     would gain nothing from an extra alias. */
+  --color-accent-50: oklch(97% 0.014 254.604);
+  --color-accent-100: oklch(93.2% 0.032 255.585);
+  --color-accent-200: oklch(88.2% 0.059 254.128);
+  --color-accent-300: oklch(80.9% 0.105 251.813);
+  --color-accent-400: oklch(70.7% 0.165 254.624);
+  --color-accent-500: oklch(62.3% 0.214 259.815);
+  --color-accent-600: oklch(54.6% 0.245 262.881);
+  --color-accent-700: oklch(48.8% 0.243 264.376);
+  --color-accent-800: oklch(42.4% 0.199 265.638);
+  --color-accent-900: oklch(37.9% 0.146 265.522);
+  --color-accent-950: oklch(28.2% 0.091 267.935);
+
+  /* Page surfaces. `bg-surface` adapts to dark mode via the .dark override
+     below; `surface-dark` pins the dark value explicitly. Values match the
+     current white / gray-900 page backgrounds. */
+  --color-surface: #fff;
+  --color-surface-dark: oklch(21% 0.034 264.665);
+
+  /* Status colors for Notice-style feedback blocks. Shade selection mirrors
+     Notice.astro's current green/yellow/red/blue usages (50 light surface,
+     200 dark text, 400 border, 800 light text, 900 dark surface) so that
+     consuming the tokens is visually identical. `info` shares the accent hue
+     on purpose. */
+  --color-success-50: oklch(98.2% 0.018 155.826);
+  --color-success-200: oklch(92.5% 0.084 155.995);
+  --color-success-400: oklch(79.2% 0.209 151.711);
+  --color-success-800: oklch(44.8% 0.119 151.328);
+  --color-success-900: oklch(39.3% 0.095 152.535);
+
+  --color-warning-50: oklch(98.7% 0.026 102.212);
+  --color-warning-200: oklch(94.5% 0.129 101.54);
+  --color-warning-400: oklch(85.2% 0.199 91.936);
+  --color-warning-800: oklch(47.6% 0.114 61.907);
+  --color-warning-900: oklch(42.1% 0.095 57.708);
+
+  --color-danger-50: oklch(97.1% 0.013 17.38);
+  --color-danger-200: oklch(88.5% 0.062 18.334);
+  --color-danger-400: oklch(70.4% 0.191 22.216);
+  --color-danger-800: oklch(44.4% 0.177 26.899);
+  --color-danger-900: oklch(39.6% 0.141 25.723);
+
+  --color-info-50: oklch(97% 0.014 254.604);
+  --color-info-200: oklch(88.2% 0.059 254.128);
+  --color-info-400: oklch(70.7% 0.165 254.624);
+  --color-info-800: oklch(42.4% 0.199 265.638);
+  --color-info-900: oklch(37.9% 0.146 265.522);
   
   /* Fonts */
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -41,6 +94,23 @@ body {
 /* Dark mode colors */
 .dark {
   color-scheme: dark;
+
+  /* Surface token flips with the theme so a single `bg-surface` works in both
+     modes. Unlayered declarations win over the layered @theme defaults. */
+  --color-surface: var(--color-surface-dark);
+}
+
+/* Global keyboard focus indicator: one rule for the whole site instead of
+   per-component focus:outline-none + focus:ring combos. Components must not
+   re-add their own ring/outline focus styles; aria-expanded-dependent
+   styling stays in the components that own it. */
+:focus-visible {
+  outline: 2px solid var(--color-accent-600);
+  outline-offset: 2px;
+}
+
+.dark :focus-visible {
+  outline-color: var(--color-accent-400);
 }
 
 /* Prose enhancements */

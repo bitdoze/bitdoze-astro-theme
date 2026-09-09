@@ -1,74 +1,29 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import PostCard from '@components/blog/PostCard.astro';
-import Pagination from '@components/common/Pagination.astro';
-import { getPagination } from '@utils/pagination';
-import { siteConfig } from '@config/site';
-import { getPublishedPosts, sortPostsByDate } from '@utils/content';
+import ArchivePage from "@components/blog/ArchivePage.astro";
+import { siteConfig } from "@config/site";
+import { getPublishedPosts, sortPostsByDate } from "@utils/content";
+import { getPaginatedPageNumbers } from "@utils/pagination";
 
 export async function getStaticPaths() {
-  const sortedPosts = sortPostsByDate(await getPublishedPosts());
-  
-  // Calculate total pages
-  const totalPages = Math.ceil(sortedPosts.length / siteConfig.postsPerPage);
-  
-  // Generate paths for each page
-  return Array.from({ length: totalPages }).map((_, i) => {
-    const page = i + 1;
-    // Skip page 1 as it's handled by the index.astro
-    if (page === 1) return null;
-    
-    return {
-      params: { page: page.toString() },
-      props: { 
-        posts: sortedPosts,
-        page,
-        totalPosts: sortedPosts.length
-      }
-    };
-  }).filter(Boolean); // Remove null entries
+    const posts = sortPostsByDate(await getPublishedPosts());
+
+    // Page 1 lives on the index route; this sibling renders 2..totalPages.
+    return getPaginatedPageNumbers(posts.length, siteConfig.postsPerPage).map((page) => ({
+        params: { page: page.toString() },
+        props: { posts, page },
+    }));
 }
 
-const { posts, page, totalPosts } = Astro.props;
-const currentPage = Number(page);
-const basePath = '/blog';
-
-// Get pagination data
-const { startIndex, endIndex, prevUrl, nextUrl, totalPages } = getPagination({ 
-  page: currentPage, 
-  totalPosts, 
-  basePath 
-});
-
-// Get posts for the current page
-const paginatedPosts = posts.slice(startIndex, endIndex);
+const { posts, page } = Astro.props;
 ---
 
-<Layout 
-  title={`Blog - Page ${currentPage} - ${siteConfig.title}`}
-  description={`Explore our articles, tutorials, and insights - Page ${currentPage}`}
-  noindex={true}
->
-  <div class="w-full py-8">
-    <header class="mb-10">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Blog</h1>
-      <p class="text-lg text-gray-700 dark:text-gray-300">
-        Page {currentPage} of {totalPages} - Explore our articles, tutorials, and insights
-      </p>
-    </header>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {paginatedPosts.map((post) => (
-        <PostCard post={post} />
-      ))}
-    </div>
-    
-    <Pagination
-      currentPage={currentPage}
-      totalPages={totalPages}
-      prevUrl={prevUrl}
-      nextUrl={nextUrl}
-      basePath={basePath}
-    />
-  </div>
-</Layout>
+<ArchivePage
+    title={`Blog - Page ${page} - ${siteConfig.title}`}
+    description={`Explore our articles, tutorials, and insights - Page ${page}`}
+    heading="Blog"
+    subline="Explore our articles, tutorials, and insights"
+    basePath="/blog"
+    posts={posts}
+    page={page}
+    indexable={false}
+/>

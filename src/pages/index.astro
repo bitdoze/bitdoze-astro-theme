@@ -1,16 +1,41 @@
 ---
-import Hero from '@components/widgets/Hero.astro';
-import Layout from '@layouts/Layout.astro';
-import PostCard from '@components/blog/PostCard.astro';
-import PopularTopics from '@components/blog/PopularTopics.astro';
-import { siteConfig } from '@config/site';
-import { getPublishedPosts, sortPostsByDate } from '@utils/content';
+import Hero from "@components/widgets/Hero.astro";
+import Layout from "@layouts/Layout.astro";
+import PostCard from "@components/blog/PostCard.astro";
+import PopularTopics from "@components/blog/PopularTopics.astro";
+import { siteConfig } from "@config/site";
+import { getPublishedPosts, sortPostsByDate } from "@utils/content";
+import { getPostSlug, withBase } from "@utils/slug";
 
 // Get all blog posts and sort by date (newest first)
 const sortedPosts = sortPostsByDate(await getPublishedPosts());
 
-// Get the latest 6 posts for the homepage
+// Latest grid first; its posts are excluded from Popular Topics below
 const latestPosts = sortedPosts.slice(0, 6);
+const latestSlugs = latestPosts.map((post) => getPostSlug(post));
+
+const { showTaxonomyCards, showPopularTopics } = siteConfig.homepage;
+
+const exploreCards = [
+    {
+        href: "/categories/",
+        title: "Categories",
+        description: "Browse posts by topic",
+        iconPath: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
+    },
+    {
+        href: "/authors/",
+        title: "Authors",
+        description: "Meet our content creators",
+        iconPath: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+    },
+    {
+        href: "/tags/",
+        title: "Tags",
+        description: "Find content by specific topics",
+        iconPath: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z",
+    },
+];
 ---
 
 <Layout
@@ -20,73 +45,61 @@ const latestPosts = sortedPosts.slice(0, 6);
 >
   <div class="w-full py-8">
     <!-- Hero Section -->
-    <Hero /> 
-        <!-- Browse Categories Section -->
-        <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-          <div class="text-center mb-8">
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">Explore Content</h2>
-            <p class="text-lg text-gray-700 dark:text-gray-300">
-              Browse our content by category, author, or tag
-            </p>
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <a 
-              href="/categories/" 
-              class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700 text-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Categories</h3>
-              <p class="text-gray-600 dark:text-gray-400">Browse posts by topic</p>
-            </a>
-            
-            <a 
-              href="/authors/" 
-              class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700 text-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Authors</h3>
-              <p class="text-gray-600 dark:text-gray-400">Meet our content creators</p>
-            </a>
-            
-            <a 
-              href="/tags/" 
-              class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700 text-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 dark:text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-              </svg>
-              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Tags</h3>
-              <p class="text-gray-600 dark:text-gray-400">Find content by specific topics</p>
-            </a>
-          </div>
-        </section>
-    <!-- Popular Topics Section -->
-    <PopularTopics tags={["Jamstack", "astro", "ai"]} postsPerTag={5} />
-    
-    <!-- Blog Posts Section -->
-    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <Hero />
+
+    <!-- Latest Articles Section -->
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
       <div class="flex justify-between items-center mb-8">
         <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Latest Articles</h2>
-        <a href="/blog/" class="text-blue-600 dark:text-blue-400 hover:underline font-medium flex items-center">
+        <a href={withBase("/blog/")} class="text-accent-600 dark:text-accent-400 hover:underline font-medium flex items-center">
           View All
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
           </svg>
         </a>
       </div>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {latestPosts.map((post) => (
           <PostCard post={post} />
         ))}
       </div>
     </section>
-    
 
+    <!-- Explore Section (compact taxonomy row) -->
+    {showTaxonomyCards && (
+      <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Explore Content</h2>
+          <p class="text-base text-gray-600 dark:text-gray-400">
+            Browse our content by category, author, or tag
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {exploreCards.map((card) => (
+            <a
+              href={withBase(card.href)}
+              class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 text-accent-600 dark:text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={card.iconPath} />
+              </svg>
+              <div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">{card.title}</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">{card.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Popular Topics Section (deduped against the Latest grid) -->
+    {showPopularTopics && (
+      <div class="mt-16">
+        <PopularTopics tags={["Jamstack", "astro", "ai"]} postsPerTag={5} excludeSlugs={latestSlugs} />
+      </div>
+    )}
   </div>
 </Layout>

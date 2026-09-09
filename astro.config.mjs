@@ -16,6 +16,7 @@ const sitemapFilter = (page) =>
 export default defineConfig({
   // Set the site URL for production
   site: process.env.SITE_URL || 'https://www.bitdoze.com',
+  base: process.env.BASE_PATH || '/',
   
   // Configure Vite plugins and server settings
   vite: {

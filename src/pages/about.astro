@@ -1,6 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getEntry, render } from "astro:content";
+import { withBase } from "@utils/slug";
 
 const entry = await getEntry("about", "index");
 if (!entry || entry.data.draft) {
@@ -40,7 +41,7 @@ const { title, description, meta_title, image, what_i_do } = entry.data;
           </div>
           <div class="mt-8">
             <a 
-              href="/contact" 
+              href={withBase("/contact")} 
               class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300 font-medium inline-block"
             >
               Get In Touch

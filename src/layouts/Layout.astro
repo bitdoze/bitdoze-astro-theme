@@ -1,17 +1,16 @@
 ---
 import "@styles/global.css";
 import Header from "@components/common/Header.astro";
-import Footer from "@components/common/Footer.astro";
 import SEO from "@components/common/SEO.astro";
-// import faviconSVG from "@assets/favicons/favicon.svg"; // Removed import
+import { withBase } from "@utils/slug";
 import { siteConfig } from '@config/site';
-// Import favicon from public directory instead of assets
+import Footer from "@components/common/Footer.astro";
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
-  noindex?: boolean;
+  indexable?: boolean;
   wideContent?: boolean;
   article?: boolean;
   canonical?: string;
@@ -38,7 +37,7 @@ const {
   title = siteConfig.title,
   description = siteConfig.description,
   image = siteConfig.ogImage,
-  noindex = false,
+  indexable = true,
   wideContent = false,
   article = false,
   canonical,
@@ -57,13 +56,20 @@ const {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> {/* Updated path */}
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href={withBase(siteConfig.favicons.svg)} />
+    <link rel="icon" type="image/x-icon" href={withBase(siteConfig.favicons.ico)} />
+   
    
     <meta name="generator" content={Astro.generator} />
     <script is:inline>
       (() => {
-        const savedTheme = localStorage.getItem('theme');
+        let savedTheme = null;
+        try {
+          savedTheme = localStorage.getItem('theme');
+        } catch {
+          /* Storage blocked (private mode, sandboxed frame): fall through to
+             the OS preference so first paint still picks a sane theme. */
+        }
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.classList.toggle('dark', savedTheme === 'dark' || (!savedTheme && prefersDark));
       })();
@@ -82,7 +88,7 @@ const {
       description={description}
       image={image}
       article={article}
-      noindex={noindex}
+      indexable={indexable}
       canonical={canonical}
       publishDate={publishDate}
       modifiedDate={modifiedDate}
@@ -126,7 +132,12 @@ const {
 
         const isDark = !document.documentElement.classList.contains('dark');
         document.documentElement.classList.toggle('dark', isDark);
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        try {
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        } catch {
+          /* Storage blocked: the toggle still works for this page view, it
+             just won't persist across reloads. */
+        }
         syncThemeToggles();
       });
     </script>

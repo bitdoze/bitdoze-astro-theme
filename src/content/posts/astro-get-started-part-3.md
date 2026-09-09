@@ -253,32 +253,9 @@ src/content/
 
 ### View Transitions
 
-Astro supports the View Transitions API for smooth page transitions:
+This theme does not use Astro's client router (formerly `<ViewTransitions />`). It ships as a classic multi-page app: every navigation is a normal page load with full HTML, and interactivity comes from small vanilla scripts attached to individual widgets, such as the theme toggle, table of contents, search, tabs, and the click-to-load video embed.
 
-```astro
----
-// src/layouts/MainLayout.astro
-import { ViewTransitions } from 'astro:transitions';
----
-
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>My Astro Site</title>
-    <ViewTransitions />
-  </head>
-  <body>
-    <slot />
-  </body>
-</html>
-```
-
-You can customize transitions for specific elements:
-
-```astro
-<h1 transition:name="title">Page Title</h1>
-```
+That is a deliberate trade-off: there is no client-side router state to manage, and every page starts with a clean DOM, which keeps widget scripts simple. If your own project needs smooth cross-page transitions, you can add Astro's client router to your layout — just review every widget script's initialization and teardown when you do, because handlers written for full page loads also need to run again after client-side navigations.
 
 ### Authentication
 

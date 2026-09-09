@@ -1,99 +1,66 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import PostCard from '@components/blog/PostCard.astro';
-import Pagination from '@components/common/Pagination.astro';
-import { getPagination } from '@utils/pagination';
-import { siteConfig } from '@config/site';
-import { slugify } from '@utils/slug';
-import { getPublishedPosts, sortPostsByDate } from '@utils/content';
+import ArchivePage from "@components/blog/ArchivePage.astro";
+import { siteConfig } from "@config/site";
+import { entryIdToSlug, slugify } from "@utils/slug";
+import { getPublishedAuthors, getPublishedPosts, sortPostsByDate } from "@utils/content";
+import { resolveAuthor, warnUnknownAuthor } from "@utils/authors";
+import { getPaginatedPageNumbers } from "@utils/pagination";
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  
-  // Get all unique authors
-  const authors = [...new Set(posts.flatMap(post => post.data.authors || []))];
-  
-  // Create paths for each author and its pages
-  return authors.flatMap(author => {
-    // Filter posts by author
-    const authorPosts = sortPostsByDate(posts.filter(post =>
-      post.data.authors && post.data.authors.includes(author)
-    ));
-    
-    // Generate pages for this author
-    const totalPages = Math.ceil(authorPosts.length / siteConfig.postsPerPage);
-    
-    return Array.from({ length: totalPages }).map((_, i) => {
-      const page = i + 1;
-      // Skip page 1 as it's handled by the index.astro
-      if (page === 1) return null;
-      
-      return {
-        params: { 
-          author: slugify(author),
-          page: page.toString()
-        },
-        props: { 
-          author,
-          posts: authorPosts,
-          page,
-          count: authorPosts.length
+    const posts = await getPublishedPosts();
+
+    // Get all author content
+    const authorEntries = await getPublishedAuthors();
+
+    // Get all unique authors referenced by posts
+    const authors = [...new Set(posts.flatMap((post) => post.data.authors || []))];
+
+    return authors.flatMap((author) => {
+        // Resolve by entry id; unknown references warn and skip like the index route
+        const authorDetails = resolveAuthor(author, authorEntries);
+        if (!authorDetails) {
+            warnUnknownAuthor(author);
+            return [];
         }
-      };
-    }).filter(Boolean); // Remove null entries
-  });
+
+        // Filter posts by author
+        const authorPosts = sortPostsByDate(
+            posts.filter((post) => post.data.authors && post.data.authors.includes(author))
+        );
+
+        const authorSlug = slugify(entryIdToSlug(authorDetails));
+
+        // Page 1 lives on the index route; this sibling renders 2..totalPages.
+        return getPaginatedPageNumbers(authorPosts.length, siteConfig.postsPerPage).map((page) => ({
+            params: {
+                author: authorSlug,
+                page: page.toString(),
+            },
+            props: {
+                author,
+                authorDetails,
+                slug: authorSlug,
+                posts: authorPosts,
+                page,
+            },
+        }));
+    });
 }
 
-const { author, posts, page, count } = Astro.props;
-const currentPage = Number(page);
-const basePath = `/authors/${slugify(author)}`;
+const { author, authorDetails, slug, posts, page } = Astro.props;
 
-// Get pagination data
-const { startIndex, endIndex, prevUrl, nextUrl, totalPages } = getPagination({ 
-  page: currentPage, 
-  totalPosts: count, 
-  basePath 
-});
-
-// Get posts for the current page
-const paginatedPosts = posts.slice(startIndex, endIndex);
-
-// Set noindex based on site config
-const noindex = siteConfig.noindex.authors;
-
-// Format the author name for display
-const formattedAuthor = author.split(' ').map(word => 
-  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-).join(' ');
+// Display the resolved entry title; frontmatter references are entry ids, not names
+const displayName = authorDetails ? authorDetails.data.title : author;
 ---
 
-<Layout 
-  title={`Posts by ${formattedAuthor} - Page ${currentPage} - ${siteConfig.title}`}
-  description={`Browse posts written by ${formattedAuthor} - Page ${currentPage}`}
-  noindex={noindex}
->
-  <div class="w-full py-8">
-    <header class="mb-10">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        Author: {formattedAuthor}
-      </h1>
-      <p class="text-lg text-gray-700 dark:text-gray-300">
-        Page {currentPage} of {totalPages} - {count} {count === 1 ? 'post' : 'posts'} by this author
-      </p>
-    </header>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {paginatedPosts.map((post) => (
-        <PostCard post={post} />
-      ))}
-    </div>
-    
-    <Pagination
-      currentPage={currentPage}
-      totalPages={totalPages}
-      prevUrl={prevUrl}
-      nextUrl={nextUrl}
-      basePath={basePath}
-    />
-  </div>
-</Layout>
+<ArchivePage
+    title={`Posts by ${displayName} - Page ${page} - ${siteConfig.title}`}
+    description={`Browse posts written by ${displayName} - Page ${page}`}
+    heading={`Author: ${displayName}`}
+    subline={`${posts.length} ${posts.length === 1 ? "post" : "posts"} by this author`}
+    basePath={`/authors/${slug}`}
+    posts={posts}
+    page={page}
+    indexable={false}
+    emptyMessage="No posts found by this author."
+/>

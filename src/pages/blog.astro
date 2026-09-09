@@ -1,49 +1,18 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import PostCard from '@components/blog/PostCard.astro';
-import Pagination from '@components/common/Pagination.astro';
-import { getPagination } from '@utils/pagination';
-import { siteConfig } from '@config/site';
-import { getPublishedPosts, sortPostsByDate } from '@utils/content';
+import ArchivePage from "@components/blog/ArchivePage.astro";
+import { siteConfig } from "@config/site";
+import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 
-// Get all blog posts and sort by date (newest first)
-const sortedPosts = sortPostsByDate(await getPublishedPosts());
-
-// Get pagination data for first page
-const { postsPerPage } = getPagination({ 
-  page: 1, 
-  totalPosts: sortedPosts.length, 
-  basePath: '/blog' 
-});
-
-// Get posts for the first page
-const paginatedPosts = sortedPosts.slice(0, postsPerPage);
+const posts = sortPostsByDate(await getPublishedPosts());
 ---
 
-<Layout
-  title={`Blog - ${siteConfig.title}`}
-  description="Explore our latest articles, tutorials, and insights"
->
-  <div class="w-full py-8">
-    <header class="mb-10">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Blog</h1>
-      <p class="text-lg text-gray-700 dark:text-gray-300">
-        Explore our latest articles, tutorials, and insights
-      </p>
-    </header>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {paginatedPosts.map((post) => (
-        <PostCard post={post} />
-      ))}
-    </div>
-    
-    <Pagination
-      currentPage={1}
-      totalPages={Math.ceil(sortedPosts.length / postsPerPage)}
-      prevUrl={null}
-      nextUrl={sortedPosts.length > postsPerPage ? `/blog/page/2/` : null}
-      basePath="/blog"
-    />
-  </div>
-</Layout>
+<ArchivePage
+    title={`Blog - ${siteConfig.title}`}
+    description="Explore our latest articles, tutorials, and insights"
+    heading="Blog"
+    subline="Explore our latest articles, tutorials, and insights"
+    basePath="/blog"
+    posts={posts}
+    page={1}
+    indexable={true}
+/>

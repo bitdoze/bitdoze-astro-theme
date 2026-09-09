@@ -1,97 +1,53 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import PostCard from '@components/blog/PostCard.astro';
-import Pagination from '@components/common/Pagination.astro';
-import { getPagination } from '@utils/pagination';
-import { siteConfig } from '@config/site';
-import { slugify } from '@utils/slug';
-import { getPublishedPosts, sortPostsByDate } from '@utils/content';
+import ArchivePage from "@components/blog/ArchivePage.astro";
+import { siteConfig } from "@config/site";
+import { normalizeTaxonomy, taxonomySlug } from "@utils/slug";
+import { getPublishedPosts, sortPostsByDate } from "@utils/content";
+import { getPaginatedPageNumbers } from "@utils/pagination";
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  
-  // Get all unique categories
-  const categories = [...new Set(posts.flatMap(post => post.data.categories || []))];
-  
-  // Create paths for each category and its pages
-  return categories.flatMap(category => {
-    // Filter posts by category
-    const categoryPosts = sortPostsByDate(posts.filter(post =>
-      post.data.categories && post.data.categories.includes(category)
-    ));
-    
-    // Generate pages for this category
-    const totalPages = Math.ceil(categoryPosts.length / siteConfig.postsPerPage);
-    
-    return Array.from({ length: totalPages }).map((_, i) => {
-      const page = i + 1;
-      // Skip page 1 as it's handled by the index.astro
-      if (page === 1) return null;
-      
-      return {
-        params: { 
-          category: slugify(category),
-          page: page.toString()
-        },
-        props: { 
-          category,
-          posts: categoryPosts,
-          page,
-          count: categoryPosts.length
-        }
-      };
-    }).filter(Boolean); // Remove null entries
-  });
+    const posts = await getPublishedPosts();
+
+    // Group by normalized taxonomy identity so case/punctuation variants
+    // ("Tutorials" vs "tutorials") share one route and one post set; the
+    // first raw label is kept for display.
+    const categories = normalizeTaxonomy(posts.flatMap((post) => post.data.categories || []));
+
+    return categories.flatMap(({ slug, label }) => {
+        const categoryPosts = sortPostsByDate(
+            posts.filter((post) =>
+                (post.data.categories || []).some((category) => taxonomySlug(category) === slug)
+            )
+        );
+
+        // Page 1 lives on the index route; this sibling renders 2..totalPages.
+        return getPaginatedPageNumbers(categoryPosts.length, siteConfig.postsPerPage).map((page) => ({
+            params: {
+                category: slug,
+                page: page.toString(),
+            },
+            props: {
+                category: label,
+                slug,
+                posts: categoryPosts,
+                page,
+            },
+        }));
+    });
 }
 
-const { category, posts, page, count } = Astro.props;
-const currentPage = Number(page);
-const basePath = `/categories/${slugify(category)}`;
-
-// Get pagination data
-const { startIndex, endIndex, prevUrl, nextUrl, totalPages } = getPagination({ 
-  page: currentPage, 
-  totalPosts: count, 
-  basePath 
-});
-
-// Get posts for the current page
-const paginatedPosts = posts.slice(startIndex, endIndex);
-
-// Set noindex based on site config
-const noindex = siteConfig.noindex.categories;
-
-// Format the category name for display
+const { category, slug, posts, page } = Astro.props;
 const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
 ---
 
-<Layout 
-  title={`${formattedCategory} - Page ${currentPage} - ${siteConfig.title}`}
-  description={`Browse posts in the ${formattedCategory} category - Page ${currentPage}`}
-  noindex={noindex}
->
-  <div class="w-full py-8">
-    <header class="mb-10">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        Category: {formattedCategory}
-      </h1>
-      <p class="text-lg text-gray-700 dark:text-gray-300">
-        Page {currentPage} of {totalPages} - {count} {count === 1 ? 'post' : 'posts'} in this category
-      </p>
-    </header>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {paginatedPosts.map((post) => (
-        <PostCard post={post} />
-      ))}
-    </div>
-    
-    <Pagination
-      currentPage={currentPage}
-      totalPages={totalPages}
-      prevUrl={prevUrl}
-      nextUrl={nextUrl}
-      basePath={basePath}
-    />
-  </div>
-</Layout>
+<ArchivePage
+    title={`${formattedCategory} - Page ${page} - ${siteConfig.title}`}
+    description={`Browse posts in the ${formattedCategory} category - Page ${page}`}
+    heading={`Category: ${formattedCategory}`}
+    subline={`${posts.length} ${posts.length === 1 ? "post" : "posts"} in this category`}
+    basePath={`/categories/${slug}`}
+    posts={posts}
+    page={page}
+    indexable={false}
+    emptyMessage="No posts found in this category."
+/>

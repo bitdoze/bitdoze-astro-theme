@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import { withBase } from '@utils/slug';
 
 interface BreadcrumbItem {
   name: string;
@@ -25,7 +26,7 @@ const { items, className = "" } = Astro.props;
           <span class="text-gray-700 dark:text-gray-300" aria-current="page">{item.name}</span>
         ) : (
           <a 
-            href={item.url} 
+            href={withBase(item.url)}
             class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200"
           >
             {item.name}

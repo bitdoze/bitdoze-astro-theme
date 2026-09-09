@@ -1,12 +1,14 @@
 ---
 import { siteConfig } from '@config/site';
+import { safeJsonLd } from '@utils/serialize';
+import { withBase } from '@utils/slug';
 
 export interface Props {
   title?: string;
   description?: string;
   image?: string;
   article?: boolean;
-  noindex?: boolean;
+  indexable?: boolean;
   canonical?: string;
   publishDate?: Date;
   modifiedDate?: Date;
@@ -34,32 +36,16 @@ const {
   description = siteConfig.description,
   image = siteConfig.ogImage, // Updated from siteConfig.defaultImage
   article = false,
-  noindex = false,
+  indexable = true,
   canonical = Astro.url.pathname,
   publishDate,
   modifiedDate,
   author,
   tags,
-  categories
+  categories,
+  breadcrumbs,
+  video
 } = Astro.props;
-
-// Determine if we should add noindex based on site config and page type
-let shouldNoindex = noindex;
-
-// Check if this is a tag, category, or search page that should be noindexed
-const isTags = Astro.url.pathname.includes('/tags/');
-const isCategories = Astro.url.pathname.includes('/categories/');
-const isSearch = Astro.url.pathname.includes('/search');
-const isPagination = Astro.url.pathname.includes('/page/');
-
-if (
-  (isTags && siteConfig.noindex.tags) ||
-  (isCategories && siteConfig.noindex.categories) ||
-  isSearch ||
-  isPagination
-) {
-  shouldNoindex = true;
-}
 
 // Format dates for schema
 const publishISODate = publishDate ? new Date(publishDate).toISOString() : null;
@@ -100,28 +86,28 @@ const websiteSchema = {
 };
 
 // BreadcrumbList schema
-const breadcrumbsSchema = Astro.props.breadcrumbs ? {
+const breadcrumbsSchema = breadcrumbs ? {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
-  "itemListElement": Astro.props.breadcrumbs.map((item, index) => ({
+  "itemListElement": breadcrumbs.map((item, index) => ({
     "@type": "ListItem",
     "position": index + 1,
     "name": item.name,
-    "item": safeUrl(item.url, Astro.site) // Use Astro.site
+    "item": safeUrl(withBase(item.url), Astro.site) // Root-relative items carry the deploy base
   }))
 } : null;
 
 // VideoObject schema for pages with embedded videos
-const videoSchema = Astro.props.video ? {
+const videoSchema = video ? {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": Astro.props.video.name || title,
-  "description": Astro.props.video.description || description,
-  "thumbnailUrl": Astro.props.video.thumbnailUrl || image,
-  "uploadDate": Astro.props.video.uploadDate ? new Date(Astro.props.video.uploadDate).toISOString() : publishISODate,
-  "duration": Astro.props.video.duration || "PT0M0S",
-  "contentUrl": Astro.props.video.src,
-  "embedUrl": Astro.props.video.src
+  "name": video.name || title,
+  "description": video.description || description,
+  "thumbnailUrl": video.thumbnailUrl || image,
+  "uploadDate": video.uploadDate ? new Date(video.uploadDate).toISOString() : publishISODate,
+  "duration": video.duration || "PT0M0S",
+  "contentUrl": video.src,
+  "embedUrl": video.src
 } : null;
 
 // Article schema (for blog posts)
@@ -144,7 +130,7 @@ if (article && publishISODate) {
       "name": siteConfig.title, // Updated from siteConfig.name
       "logo": {
         "@type": "ImageObject",
-        "url": safeUrl("/favicon.svg", Astro.site) // Use Astro.site
+        "url": safeUrl(withBase("/favicon.svg"), Astro.site) // Internal asset; carries the deploy base
       }
     },
     "mainEntityOfPage": {
@@ -155,7 +141,7 @@ if (article && publishISODate) {
     "articleSection": categories?.[0],
     "inLanguage": siteConfig.lang
   };
-} else if (Astro.props.video) {
+} else if (video) {
   schema = videoSchema;
 } else {
   schema = websiteSchema;
@@ -187,11 +173,14 @@ try {
   // Astro.site should be defined.
   const baseSiteForOgImage = Astro.site ? Astro.site.toString() : '';
   try {
-    return new URL(image, baseSiteForOgImage).toString();
+    return new URL(withBase(image), baseSiteForOgImage).toString();
   } catch (e) {
     return `${baseSiteForOgImage.replace(/\/$/, '')}/${image.replace(/^\//, '')}`;
   }
 })()} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:image:alt" content={title} />
 <meta property="og:site_name" content={siteConfig.title} />
 <meta property="og:locale" content={siteConfig.locale} />
@@ -217,32 +206,31 @@ try {
   // Astro.site should be defined.
   const baseSiteForTwitterImage = Astro.site ? Astro.site.toString() : '';
   try {
-    return new URL(image, baseSiteForTwitterImage).toString();
+    return new URL(withBase(image), baseSiteForTwitterImage).toString();
   } catch (e) {
     return `${baseSiteForTwitterImage.replace(/\/$/, '')}/${image.replace(/^\//, '')}`;
   }
 })()} />
 
 <!-- Robots Meta -->
-{shouldNoindex ? (
-  <meta name="robots" content="noindex, follow" />
-) : (
-  <meta name="robots" content="index, follow" />
-)}
+<meta name="robots" content={indexable ? "index, follow" : "noindex, follow"} />
 
 <!-- RSS Feed autodiscovery -->
-<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} RSS Feed`} href="/rss.xml" />
-<link rel="feed" type="application/rss+xml" title={`${siteConfig.title} RSS Feed`} href="/rss.xml" /> 
+<link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} RSS Feed`} href={withBase("/rss.xml")} />
+<link rel="feed" type="application/rss+xml" title={`${siteConfig.title} RSS Feed`} href={withBase("/rss.xml")} />
 
 <!-- Schema.org JSON-LD -->
-<script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+<!-- safeJsonLd escapes `<`, U+2028/U+2029 for the <script> context. Trust boundary:
+     repository MDX/config are trusted build input; this defends against markup-breaking
+     content, not hostile authors. -->
+<script is:inline type="application/ld+json" set:html={safeJsonLd(schema)} />
 
 <!-- BreadcrumbList Schema (if breadcrumbs are provided) -->
 {breadcrumbsSchema && (
-  <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbsSchema)} />
+  <script is:inline type="application/ld+json" set:html={safeJsonLd(breadcrumbsSchema)} />
 )}
 
 <!-- VideoObject Schema (if video is provided) -->
 {videoSchema && article && (
-  <script is:inline type="application/ld+json" set:html={JSON.stringify(videoSchema)} />
+  <script is:inline type="application/ld+json" set:html={safeJsonLd(videoSchema)} />
 )}

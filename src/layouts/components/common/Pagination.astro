@@ -1,4 +1,6 @@
 ---
+import { withBase } from "@utils/slug";
+
 // Props for the pagination component
 interface Props {
   currentPage: number;
@@ -45,12 +47,13 @@ const pageNumbers = () => {
   return pages;
 };
 
-// Generate the URL for a specific page
+// Generate the URL for a specific page (prevUrl/nextUrl arrive already
+// base-aware from getPagination(); this covers the numbered page links).
 const getPageUrl = (pageNum: number) => {
   if (pageNum === 1) {
-    return basePath;
+    return withBase(basePath);
   }
-  return `${basePath}${basePath.endsWith('/') ? '' : '/'}page/${pageNum}/`;
+  return withBase(`${basePath}${basePath.endsWith('/') ? '' : '/'}page/${pageNum}/`);
 };
 ---
 

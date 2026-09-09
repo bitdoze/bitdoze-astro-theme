@@ -11,8 +11,10 @@ const postsCollection = defineCollection({
       meta_title: z.string().optional(),
       description: z.string().min(1),
       date: z.coerce.date(),
-      image: image(),
+      image: z.optional(image()),
       imageAlt: z.string().optional(),
+      imageFit: z.enum(["cover", "contain"]).default("cover"),
+      video: z.url().optional(),
       authors: z.array(z.string()).min(1),
       categories: z.array(z.string()).default([]),
       tags: z.array(z.string()).default([]),
@@ -33,7 +35,13 @@ const authorsCollection = defineCollection({
     id: z.string().optional(),
     title: z.string(),
     meta_title: z.string().optional(),
-    image: z.string().optional(),
+    image: z
+      .string()
+      .optional()
+      .refine((value) => value === undefined || value.startsWith("/"), {
+        message:
+          "Author image must be a public asset path starting with '/' (e.g. /images/authors/dragos.webp), not a relative source path.",
+      }),
     description: z.string().optional(),
     social: z
       .object({

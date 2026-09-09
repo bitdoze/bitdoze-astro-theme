@@ -21,3 +21,9 @@ export function sortPostsByDate(posts: PostEntry[]): PostEntry[] {
     (a, b) => b.data.date.getTime() - a.data.date.getTime(),
   );
 }
+
+// Latest posts for widgets (e.g. the footer): sort + slice in one place so
+// consumers never re-implement the ordering.
+export async function getLatestPosts(count: number, now = new Date()): Promise<PostEntry[]> {
+  return sortPostsByDate(await getPublishedPosts(now)).slice(0, count);
+}

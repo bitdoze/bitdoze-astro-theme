@@ -1,88 +1,47 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import PostCard from '@components/blog/PostCard.astro';
-import Pagination from '@components/common/Pagination.astro';
-import { getPagination } from '@utils/pagination';
-import { siteConfig } from '@config/site';
-import { slugify } from '@utils/slug';
-import { getPublishedPosts, sortPostsByDate } from '@utils/content';
+import ArchivePage from "@components/blog/ArchivePage.astro";
+import { siteConfig } from "@config/site";
+import { normalizeTaxonomy, taxonomySlug } from "@utils/slug";
+import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 
 export async function getStaticPaths() {
-  const posts = await getPublishedPosts();
-  
-  // Get all unique tags
-  const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
-  
-  return tags.map(tag => {
-    // Filter posts by tag
-    const tagPosts = sortPostsByDate(posts.filter(post =>
-      post.data.tags && post.data.tags.includes(tag)
-    ));
-    
-    return {
-      params: { tag: slugify(tag) },
-      props: { 
-        tag,
-        posts: tagPosts,
-        count: tagPosts.length
-      }
-    };
-  });
+    const posts = await getPublishedPosts();
+
+    // Group by normalized taxonomy identity so case/punctuation variants
+    // ("Astro" vs "astro") share one route and one post set; the first raw
+    // label is kept for display.
+    const tags = normalizeTaxonomy(posts.flatMap((post) => post.data.tags || []));
+
+    return tags.map(({ slug, label }) => {
+        const tagPosts = sortPostsByDate(
+            posts.filter((post) =>
+                (post.data.tags || []).some((tag) => taxonomySlug(tag) === slug)
+            )
+        );
+
+        return {
+            params: { tag: slug },
+            props: {
+                tag: label,
+                slug,
+                posts: tagPosts,
+            },
+        };
+    });
 }
 
-const { tag, posts, count } = Astro.props;
-const basePath = `/tags/${slugify(tag)}`;
-
-// Get pagination data for first page
-const { postsPerPage } = getPagination({ 
-  page: 1, 
-  totalPosts: count, 
-  basePath 
-});
-
-// Get posts for the first page
-const paginatedPosts = posts.slice(0, postsPerPage);
-
-// Set noindex based on site config
-const noindex = siteConfig.noindex.tags;
-
-// Format the tag name for display
+const { tag, slug, posts } = Astro.props;
 const formattedTag = tag.charAt(0).toUpperCase() + tag.slice(1);
 ---
 
-<Layout 
-  title={`Posts tagged with ${formattedTag} - ${siteConfig.title}`}
-  description={`Browse all posts tagged with ${formattedTag}`}
-  noindex={noindex}
->
-  <div class="w-full py-8">
-    <header class="mb-10">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        Tag: #{formattedTag}
-      </h1>
-      <p class="text-lg text-gray-700 dark:text-gray-300">
-        {count} {count === 1 ? 'post' : 'posts'} with this tag
-      </p>
-    </header>
-    
-    {count > 0 ? (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {paginatedPosts.map((post) => (
-          <PostCard post={post} />
-        ))}
-      </div>
-    ) : (
-      <div class="text-center py-12">
-        <p class="text-gray-600 dark:text-gray-400">No posts found with this tag.</p>
-      </div>
-    )}
-    
-    <Pagination
-      currentPage={1}
-      totalPages={Math.ceil(count / postsPerPage)}
-      prevUrl={null}
-      nextUrl={count > postsPerPage ? `${basePath}/page/2/` : null}
-      basePath={basePath}
-    />
-  </div>
-</Layout>
+<ArchivePage
+    title={`Posts tagged with ${formattedTag} - ${siteConfig.title}`}
+    description={`Browse all posts tagged with ${formattedTag}`}
+    heading={`Tag: #${formattedTag}`}
+    subline={`${posts.length} ${posts.length === 1 ? "post" : "posts"} with this tag`}
+    basePath={`/tags/${slug}`}
+    posts={posts}
+    page={1}
+    indexable={!siteConfig.noindex.tags}
+    emptyMessage="No posts found with this tag."
+/>

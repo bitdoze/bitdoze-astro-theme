@@ -1,6 +1,10 @@
 ---
-// This component exports all widget components to be used in MDX files
-// It will be imported in the MDX layout to make all components available without explicit imports
+// This component exports all widget components to be used in MDX files.
+// It is imported in the MDX layout to make every widget available without
+// explicit imports. The exported interfaces document each widget's contract
+// for MDX authors; in MDX, boolean props must be passed with braces
+// (expanded={true}), because expanded="true" would hand the component the
+// string "true".
 
 // Import all widget components
 import Accordion from './widgets/Accordion.astro';
@@ -11,6 +15,70 @@ import Tab from './widgets/Tab.astro';
 import Tabs from './widgets/Tabs.astro';
 import YouTubeEmbed from './widgets/YouTubeEmbed.astro';
 import SeriesWidget from './widgets/SeriesWidget.astro';
+
+/** Collapsible section. Items sharing a `group` behave exclusively: opening one closes the others. */
+export interface AccordionProps {
+    label: string;
+    group?: string;
+    /** Initial open state. Pass a real boolean in MDX: expanded={true}. */
+    expanded?: boolean;
+}
+
+/** Link (or button) with color/size/icon variants. Falls back to a <button> when no usable link is given. */
+export interface ButtonProps {
+    text?: string;
+    link?: string;
+    /** Legacy aliases for `text` / `link`. */
+    label?: string;
+    url?: string;
+    variant?: 'solid' | 'outline';
+    color?: 'blue' | 'green' | 'red' | 'purple' | 'gray';
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    external?: boolean;
+    /** Iconify name without the mdi: prefix (e.g. "rocket"). */
+    icon?: string;
+    iconPosition?: 'left' | 'right';
+    /** Renders only the icon; announce it via `ariaLabel` (falls back to `text`). */
+    iconOnly?: boolean;
+    ariaLabel?: string;
+}
+
+/** Wraps a <ul> whose items render with circular check bullets. Slot: <ul><li>…</li></ul>. */
+export interface ListCheckProps {}
+
+/** Callout box. Slot: body content. */
+export interface NoticeProps {
+    type?: 'info' | 'success' | 'warning' | 'error';
+    title?: string;
+}
+
+/** One panel inside <Tabs>. Slot: panel content. */
+export interface TabProps {
+    name: string;
+}
+
+/** Client-side tab group. Slot: two or more <Tab name="…"> panels; the first is active by default. */
+export interface TabsProps {}
+
+/**
+ * Click-to-load YouTube facade. Accepts watch/youtu.be/embed/shorts URLs or a
+ * bare 11-char video ID; a `t`/`start` query param becomes the embed start
+ * offset. Invalid input renders nothing. The pre-play thumbnail is a single
+ * remote request to img.youtube.com (privacy boundary documented in the
+ * component).
+ */
+export interface YouTubeEmbedProps {
+    url: string;
+    /** Accessible label; also used as the iframe title once playing. */
+    label: string;
+}
+
+/** Series navigator. `currentSlug` defaults to the current page path; MDX authors normally omit it. */
+export interface SeriesWidgetProps {
+    currentSlug?: string;
+    seriesName: string;
+    seriesPosition: number;
+}
 
 // Export all components to make them available in MDX
 export { Accordion, Button, ListCheck, Notice, Tab, Tabs, YouTubeEmbed, SeriesWidget };

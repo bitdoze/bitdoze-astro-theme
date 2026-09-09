@@ -1,17 +1,19 @@
 ---
 import Layout from '@layouts/Layout.astro';
 import { siteConfig } from '@config/site';
+
+const blogUrl = import.meta.env.BASE_URL + 'blog/';
 ---
 
 <Layout
   title={"Search - " + siteConfig.title}
   description={"Search for articles and tutorials on " + siteConfig.title}
-  noindex={true}
+  indexable={false}
 >
   <div class="max-w-4xl mx-auto py-8">
     <h1 class="text-3xl font-bold mb-8 text-center">Search</h1>
 
-    <form id="search-form" class="mb-8" role="search" action="/search/" method="get">
+    <form id="search-form" class="mb-8" role="search" action={import.meta.env.BASE_URL + "search/"} method="get">
       <label for="search-input" class="sr-only">Search articles</label>
       <div class="relative">
         <input
@@ -19,7 +21,7 @@ import { siteConfig } from '@config/site';
           id="search-input"
           name="q"
           placeholder="Search for articles..."
-          class="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          class="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           autocomplete="off"
           enterkeyhint="search"
         />
@@ -27,11 +29,18 @@ import { siteConfig } from '@config/site';
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </div>
+      <noscript>
+        <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
+          Browsing search results requires JavaScript. <a class="text-accent-600 dark:text-accent-400 underline hover:text-accent-500" href={blogUrl}>Browse all posts</a> instead.
+        </p>
+      </noscript>
     </form>
 
     <p id="search-info" class="text-center mb-6 text-gray-600 dark:text-gray-300 text-lg" role="status" aria-live="polite"></p>
 
     <div id="search-results" class="grid grid-cols-1 md:grid-cols-2 gap-6" aria-busy="false"></div>
+
+    <p id="search-truncated" class="hidden mt-6 text-center text-sm text-gray-500 dark:text-gray-400"></p>
 
     <div id="no-results" class="hidden text-center py-8">
       <p class="text-lg text-gray-600 dark:text-gray-300">No results found. Try a different search term.</p>
@@ -113,7 +122,7 @@ import { siteConfig } from '@config/site';
     heading.className = 'text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2';
     const titleLink = document.createElement('a');
     titleLink.href = postUrl;
-    titleLink.className = 'hover:text-blue-600 dark:hover:text-blue-400 transition-colors';
+    titleLink.className = 'hover:text-accent-600 dark:hover:text-accent-400 transition-colors';
     titleLink.textContent = post.title;
     heading.appendChild(titleLink);
 
@@ -132,7 +141,7 @@ import { siteConfig } from '@config/site';
       post.tags.slice(0, 3).forEach((tag) => {
         const link = document.createElement('a');
         link.href = import.meta.env.BASE_URL + 'tags/' + slugify(tag) + '/';
-        link.className = 'px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors';
+        link.className = 'px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-accent-100 dark:hover:bg-accent-900 transition-colors';
         link.textContent = '#' + tag;
         tags.appendChild(link);
       });
@@ -149,45 +158,60 @@ import { siteConfig } from '@config/site';
     const searchResults = document.querySelector<HTMLElement>('#search-results');
     const noResults = document.querySelector<HTMLElement>('#no-results');
     const searchInfo = document.querySelector<HTMLElement>('#search-info');
-    if (!form || !searchInput || !searchResults || !noResults || !searchInfo) return;
+    const truncated = document.querySelector<HTMLElement>('#search-truncated');
+    if (!form || !searchInput || !searchResults || !noResults || !searchInfo || !truncated) return;
 
-    let fuse: Fuse<SearchPost> | null = null;
+    let loadPromise: Promise<Fuse<SearchPost>> | null = null;
     let debounceTimer: number | undefined;
+    let searchSequence = 0;
 
-    const loadIndex = async () => {
-      if (fuse) return fuse;
+    const loadIndex = () => {
+      if (loadPromise) return loadPromise;
       searchResults.setAttribute('aria-busy', 'true');
       searchInfo.textContent = 'Loading search index…';
 
-      const response = await fetch(import.meta.env.BASE_URL + 'search.json');
-      if (!response.ok) throw new Error('Failed to fetch search data');
-      const searchData = await response.json() as SearchPost[];
-      fuse = new Fuse(searchData, {
-        keys: [
-          { name: 'title', weight: 0.4 },
-          { name: 'tags', weight: 0.2 },
-          { name: 'categories', weight: 0.15 },
-          { name: 'description', weight: 0.15 },
-          { name: 'content', weight: 0.1 },
-        ],
-        minMatchCharLength: 2,
-        ignoreLocation: true,
-        threshold: 0.32,
+      loadPromise = (async () => {
+        const response = await fetch(import.meta.env.BASE_URL + 'search.json');
+        if (!response.ok) throw new Error('Failed to fetch search data');
+        const searchData = await response.json() as SearchPost[];
+        return new Fuse(searchData, {
+          keys: [
+            { name: 'title', weight: 0.4 },
+            { name: 'tags', weight: 0.2 },
+            { name: 'categories', weight: 0.15 },
+            { name: 'description', weight: 0.15 },
+            { name: 'content', weight: 0.1 },
+          ],
+          minMatchCharLength: 2,
+          ignoreLocation: true,
+          threshold: 0.32,
+        });
+      })();
+      const settled = () => {
+        searchResults.setAttribute('aria-busy', 'false');
+        searchInfo.textContent = '';
+      };
+      loadPromise.then(settled, () => {
+        loadPromise = null; // allow a retry after a failed load
+        settled();
       });
-      searchResults.setAttribute('aria-busy', 'false');
-      searchInfo.textContent = '';
-      return fuse;
+      return loadPromise;
     };
 
-    const performSearch = async (rawQuery: string) => {
+    const performSearch = async (rawQuery: string, syncUrl = true) => {
       const query = rawQuery.trim();
-      const url = new URL(window.location.href);
-      if (query) url.searchParams.set('q', query);
-      else url.searchParams.delete('q');
-      history.replaceState(null, '', url);
+      const sequence = ++searchSequence;
+
+      if (syncUrl) {
+        const url = new URL(window.location.href);
+        if (query) url.searchParams.set('q', query);
+        else url.searchParams.delete('q');
+        history.replaceState(null, '', url);
+      }
 
       searchResults.replaceChildren();
       noResults.classList.add('hidden');
+      truncated.classList.add('hidden');
       if (!query) {
         searchInfo.textContent = '';
         return;
@@ -195,15 +219,22 @@ import { siteConfig } from '@config/site';
 
       try {
         const index = await loadIndex();
-        const results = index.search(query).slice(0, MAX_RESULTS);
+        if (sequence !== searchSequence) return;
+        const allResults = index.search(query);
+        const totalResults = allResults.length;
+        const results = allResults.slice(0, MAX_RESULTS);
         results.forEach((result) => searchResults.appendChild(createResultCard(result.item)));
-        noResults.classList.toggle('hidden', results.length !== 0);
-        searchInfo.textContent = results.length
-          ? 'Found ' + results.length + ' result' + (results.length === 1 ? '' : 's') + ' for “' + query + '”'
+        noResults.classList.toggle('hidden', totalResults !== 0);
+        searchInfo.textContent = totalResults
+          ? 'Found ' + totalResults + ' result' + (totalResults === 1 ? '' : 's') + ' for “' + query + '”'
           : 'No results found for “' + query + '”';
+        if (totalResults > MAX_RESULTS) {
+          truncated.textContent = 'Showing ' + results.length + ' of ' + totalResults + ' results for “' + query + '”.';
+          truncated.classList.remove('hidden');
+        }
       } catch (error) {
+        if (sequence !== searchSequence) return;
         console.error('Error loading search data:', error);
-        searchResults.setAttribute('aria-busy', 'false');
         searchInfo.textContent = 'Search is unavailable right now. Please try again later.';
       }
     };
@@ -216,6 +247,13 @@ import { siteConfig } from '@config/site';
     searchInput.addEventListener('input', () => {
       window.clearTimeout(debounceTimer);
       debounceTimer = window.setTimeout(() => void performSearch(searchInput.value), 250);
+    });
+
+    window.addEventListener('popstate', () => {
+      window.clearTimeout(debounceTimer);
+      const query = new URLSearchParams(window.location.search).get('q') || '';
+      searchInput.value = query;
+      void performSearch(query, false);
     });
 
     const initialQuery = new URLSearchParams(window.location.search).get('q') || '';

@@ -22,3 +22,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# workspace / maintainer artifacts
+.claude/
+temp_vision_images/
+skills-lock.json
