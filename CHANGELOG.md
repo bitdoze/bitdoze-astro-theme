@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-09-10
+
+A focused follow-up to 1.3.0: single-row card metadata, a tighter homepage structure, and a modern footer. No routing or content contracts changed.
+
+### Fixed
+
+- Post card metadata is now one text-first row (author · category, date pinned right) with a compact date format ("Aug 4, 2026"); long author names or categories truncate with a `title` tooltip instead of wrapping to a second row.
+
+### Changed
+
+- Homepage structure: Popular Topics moved directly below Featured Posts, and every homepage section now shares one left-aligned header style (`SectionHeader.astro`) with optional actions ("View all posts", "Browse series").
+- Homepage rhythm: the hero and Learning paths now use the same full-width tinted band as Popular Topics, so the page alternates between white and tinted sections and the footer continues the band surface.
+- Footer redesigned: tinted surface with a clearer column hierarchy, circular social buttons, larger post thumbnails, and a bottom bar with RSS and Back to top; the copyright now uses the brand name.
+
 ## [1.3.0] - 2026-09-10
 
 A design-identity pass based on the 2026-09-10 design critique, plus expanded demo content, a Featured Posts section, and a brand-anchored accent ramp. Routing contracts are unchanged; the content schema gains one optional field (`featured`).

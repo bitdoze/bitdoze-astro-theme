@@ -18,28 +18,35 @@ const iconMap: Record<string, string> = {
 
 const footerMenu = menu.footer;
 const recentPosts = await getLatestPosts(3);
+const year = new Date().getFullYear();
 ---
 
-<footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-10">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<footer class="mt-10 border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/40">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.3fr]">
       <!-- Brand -->
-      <div>
+      <div class="max-w-sm">
         <Image
           src={siteConfig.logo}
           alt={siteConfig.logoText}
           width={siteConfig.logoWidth}
           height={siteConfig.logoHeight}
         />
-        <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-4 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
           {siteConfig.footerDescription}
         </p>
         {socialLinks.length > 0 && (
-          <div class="flex gap-3 mt-4">
+          <div class="mt-6 flex flex-wrap gap-3">
             {socialLinks.map(([platform, url]) => {
               const isBluesky = (url as string).includes('bsky.app');
               return (
-                <a href={url as string} target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-accent-600 dark:text-gray-400 dark:hover:text-accent-400" aria-label={platform}>
+                <a
+                  href={url as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={platform}
+                  class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:border-accent-200 hover:bg-accent-50 hover:text-accent-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-accent-800 dark:hover:bg-accent-900/30 dark:hover:text-accent-400"
+                >
                   {isBluesky ? (
                     <svg class="w-5 h-5" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
                       <path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z"/>
@@ -54,13 +61,17 @@ const recentPosts = await getLatestPosts(3);
         )}
       </div>
 
-      <!-- Links -->
+      <!-- Explore -->
       <nav aria-label="Footer">
-        <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h2>
-        <ul class="space-y-2">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Explore</h2>
+        <ul class="mt-4 space-y-2.5">
           {footerMenu.map((item) => (
             <li>
-              <a href={withBase(item.url)} class="text-sm text-gray-500 hover:text-accent-600 dark:text-gray-400 dark:hover:text-accent-400">
+              <a
+                href={withBase(item.url)}
+                class="group inline-flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-accent-600 dark:text-gray-400 dark:hover:text-accent-400"
+              >
+                <span class="h-1 w-1 shrink-0 rounded-full bg-gray-300 transition-colors group-hover:bg-accent-500 dark:bg-gray-600 dark:group-hover:bg-accent-400"></span>
                 {item.name}
               </a>
             </li>
@@ -68,16 +79,24 @@ const recentPosts = await getLatestPosts(3);
         </ul>
       </nav>
 
-      <!-- Recent Posts -->
+      <!-- Latest Posts -->
       <div>
-        <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Latest Posts</h2>
-        <div class="space-y-3">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Latest Posts</h2>
+        <div class="mt-4 space-y-4">
           {recentPosts.map((post) => (
-            <a href={getPostUrl(post)} class="flex gap-3 group">
+            <a href={getPostUrl(post)} class="group flex items-center gap-3">
               {post.data.image && (
-                <Image src={post.data.image} alt="" width={64} height={36} class="w-16 h-9 object-cover rounded flex-shrink-0" loading="lazy" decoding="async" />
+                <Image
+                  src={post.data.image}
+                  alt=""
+                  width={64}
+                  height={48}
+                  class="h-12 w-16 shrink-0 rounded-md object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
               )}
-              <span class="text-sm text-gray-600 dark:text-gray-300 group-hover:text-accent-600 dark:group-hover:text-accent-400 line-clamp-2">
+              <span class="text-sm font-medium leading-snug text-gray-700 transition-colors group-hover:text-accent-600 dark:text-gray-300 dark:group-hover:text-accent-400 line-clamp-2">
                 {post.data.title}
               </span>
             </a>
@@ -85,9 +104,28 @@ const recentPosts = await getLatestPosts(3);
         </div>
       </div>
     </div>
+  </div>
 
-    <p class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-500 dark:text-gray-400">
-      &copy; {new Date().getFullYear()} {siteConfig.title}. All rights reserved.
-    </p>
+  <!-- Bottom bar -->
+  <div class="border-t border-gray-200 dark:border-gray-800">
+    <div class="max-w-5xl mx-auto flex flex-col items-center justify-between gap-3 px-4 py-6 text-sm text-gray-500 dark:text-gray-400 sm:flex-row sm:px-6 lg:px-8">
+      <p>&copy; {year} {siteConfig.brandName}. All rights reserved.</p>
+      <div class="flex items-center gap-5">
+        <a
+          href={withBase("/rss.xml")}
+          class="inline-flex items-center gap-1.5 transition-colors hover:text-accent-600 dark:hover:text-accent-400"
+        >
+          <Icon name="mdi:rss" class="h-4 w-4" />
+          RSS
+        </a>
+        <a
+          href="#main-content"
+          class="inline-flex items-center gap-1.5 transition-colors hover:text-accent-600 dark:hover:text-accent-400"
+        >
+          <Icon name="mdi:arrow-up" class="h-4 w-4" />
+          Back to top
+        </a>
+      </div>
+    </div>
   </div>
 </footer>

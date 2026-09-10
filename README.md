@@ -128,12 +128,12 @@ The homepage is composed from real content in this order:
 
 1. **Hero** — the newest published post, with proof counts and entry points.
 2. **Featured Posts** — up to three posts flagged `featured: true` in a three-column grid, newest first (the hero post is skipped).
-3. **Latest Articles** — the newest remaining posts, excluding series and featured entries.
-4. **Learning paths** — series in position order plus the largest categories; each path needs at least two entries.
-5. **Explore Content** — links to categories, authors, and tags.
-6. **Popular Topics** — configured tags with their most recent posts. Columns prefer posts not shown above, then backfill so they still render on small archives, and a post never appears in two columns.
+3. **Popular Topics** — configured tags with their most recent posts in a full-width band. Columns prefer posts not already shown in the hero or featured grid, then backfill so they still render on small archives; a post never appears in two columns.
+4. **Latest Articles** — the newest remaining posts, excluding series and featured entries, with a link to the full archive.
+5. **Learning paths** — series in position order plus the largest categories; each path needs at least two entries, with a link to all series.
+6. **Explore Content** — links to categories, authors, and tags.
 
-Every optional section is controlled by the `homepage` flags in `src/config/site.ts`.
+The hero, Popular Topics, and Learning paths render as full-width tinted bands, so the page alternates between white and tinted sections; the footer continues the same surface. Every optional section is controlled by the `homepage` flags in `src/config/site.ts`.
 
 ### Creating Content
 

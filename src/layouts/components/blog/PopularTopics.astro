@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import SectionHeader from "./SectionHeader.astro";
 import { getPostUrl, getPostSlug, normalizeTaxonomy, taxonomySlug, withBase } from "@utils/slug";
 import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 import { formatDate } from "@utils/date";
@@ -50,18 +51,7 @@ const tagPosts = normalizeTaxonomy(tags)
     class="mt-16 border-y border-gray-200 bg-gray-50 py-14 dark:border-gray-700 dark:bg-gray-800/40"
 >
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-10 flex items-end justify-between gap-4">
-            <div>
-                <h2
-                    class="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
-                >
-                    Popular Topics
-                </h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Browse posts by topic
-                </p>
-            </div>
-        </div>
+        <SectionHeader title="Popular Topics" description="Browse posts by topic" />
         <div class="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8 lg:gap-12">
             {
                 tagPosts.map(({ slug, label, posts }) => (

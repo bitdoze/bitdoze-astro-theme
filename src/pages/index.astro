@@ -5,6 +5,7 @@ import PostCard from "@components/blog/PostCard.astro";
 import FeaturedPosts from "@components/blog/FeaturedPosts.astro";
 import PopularTopics from "@components/blog/PopularTopics.astro";
 import LearningPaths from "@components/blog/LearningPaths.astro";
+import SectionHeader from "@components/blog/SectionHeader.astro";
 import { siteConfig } from "@config/site";
 import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 import { getPostSlug, withBase } from "@utils/slug";
@@ -47,12 +48,11 @@ const learningPaths = buildLearningPaths(sortedPosts, [
   ...latestPosts.map((post) => getPostSlug(post)),
 ]);
 
-// Every slug already rendered above; Popular Topics must not repeat them.
-const shownSlugs = [
+// Hero + Featured Posts render above Popular Topics; its columns prefer other
+// posts first and then backfill per tag.
+const abovePopularSlugs = [
   ...(featuredSlug ? [featuredSlug] : []),
   ...pickedSlugs,
-  ...latestPosts.map((post) => getPostSlug(post)),
-  ...learningPaths.flatMap((path) => path.entries.map((entry) => entry.slug)),
 ];
 
 const stats = {
@@ -90,25 +90,26 @@ const exploreCards = [
   description={siteConfig.description}
   wideContent={true}
 >
-  <div class="w-full py-8">
+  <div class="w-full pb-8">
     <!-- Hero Section -->
     <Hero post={featuredPost} stats={stats} hasLearningPaths={learningPaths.length > 0} />
 
     <!-- Featured Posts Section (editor's picks, deduped against the hero) -->
     {showFeaturedPosts && <FeaturedPosts posts={pickedPosts} />}
 
+    <!-- Popular Topics Section (prefers posts not shown above, backfills per topic) -->
+    {showPopularTopics && (
+      <PopularTopics tags={["Astro", "VPS", "Blogging"]} postsPerTag={4} excludeSlugs={abovePopularSlugs} />
+    )}
+
     <!-- Latest Articles Section -->
     {latestPosts.length > 0 && (
       <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <div class="flex justify-between items-center mb-8">
-          <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Latest Articles</h2>
-          <a href={withBase("/blog/")} class="text-accent-600 dark:text-accent-400 hover:underline font-medium flex items-center">
-            View All
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-            </svg>
-          </a>
-        </div>
+        <SectionHeader
+          title="Latest Articles"
+          actionLabel="View all posts"
+          actionHref={withBase("/blog/")}
+        />
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {latestPosts.map((post) => (
@@ -124,12 +125,10 @@ const exploreCards = [
     <!-- Explore Section (compact taxonomy row) -->
     {showTaxonomyCards && (
       <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <div class="text-center mb-8">
-          <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">Explore Content</h2>
-          <p class="text-base text-gray-600 dark:text-gray-400">
-            Browse our content by category, author, or tag
-          </p>
-        </div>
+        <SectionHeader
+          title="Explore Content"
+          description="Browse our content by category, author, or tag"
+        />
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           {exploreCards.map((card) => (
@@ -150,9 +149,5 @@ const exploreCards = [
       </section>
     )}
 
-    <!-- Popular Topics Section (prefers posts not shown above, backfills per topic) -->
-    {showPopularTopics && (
-      <PopularTopics tags={["Astro", "VPS", "Blogging"]} postsPerTag={4} excludeSlugs={shownSlugs} />
-    )}
   </div>
 </Layout>
