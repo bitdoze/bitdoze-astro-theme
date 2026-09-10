@@ -63,7 +63,7 @@ const year = new Date().getFullYear();
 
       <!-- Explore -->
       <nav aria-label="Footer">
-        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Explore</h2>
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{siteConfig.footer.exploreTitle}</h2>
         <ul class="mt-4 space-y-2.5">
           {footerMenu.map((item) => (
             <li>
@@ -81,7 +81,7 @@ const year = new Date().getFullYear();
 
       <!-- Latest Posts -->
       <div>
-        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Latest Posts</h2>
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{siteConfig.footer.latestTitle}</h2>
         <div class="mt-4 space-y-4">
           {recentPosts.map((post) => (
             <a href={getPostUrl(post)} class="group flex items-center gap-3">

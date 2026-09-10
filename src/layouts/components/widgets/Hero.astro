@@ -46,7 +46,8 @@ const featuredUrl = post ? getPostUrl(post) : withBase('/blog/');
           <!-- Copy -->
           <div class="max-w-xl">
             <h1 class="text-4xl sm:text-5xl font-bold leading-[1.08] tracking-[-0.02em] text-balance text-gray-900 dark:text-white">
-              Modern web guides that <span class="text-accent-600 dark:text-accent-400">actually ship</span>
+              {siteConfig.hero.title}{' '}
+              <span class="text-accent-600 dark:text-accent-400">{siteConfig.hero.titleAccent}</span>
             </h1>
 
             <p class="mt-5 text-lg sm:text-xl leading-relaxed text-pretty text-gray-600 dark:text-gray-300">
@@ -56,24 +57,24 @@ const featuredUrl = post ? getPostUrl(post) : withBase('/blog/');
             <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
               <li class="inline-flex items-center gap-1.5">
                 <Icon name="mdi:book-open-page-variant-outline" class="w-4 h-4 text-accent-600 dark:text-accent-400" />
-                {stats.guides} practical guides
+                {stats.guides} {siteConfig.hero.statsLabels.guides}
               </li>
               <li class="inline-flex items-center gap-1.5">
                 <Icon name="mdi:tag-outline" class="w-4 h-4 text-accent-600 dark:text-accent-400" />
-                {stats.topics} topics to explore
+                {stats.topics} {siteConfig.hero.statsLabels.topics}
               </li>
               <li class="inline-flex items-center gap-1.5">
                 <Icon name="mdi:account-group-outline" class="w-4 h-4 text-accent-600 dark:text-accent-400" />
-                {stats.authors} {stats.authors === 1 ? 'author' : 'authors'} writing
+                {stats.authors} {stats.authors === 1 ? siteConfig.hero.statsLabels.author : siteConfig.hero.statsLabels.authors}
               </li>
             </ul>
 
             <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
               <a
-                href={withBase("/blog/")}
+                href={withBase(siteConfig.hero.primaryCta.href)}
                 class="group inline-flex items-center gap-2 rounded-lg bg-accent-600 px-6 py-3 text-base font-semibold text-white shadow-md transition-all duration-200 hover:bg-accent-700 hover:shadow-lg hover:-translate-y-px"
               >
-                Browse articles
+                {siteConfig.hero.primaryCta.label}
                 <Icon
                   name="mdi:arrow-right"
                   class="w-5 h-5 transition-transform duration-200 group-hover:translate-x-0.5"
@@ -81,14 +82,14 @@ const featuredUrl = post ? getPostUrl(post) : withBase('/blog/');
               </a>
               {hasLearningPaths && (
                 <a
-                  href="#learning-paths"
+                  href={withBase(siteConfig.hero.secondaryCta.href)}
                   class="group inline-flex items-center gap-1.5 text-base font-semibold text-gray-700 transition-colors duration-200 hover:text-accent-600 dark:text-gray-300 dark:hover:text-accent-400"
                 >
                   <Icon
                     name="mdi:map-marker-path"
                     class="w-5 h-5 text-accent-600 dark:text-accent-400"
                   />
-                  Find your path
+                  {siteConfig.hero.secondaryCta.label}
                   <Icon
                     name="mdi:arrow-down"
                     class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5"
@@ -181,10 +182,10 @@ const featuredUrl = post ? getPostUrl(post) : withBase('/blog/');
           {siteConfig.heroDescription}
         </p>
         <a
-          href={withBase("/blog/")}
+          href={withBase(siteConfig.hero.primaryCta.href)}
           class="inline-flex items-center gap-2 rounded-lg bg-accent-600 px-6 py-3 text-base font-semibold text-white shadow-md transition-all duration-200 hover:bg-accent-700 hover:shadow-lg"
         >
-          Browse articles
+          {siteConfig.hero.primaryCta.label}
           <Icon name="mdi:arrow-right" class="w-5 h-5" />
         </a>
       </div>

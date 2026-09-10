@@ -110,7 +110,9 @@ media, and reserve eager/high-priority loading for likely LCP images.
 ## Customize the theme
 
 - Edit `src/config/site.ts` for the title, brand name, logo, language, default
-  metadata, hero/footer copy, pagination, and archive indexing policy.
+  metadata, hero headline/CTAs/proof labels, homepage section copy, limits,
+  Popular Topics tags, Explore cards, footer column titles, listing/utility
+  page headings and sublines, pagination, and archive indexing policy.
 - Edit `src/config/menu.json` for primary and footer navigation.
 - Edit `src/config/social.json` for public social profiles. Leave unavailable
   profiles empty so they are omitted.

@@ -2,9 +2,10 @@
 import Layout from "@layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
 import config from "@config/config.json";
+import { siteConfig } from "@config/site";
 
 // Contact information from config file
-const title = "Contact Us";
+const title = siteConfig.pages.contact.title;
 const { address, email, phone } = config.contactinfo;
 const { contact_form_action } = config.params;
 const formConfigured = contact_form_action !== "#";
@@ -13,7 +14,7 @@ const hasContactInfo = Boolean(address || email || phone);
 
 <Layout
   title={title}
-  description="Get in touch with us"
+  description={siteConfig.pages.contact.description}
 >
   <section class="section py-12">
     <div class="w-full">

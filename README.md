@@ -6,7 +6,7 @@ A modern, responsive blog theme for Astro with support for tags, categories, ser
 
 - 🚀 **Built with Astro** - Benefit from Astro's speed and flexibility
 - 📱 **Fully Responsive** - Looks great on all devices
-- 🎨 **Customizable** - One logo-anchored accent ramp and swappable font tokens drive links, buttons, focus rings, and chips in both themes
+- 🎨 **Customizable** - One logo-anchored accent ramp and swappable font tokens drive links, buttons, focus rings, and chips, and one config file (`src/config/site.ts`) owns identity, hero, homepage, footer, and page copy
 - 🔍 **SEO Optimized** - Meta tags, Open Graph, and JSON-LD
 - 📝 **Blog Ready** - Support for posts, categories, tags, and series
 - ⭐ **Featured Posts** - An optional `featured` flag surfaces editor's picks in a three-column homepage grid
@@ -63,7 +63,7 @@ Work through the tasks below in order. Each step links to the reference section 
 
 1. **Preview the theme.** Run `npm install && npm run dev` and open `http://localhost:4321`. Try the theme toggle, a mobile viewport, the Featured Posts grid, and the MDX widget examples in `src/content/posts/artificial-intelligence-guide.mdx`, `src/content/posts/vps-hosting-docker-and-caddy.mdx`, and `src/content/posts/developer-seo-checklist.mdx`.
 2. **Create your site.** The fastest path is GitHub's **Use this template** button; alternatively clone over HTTPS (`git clone https://github.com/bitdoze/bitdoze-astro-theme.git my-blog`). Install dependencies on Node 22.12 or newer (see [Installation](#installation)).
-3. **Rebrand.** Update `src/config/site.ts` (title, description, brand, hero and footer copy, `ogImage`, `postsPerPage`), then `src/config/menu.json` and `src/config/social.json` (see [Configuration](#configuration)).
+3. **Rebrand.** Update `src/config/site.ts` — identity, hero, homepage sections, footer titles, and listing/utility page copy — then `src/config/menu.json` and `src/config/social.json` (see [Configuration](#configuration)).
 4. **Create your first content.** Add a post, an author, a series, and an ordinary page (see [Creating Content](#creating-content) and [Adding New Pages](#adding-new-pages)).
 5. **Remove demo content.** Delete the demo posts, authors, and pages you do not need; empty collections render as empty lists rather than failing. The About page is a dedicated content entry at `src/content/about/index.md` — replace it rather than leaving the placeholder.
 6. **Configure contact, origin, and SEO defaults.** Set a real contact endpoint (see [Contact form](#contact-form)), point `SITE_URL` at your production origin, and review the metadata defaults in `src/config/site.ts`.
@@ -99,20 +99,18 @@ The theme targets **Astro 7.x**. When upgrading Astro, check [CHANGELOG.md](CHAN
 
 ### Configuration
 
-Tailor the theme to your needs by updating the following configuration files:
+Tailor the theme to your needs by updating the following configuration files. Content and copy are not scattered through components: `site.ts` is the single source for headings, sublines, section titles, and calls to action, and the sibling files own navigation, social links, and contact details.
 
 1.  **Site URL**:
     *   Set the `SITE_URL` environment variable in production. It falls back to `https://www.bitdoze.com` for local builds.
 2.  **Primary Site Metadata & Settings**:
     *   Update `src/config/site.ts` for essential site details such as:
-        *   `title`: The main title of your site.
-        *   `description`: A brief description for SEO and metadata.
-        *   `author`: Default author name.
-        *   `brandName`, `logo`, and logo dimensions.
-        *   Hero and footer descriptions.
-        *   `ogImage`: Path to your default OpenGraph image.
-        *   `postsPerPage`: Number of posts to display on paginated pages.
-        *   `homepage`: Toggles for the optional sections — `showFeaturedPosts`, `showTaxonomyCards`, and `showPopularTopics`.
+        *   **Identity**: `title`, `description`, `author`, `brandName`, `logo`, and logo dimensions.
+        *   **Hero**: `hero.title`, `hero.titleAccent`, `hero.primaryCta` / `hero.secondaryCta`, `hero.statsLabels`, and `heroDescription`.
+        *   **Homepage**: the `showFeaturedPosts` / `showTaxonomyCards` / `showPopularTopics` toggles, plus section copy and limits (`homepage.featured`, `homepage.latest`, `homepage.learningPaths`), configured tags (`homepage.popularTopics`), and the Explore cards (`homepage.explore`).
+        *   **Footer**: column titles (`footer.exploreTitle`, `footer.latestTitle`).
+        *   **Pages**: headings, meta descriptions, and visible sublines for Blog, Categories, Tags, Authors, Series, Contact, Search, and 404 (`pages.*`).
+        *   `ogImage`, `postsPerPage`, `favicons`, and the `noindex` policy.
 3.  **Menus**:
     *   Modify `src/config/menu.json` to define navigation links for the header and footer.
 4.  **Social Media Links**:
@@ -127,13 +125,13 @@ Tailor the theme to your needs by updating the following configuration files:
 The homepage is composed from real content in this order:
 
 1. **Hero** — the newest published post, with proof counts and entry points.
-2. **Featured Posts** — up to three posts flagged `featured: true` in a three-column grid, newest first (the hero post is skipped).
+2. **Featured Posts** — up to `homepage.featured.limit` posts flagged `featured: true` in a three-column grid, newest first (the hero post is skipped).
 3. **Popular Topics** — configured tags with their most recent posts in a full-width band. Columns prefer posts not already shown in the hero or featured grid, then backfill so they still render on small archives; a post never appears in two columns.
 4. **Latest Articles** — the newest remaining posts, excluding series and featured entries, with a link to the full archive.
 5. **Learning paths** — series in position order plus the largest categories; each path needs at least two entries, with a link to all series.
 6. **Explore Content** — links to categories, authors, and tags.
 
-The hero, Popular Topics, and Learning paths render as full-width tinted bands, so the page alternates between white and tinted sections; the footer continues the same surface. Every optional section is controlled by the `homepage` flags in `src/config/site.ts`.
+The hero, Popular Topics, and Learning paths render as full-width tinted bands, so the page alternates between white and tinted sections; the footer continues the same surface. Every section's copy, limits, tags, and toggles live in `homepage` in `src/config/site.ts`; the header and footer navigation live in `src/config/menu.json`, and social and contact details in `src/config/social.json` and `src/config/config.json`.
 
 ### Creating Content
 

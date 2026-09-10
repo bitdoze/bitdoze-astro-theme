@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import Hero from "@components/widgets/Hero.astro";
 import Layout from "@layouts/Layout.astro";
 import PostCard from "@components/blog/PostCard.astro";
@@ -28,7 +29,7 @@ const seriesSlugs = sortedPosts
 // overall, so it is dropped here to keep the grid free of repeats.
 const pickedPosts = sortedPosts
   .filter((post) => post.data.featured && getPostSlug(post) !== featuredSlug)
-  .slice(0, 3);
+  .slice(0, siteConfig.homepage.featured.limit);
 const pickedSlugs = pickedPosts.map((post) => getPostSlug(post));
 
 const latestPosts = sortedPosts
@@ -40,7 +41,7 @@ const latestPosts = sortedPosts
       !pickedSlugs.includes(slug)
     );
   })
-  .slice(0, 6);
+  .slice(0, siteConfig.homepage.latest.limit);
 
 const learningPaths = buildLearningPaths(sortedPosts, [
   ...(featuredSlug ? [featuredSlug] : []),
@@ -61,28 +62,7 @@ const stats = {
   authors: new Set(sortedPosts.flatMap((post) => post.data.authors ?? [])).size,
 };
 
-const { showFeaturedPosts, showTaxonomyCards, showPopularTopics } = siteConfig.homepage;
-
-const exploreCards = [
-    {
-        href: "/categories/",
-        title: "Categories",
-        description: "Browse posts by topic",
-        iconPath: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10",
-    },
-    {
-        href: "/authors/",
-        title: "Authors",
-        description: "Meet our content creators",
-        iconPath: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
-    },
-    {
-        href: "/tags/",
-        title: "Tags",
-        description: "Find content by specific topics",
-        iconPath: "M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z",
-    },
-];
+const { showFeaturedPosts, showTaxonomyCards, showPopularTopics, latest, explore } = siteConfig.homepage;
 ---
 
 <Layout
@@ -98,16 +78,14 @@ const exploreCards = [
     {showFeaturedPosts && <FeaturedPosts posts={pickedPosts} />}
 
     <!-- Popular Topics Section (prefers posts not shown above, backfills per topic) -->
-    {showPopularTopics && (
-      <PopularTopics tags={["Astro", "VPS", "Blogging"]} postsPerTag={4} excludeSlugs={abovePopularSlugs} />
-    )}
+    {showPopularTopics && <PopularTopics excludeSlugs={abovePopularSlugs} />}
 
     <!-- Latest Articles Section -->
     {latestPosts.length > 0 && (
       <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <SectionHeader
-          title="Latest Articles"
-          actionLabel="View all posts"
+          title={latest.title}
+          actionLabel={latest.actionLabel}
           actionHref={withBase("/blog/")}
         />
 
@@ -126,19 +104,17 @@ const exploreCards = [
     {showTaxonomyCards && (
       <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
         <SectionHeader
-          title="Explore Content"
-          description="Browse our content by category, author, or tag"
+          title={explore.title}
+          description={explore.description}
         />
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {exploreCards.map((card) => (
+          {explore.cards.map((card) => (
             <a
               href={withBase(card.href)}
               class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border border-gray-200 dark:border-gray-700"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 text-accent-600 dark:text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={card.iconPath} />
-              </svg>
+              <Icon name={card.icon} class="h-8 w-8 shrink-0 text-accent-600 dark:text-accent-400" />
               <div>
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white">{card.title}</h3>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{card.description}</p>

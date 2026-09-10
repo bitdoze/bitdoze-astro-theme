@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import SectionHeader from './SectionHeader.astro';
+import { siteConfig } from '@config/site';
 import { withBase } from '@utils/slug';
 import type { LearningPath } from '@utils/learningPaths';
 
@@ -16,9 +17,9 @@ const { paths } = Astro.props;
   <section id="learning-paths" class="mt-16 border-y border-gray-200 bg-gray-50 py-14 dark:border-gray-700 dark:bg-gray-800/40 scroll-mt-24">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
     <SectionHeader
-      title="Learning paths"
-      description="Follow a series end to end, or go deep on one topic."
-      actionLabel="Browse series"
+      title={siteConfig.homepage.learningPaths.title}
+      description={siteConfig.homepage.learningPaths.description}
+      actionLabel={siteConfig.homepage.learningPaths.actionLabel}
       actionHref={withBase('/series/')}
     />
 

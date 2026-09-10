@@ -4,13 +4,14 @@ import { siteConfig } from "@config/site";
 import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 
 const posts = sortPostsByDate(await getPublishedPosts());
+const page = siteConfig.pages.blog;
 ---
 
 <ArchivePage
-    title={`Blog - ${siteConfig.title}`}
-    description="Explore our latest articles, tutorials, and insights"
-    heading="Blog"
-    subline="Explore our latest articles, tutorials, and insights"
+    title={`${page.title} - ${siteConfig.title}`}
+    description={page.description}
+    heading={page.title}
+    subline={page.subline}
     basePath="/blog"
     posts={posts}
     page={1}

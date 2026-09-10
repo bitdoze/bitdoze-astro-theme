@@ -7,6 +7,7 @@ import { getPostUrl, slugify } from '@utils/slug';
 import { getPublishedPosts } from '@utils/content';
 
 // Get all posts
+const page = siteConfig.pages.series;
 const allPosts = await getPublishedPosts();
 
 // Extract series information
@@ -59,8 +60,8 @@ const breadcrumbs = [
 ---
 
 <Layout 
-  title={`Article Series | ${siteConfig.title}`}
-  description="Browse our collection of article series on various topics"
+  title={`${page.title} - ${siteConfig.title}`}
+  description={page.description}
   breadcrumbs={breadcrumbs}
 >
   <div class="max-w-5xl mx-auto py-12">
@@ -69,10 +70,10 @@ const breadcrumbs = [
     
     <header class="mb-12">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        Article Series
+        {page.title}
       </h1>
       <p class="text-lg text-gray-700 dark:text-gray-300">
-        Browse our collection of multi-part article series on various topics
+        {page.subline}
       </p>
     </header>
 

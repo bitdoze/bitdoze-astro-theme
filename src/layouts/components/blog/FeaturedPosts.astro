@@ -1,6 +1,7 @@
 ---
 import PostCard from "./PostCard.astro";
 import SectionHeader from "./SectionHeader.astro";
+import { siteConfig } from "@config/site";
 import type { PostEntry } from "@utils/content";
 
 interface Props {
@@ -14,8 +15,8 @@ const { posts } = Astro.props;
 {posts.length > 0 && (
   <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
     <SectionHeader
-      title="Featured Posts"
-      description="Hand-picked guides worth starting with."
+      title={siteConfig.homepage.featured.title}
+      description={siteConfig.homepage.featured.description}
     />
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

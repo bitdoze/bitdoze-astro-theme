@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import SectionHeader from "./SectionHeader.astro";
+import { siteConfig } from "@config/site";
 import { getPostUrl, getPostSlug, normalizeTaxonomy, taxonomySlug, withBase } from "@utils/slug";
 import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 import { formatDate } from "@utils/date";
@@ -12,7 +13,11 @@ export interface Props {
     excludeSlugs?: string[];
 }
 
-const { tags = ["Jamstack", "astro", "ai"], postsPerTag = 5, excludeSlugs = [] } = Astro.props;
+const {
+    tags = [...siteConfig.homepage.popularTopics.tags],
+    postsPerTag = siteConfig.homepage.popularTopics.postsPerTag,
+    excludeSlugs = [],
+} = Astro.props;
 
 // Get all posts
 const sortedPosts = sortPostsByDate(await getPublishedPosts());
@@ -51,7 +56,10 @@ const tagPosts = normalizeTaxonomy(tags)
     class="mt-16 border-y border-gray-200 bg-gray-50 py-14 dark:border-gray-700 dark:bg-gray-800/40"
 >
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeader title="Popular Topics" description="Browse posts by topic" />
+        <SectionHeader
+            title={siteConfig.homepage.popularTopics.title}
+            description={siteConfig.homepage.popularTopics.description}
+        />
         <div class="grid grid-cols-1 gap-10 md:grid-cols-3 md:gap-8 lg:gap-12">
             {
                 tagPosts.map(({ slug, label, posts }) => (

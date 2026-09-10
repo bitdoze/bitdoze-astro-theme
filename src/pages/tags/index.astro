@@ -4,6 +4,7 @@ import { siteConfig } from "@config/site";
 import { normalizeTaxonomy, taxonomySlug, withBase } from "@utils/slug";
 import { getPublishedPosts } from "@utils/content";
 
+const page = siteConfig.pages.tags;
 const posts = await getPublishedPosts();
 
 // Dedupe by route slug so "Astro"/"astro" render one chip with a combined
@@ -21,17 +22,17 @@ const tagCounts = tags
 ---
 
 <Layout
-    title={`Tags - ${siteConfig.title}`}
-    description="Browse all tags and topics on our blog"
+    title={`${page.title} - ${siteConfig.title}`}
+    description={page.description}
     indexable={!siteConfig.noindex.tags}
 >
     <div class="w-full py-8">
         <header class="mb-10">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Tags
+                {page.title}
             </h1>
             <p class="text-lg text-gray-700 dark:text-gray-300">
-                Browse posts by tag
+                {page.subline}
             </p>
         </header>
 

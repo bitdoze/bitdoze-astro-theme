@@ -5,6 +5,7 @@ import { siteConfig } from "@config/site";
 import { normalizeTaxonomy, taxonomySlug, withBase } from "@utils/slug";
 import { getPublishedPosts } from "@utils/content";
 
+const page = siteConfig.pages.categories;
 const posts = await getPublishedPosts();
 
 // Dedupe by route slug so "Tutorials"/"tutorials" render one card with a
@@ -22,17 +23,17 @@ const categoryCounts = categories
 ---
 
 <Layout
-    title={`Categories - ${siteConfig.title}`}
-    description="Browse all categories of posts on our blog"
+    title={`${page.title} - ${siteConfig.title}`}
+    description={page.description}
     indexable={!siteConfig.noindex.categories}
 >
     <div class="w-full py-8">
         <header class="mb-10">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                Categories
+                {page.title}
             </h1>
             <p class="text-lg text-gray-700 dark:text-gray-300">
-                Browse posts by category
+                {page.subline}
             </p>
         </header>
 

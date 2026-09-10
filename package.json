@@ -2,7 +2,7 @@
     "name": "astro-blog-theme",
     "description": "A modern, responsive blog theme for Astro with support for tags, categories, and series",
     "type": "module",
-    "version": "1.3.1",
+    "version": "1.4.0",
     "packageManager": "npm@10.8.2",
     "engines": {
         "node": ">=22.12.0",

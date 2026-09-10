@@ -5,6 +5,8 @@ import { siteConfig } from '@config/site';
 import { slugify } from '@utils/slug';
 import { getPublishedPosts } from '@utils/content';
 
+const page = siteConfig.pages.authors;
+
 // Get all blog posts
 const posts = await getPublishedPosts();
 
@@ -31,16 +33,16 @@ const formatAuthorName = (name: string) => {
 ---
 
 <Layout 
-  title={`Authors - ${siteConfig.title}`}
-  description="Meet our authors and browse their posts"
+  title={`${page.title} - ${siteConfig.title}`}
+  description={page.description}
 >
   <div class="w-full py-8">
     <header class="mb-10">
       <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-        Authors
+        {page.title}
       </h1>
       <p class="text-lg text-gray-700 dark:text-gray-300">
-        Meet our content creators and browse their posts
+        {page.subline}
       </p>
     </header>
     

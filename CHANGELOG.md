@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-09-10
+
+A customization release: theme copy and content controls now live in one place. Rendering and content contracts are unchanged.
+
+### Added
+
+- Centralized customization in `src/config/site.ts`: the hero headline/accent/CTAs/proof labels, homepage section copy, limits, Popular Topics tags, Explore cards, footer column titles, and listing/utility page copy (titles, meta descriptions, sublines, and Search/404 text) now live alongside the existing identity settings.
+
 ## [1.3.1] - 2026-09-10
 
 A focused follow-up to 1.3.0: single-row card metadata, a tighter homepage structure, and a modern footer. No routing or content contracts changed.
