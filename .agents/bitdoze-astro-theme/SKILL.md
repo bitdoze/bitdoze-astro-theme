@@ -66,11 +66,14 @@ series:
 slug: "optional/custom-path"
 canonical: "https://example.com/original/"
 draft: false
+featured: true
 ---
 ```
 
 - Require `description`, `date`, `image`, and at least one author.
 - Omit optional fields instead of inserting empty strings.
+- Set `featured: true` to include a post in the homepage Featured Posts grid
+  (up to three, newest first, never repeating the hero post).
 - Keep series positions positive and unique within a series.
 - Add a matching author entry before introducing a new author identifier.
 - Put imported content images in `src/assets/images/`. Put URL-addressable,

@@ -1,0 +1,131 @@
+---
+title: "The Developer's SEO Checklist"
+meta_title: "The Developer's SEO Checklist: Ship Pages That Get Found"
+description: "A practical, code-level SEO checklist for developers: crawling and indexing, metadata, structured data, performance, internal linking, and monitoring."
+date: 2026-09-08
+featured: true
+image: "../../assets/images/dev-seo-checklist.svg"
+imageAlt: "Illustration of a magnifying glass reviewing a checklist"
+authors: ["dragos"]
+categories: ["SEO"]
+tags: ["seo", "web-development", "performance", "guides"]
+---
+
+SEO advice usually arrives as a content strategy document. For developers, most of the wins are much closer to the code: a page that renders clean HTML, declares one canonical URL, loads fast, and links to its neighbors. This checklist covers the technical side, in the order problems usually appear.
+
+<Notice type="info" title="Scope">
+This is a technical checklist, not a growth strategy. It assumes the content is worth ranking, and focuses on removing the engineering reasons it might not.
+</Notice>
+
+## Crawling and Indexing
+
+A page that cannot be crawled cannot rank.
+
+- Keep important content in server-rendered HTML. If it appears only after hydration, treat it as invisible.
+- Use `robots.txt` to block noise (admin, search result pages), never to hide content you want indexed.
+- Keep staging behind authentication or a `noindex` header. A password-protected page is not indexed because it cannot be fetched; a staging site with no protection is a duplicate-content problem.
+- Generate a sitemap and reference it from `robots.txt`.
+- Return proper status codes: `301` for permanent moves, `404` for gone, `410` if you mean it.
+- Avoid orphan pages. If nothing links to a page, it is unlikely to be discovered.
+
+## Metadata and Canonicals
+
+Every indexable page needs three things:
+
+```html
+<title>Unique, descriptive page title</title>
+<meta name="description" content="One sentence that earns the click." />
+<link rel="canonical" href="https://example.com/the-one-true-url/" />
+```
+
+- One canonical URL per piece of content. Query parameters, trailing-slash variants, and paginated archives are the usual offenders.
+- The `<h1>` should match the topic; the `<title>` can add context or the brand.
+- Open Graph and Twitter card tags should point at a 1200×630 image.
+- `noindex, follow` on thin archives or filtered listing pages you do not want ranked.
+
+## Content Structure
+
+Search engines read the outline, not just the words.
+
+- One `<h1>` per page, then a logical `h2`/`h3` hierarchy. Skipping levels makes the outline harder to parse.
+- Descriptive link text: "read the VPS guide," not "click here."
+- Images with meaningful `alt` text when they carry information, and empty `alt=""` when they are decorative.
+- Tables and lists where the content is tabular or list-shaped.
+- Short, human-readable URLs.
+
+## Structured Data
+
+JSON-LD helps search engines understand what the page *is*, which can unlock rich results:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "The Developer's SEO Checklist",
+  "datePublished": "2026-09-08",
+  "dateModified": "2026-09-08",
+  "author": { "@type": "Person", "name": "Dragos" },
+  "image": "https://example.com/card.png"
+}
+```
+
+Add `BreadcrumbList` for navigation and `WebSite` on the homepage. Validate the output; broken markup is worse than none.
+
+## Performance
+
+Core Web Vitals are a ranking signal and a user-experience signal at the same time.
+
+- Ship the LCP image with `fetchpriority="high"` and explicit dimensions.
+- Keep JavaScript off the critical path; hydrate lazily.
+- Reserve space for images, embeds, and banners to protect CLS.
+- Cache static assets with long-lived fingerprints, and serve them compressed.
+- Test on a throttled, mid-range device, not a developer laptop.
+
+## Internal Linking
+
+Internal links are the only ranking signal entirely under your control.
+
+- Link from every post to its pillar or index page, and from the index back to the posts.
+- Add "related posts" based on real relevance, not a random shuffle.
+- Fix orphan pages the moment they appear in a crawl.
+- Keep anchor text descriptive and varied; exact-match repetition looks manufactured.
+
+## Monitoring
+
+Set up feedback before you need it:
+
+- Google Search Console: coverage, queries, and Core Web Vitals.
+- Server logs or analytics: crawling, 404s, and which posts actually get read.
+- Uptime and certificate expiry alerts.
+- A monthly check of titles, descriptions, and canonical tags on new templates.
+
+## The Checklist
+
+<ListCheck>
+
+- Important content is server-rendered HTML
+- One canonical URL per page
+- Unique title and meta description
+- Logical heading hierarchy
+- Sitemap generated and referenced
+- robots.txt blocks the right things
+- JSON-LD for articles, breadcrumbs, and the site
+- LCP image prioritized and sized
+- Images have width/height and sensible alt text
+- Internal links point both ways
+- 404s and redirects monitored
+- Search Console connected and checked monthly
+
+</ListCheck>
+
+<Accordion label="Common quick wins when a page still will not index" group="seo-debug" expanded={true}>
+  Check these in order: the page returns 200, it is not blocked by robots.txt or a meta robots tag, it is linked from somewhere crawlable, the canonical points at itself, and the content actually differs from other pages on the site. Most "not indexed" reports resolve at one of those five steps.
+</Accordion>
+
+<Accordion label="What not to optimize" group="seo-debug">
+  Do not chase keyword density, do not create pages for every query permutation, and do not buy links. Those tactics either do nothing or actively harm the site. Spend the effort on content and page speed instead.
+</Accordion>
+
+## Conclusion
+
+Technical SEO is a small number of habits applied consistently: clean HTML, one canonical, honest metadata, fast pages, and links between related content. Put this checklist in the pull request template and the boring parts take care of themselves.

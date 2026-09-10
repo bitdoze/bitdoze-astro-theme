@@ -25,5 +25,6 @@ pnpm-debug.log*
 
 # workspace / maintainer artifacts
 .claude/
+.impeccable/
 temp_vision_images/
 skills-lock.json

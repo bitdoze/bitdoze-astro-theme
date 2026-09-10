@@ -3,7 +3,7 @@ import Layout from '@layouts/Layout.astro';
 import { Icon } from 'astro-icon/components';
 import Breadcrumb from '@layouts/components/common/Breadcrumb.astro';
 import { siteConfig } from '@config/site'; // Import siteConfig
-import { getPostUrl } from '@utils/slug';
+import { getPostUrl, slugify } from '@utils/slug';
 import { getPublishedPosts } from '@utils/content';
 
 // Get all posts
@@ -83,9 +83,9 @@ const breadcrumbs = [
     ) : (
       <div class="space-y-12">
         {seriesList.map(series => (
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+          <div id={slugify(series.name)} class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 scroll-mt-24">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-              <Icon name="mdi:book-open-variant" class="w-6 h-6 mr-2 text-blue-600 dark:text-blue-400" />
+              <Icon name="mdi:book-open-variant" class="w-6 h-6 mr-2 text-accent-600 dark:text-accent-400" />
               {series.name}
               <span class="ml-3 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
                 {series.count} {series.count === 1 ? 'part' : 'parts'}
@@ -96,14 +96,14 @@ const breadcrumbs = [
               <ol class="relative border-l border-gray-300 dark:border-gray-700 ml-3">
                 {series.posts.map((post: any) => (
                   <li class="mb-6 ml-6">
-                    <span class="absolute flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full -left-4 ring-4 ring-white dark:ring-gray-800 text-blue-600 dark:text-blue-400">
+                    <span class="absolute flex items-center justify-center w-8 h-8 bg-accent-100 dark:bg-accent-900 rounded-full -left-4 ring-4 ring-white dark:ring-gray-800 text-accent-700 dark:text-accent-300">
                       {post.position}
                     </span>
                     <a 
                       href={post.url}
                       class="group"
                     >
-                      <h3 class="flex items-center text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      <h3 class="flex items-center text-lg font-semibold text-gray-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400">
                         {post.title}
                       </h3>
                       {post.description && (

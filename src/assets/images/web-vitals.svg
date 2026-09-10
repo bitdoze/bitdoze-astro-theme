@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#16a34a" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#16a34a" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#16a34a" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#16a34a" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#16a34a" stroke-width="3" />
+
+    <path d="M280 440 a120 120 0 0 1 240 0" fill="none" stroke="#e2e8f0" stroke-width="22" stroke-linecap="round" />
+    <path d="M280 440 a120 120 0 0 1 96 -117" fill="none" stroke="#16a34a" stroke-width="22" stroke-linecap="round" />
+    <line x1="400" y1="440" x2="448" y2="356" stroke="#16a34a" stroke-width="10" stroke-linecap="round" />
+    <circle cx="400" cy="440" r="16" fill="#16a34a" />
+    <rect x="252" y="300" width="52" height="14" rx="7" fill="#e2e8f0" />
+    <rect x="496" y="300" width="52" height="14" rx="7" fill="#e2e8f0" />
+    <rect x="360" y="488" width="80" height="14" rx="7" fill="#e2e8f0" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#16a34a" opacity="0.25" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">Core Web Vitals in Practice</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">LCP, INP, and CLS Explained</text>
+</svg>

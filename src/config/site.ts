@@ -20,6 +20,7 @@ export const siteConfig = {
     ico: "/favicon.ico",
   },
   homepage: {
+    showFeaturedPosts: true,
     showTaxonomyCards: true,
     showPopularTopics: true,
   },

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#0070df" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#0070df" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#0070df" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#0070df" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#0070df" stroke-width="3" />
+
+    <circle cx="440" cy="360" r="62" fill="#ffffff" stroke="#0070df" stroke-width="8" />
+    <line x1="486" y1="406" x2="540" y2="460" stroke="#0070df" stroke-width="10" stroke-linecap="round" />
+    <path d="M414 360 l18 18 34 -40" fill="none" stroke="#0070df" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+    <rect x="244" y="306" width="180" height="16" rx="8" fill="#e2e8f0" />
+    <rect x="244" y="344" width="140" height="16" rx="8" fill="#e2e8f0" />
+    <rect x="244" y="382" width="160" height="16" rx="8" fill="#e2e8f0" />
+    <rect x="244" y="420" width="120" height="16" rx="8" fill="#e2e8f0" />
+    <rect x="244" y="458" width="150" height="16" rx="8" fill="#e2e8f0" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#0070df" opacity="0.25" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">The Developer's SEO Checklist</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">Ship Pages That Get Found</text>
+</svg>

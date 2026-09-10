@@ -17,9 +17,11 @@ interface Props {
     topics: number;
     authors: number;
   };
+  /** Only offer the in-page jump when a Learning Paths section actually renders. */
+  hasLearningPaths?: boolean;
 }
 
-const { post, stats } = Astro.props;
+const { post, stats, hasLearningPaths = false } = Astro.props;
 
 const socialLinks = Object.entries(social).filter(([_, url]) => url?.trim());
 
@@ -35,7 +37,7 @@ const readingTime = post && typeof post.body === 'string'
 const featuredUrl = post ? getPostUrl(post) : withBase('/blog/');
 ---
 
-<div class="max-w-6xl mx-auto px-4 sm:px-6">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 {post ? (
   <section class="py-12 md:py-16 lg:py-20">
     <div class="grid lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] gap-12 lg:gap-10 items-center">
@@ -75,25 +77,27 @@ const featuredUrl = post ? getPostUrl(post) : withBase('/blog/');
               class="w-5 h-5 transition-transform duration-200 group-hover:translate-x-0.5"
             />
           </a>
-          <a
-            href="#learning-paths"
-            class="group inline-flex items-center gap-1.5 text-base font-semibold text-gray-700 transition-colors duration-200 hover:text-accent-600 dark:text-gray-300 dark:hover:text-accent-400"
-          >
-            <Icon
-              name="mdi:map-marker-path"
-              class="w-5 h-5 text-accent-600 dark:text-accent-400"
-            />
-            Find your path
-            <Icon
-              name="mdi:arrow-down"
-              class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5"
-            />
-          </a>
+          {hasLearningPaths && (
+            <a
+              href="#learning-paths"
+              class="group inline-flex items-center gap-1.5 text-base font-semibold text-gray-700 transition-colors duration-200 hover:text-accent-600 dark:text-gray-300 dark:hover:text-accent-400"
+            >
+              <Icon
+                name="mdi:map-marker-path"
+                class="w-5 h-5 text-accent-600 dark:text-accent-400"
+              />
+              Find your path
+              <Icon
+                name="mdi:arrow-down"
+                class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5"
+              />
+            </a>
+          )}
         </div>
 
         {socialLinks.length > 0 && (
           <div class="mt-8 flex items-center gap-1">
-            <span class="mr-2 text-xs text-gray-400 dark:text-gray-500">Follow along</span>
+            <span class="mr-2 text-xs text-gray-500 dark:text-gray-400">Follow along</span>
             {socialLinks.map(([platform, url]) => {
               const isBluesky = (url as string).includes('bsky.app');
               return (
@@ -120,11 +124,11 @@ const featuredUrl = post ? getPostUrl(post) : withBase('/blog/');
       <article class="group w-full lg:justify-self-end">
         <a href={featuredUrl} data-astro-prefetch class="block overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
           {post.data.image && (
-            <div class="relative aspect-video overflow-hidden">
+            <div class={`relative aspect-video overflow-hidden ${post.data.imageFit === "contain" ? "bg-gray-50 dark:bg-gray-900" : ""}`}>
               <Image
                 src={post.data.image}
                 alt={post.data.imageAlt ?? post.data.title}
-                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                class={`h-full w-full transition-[filter] duration-300 group-hover:brightness-105 ${post.data.imageFit === "contain" ? "object-contain" : "object-cover"}`}
                 width={960}
                 height={540}
                 widths={[480, 640, 960]}

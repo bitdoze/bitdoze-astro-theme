@@ -13,7 +13,7 @@ const postsCollection = defineCollection({
       date: z.coerce.date(),
       image: z.optional(image()),
       imageAlt: z.string().optional(),
-      imageFit: z.enum(["cover", "contain"]).default("cover"),
+      imageFit: z.enum(["cover", "contain"]).default("contain"),
       video: z.url().optional(),
       authors: z.array(z.string()).min(1),
       categories: z.array(z.string()).default([]),
@@ -26,6 +26,7 @@ const postsCollection = defineCollection({
       canonical: z.url().optional(),
       updatedDate: z.coerce.date().optional(),
       draft: z.boolean().default(false),
+      featured: z.boolean().default(false),
     }),
 });
 

@@ -21,7 +21,7 @@ const recentPosts = await getLatestPosts(3);
 ---
 
 <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-10">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <!-- Brand -->
       <div>
@@ -56,7 +56,7 @@ const recentPosts = await getLatestPosts(3);
 
       <!-- Links -->
       <nav aria-label="Footer">
-        <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h2>
         <ul class="space-y-2">
           {footerMenu.map((item) => (
             <li>
@@ -70,7 +70,7 @@ const recentPosts = await getLatestPosts(3);
 
       <!-- Recent Posts -->
       <div>
-        <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Latest Posts</h3>
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Latest Posts</h2>
         <div class="space-y-3">
           {recentPosts.map((post) => (
             <a href={getPostUrl(post)} class="flex gap-3 group">

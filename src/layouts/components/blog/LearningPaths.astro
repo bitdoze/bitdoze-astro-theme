@@ -1,71 +1,13 @@
 ---
 import { Icon } from 'astro-icon/components';
-import { getPublishedPosts, sortPostsByDate, type PostEntry } from '@utils/content';
-import { getPostSlug, getPostUrl, normalizeTaxonomy, taxonomySlug, withBase } from '@utils/slug';
+import type { LearningPath } from '@utils/learningPaths';
 
-type PathEntry = { title: string; url: string };
-type Path = {
-  kind: 'series' | 'topic';
-  name: string;
-  meta: string;
-  entries: PathEntry[];
-  cta: string;
-  ctaUrl: string;
-};
-
-const posts = sortPostsByDate(await getPublishedPosts());
-
-// Series paths: parts in position order, cta starts at Part 1.
-const seriesGroups = new Map<string, PostEntry[]>();
-for (const post of posts) {
-  const series = post.data.series;
-  if (!series) continue;
-  const group = seriesGroups.get(series.name) ?? [];
-  group.push(post);
-  seriesGroups.set(series.name, group);
+interface Props {
+  /** Paths built by buildLearningPaths() so the homepage can dedupe sections. */
+  paths: LearningPath[];
 }
-const seriesPaths: Path[] = [...seriesGroups.entries()].map(([name, group]) => {
-  const parts = [...group]
-    .sort((a, b) => (a.data.series?.position ?? 0) - (b.data.series?.position ?? 0))
-    .map((post) => ({ title: post.data.title, url: getPostUrl(post) }));
-  return {
-    kind: 'series',
-    name,
-    meta: `${parts.length}-part series`,
-    entries: parts.slice(0, 3),
-    cta: 'Start with Part 1',
-    ctaUrl: parts[0]?.url ?? withBase('/series/'),
-  };
-});
 
-// Topic paths: the three largest categories, newest posts first.
-const categoryCounts = new Map<string, number>();
-for (const post of posts) {
-  for (const category of post.data.categories ?? []) {
-    categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
-  }
-}
-const topCategories = [...categoryCounts.entries()]
-  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-  .slice(0, 3);
-const labelBySlug = new Map(normalizeTaxonomy(topCategories.map(([label]) => label)).map((t) => [t.slug, t.label]));
-const topicPaths: Path[] = topCategories.map(([category, count]) => {
-  const slug = taxonomySlug(category);
-  const entries = posts
-    .filter((post) => post.data.categories?.includes(category))
-    .slice(0, 3)
-    .map((post) => ({ title: post.data.title, url: getPostUrl(post) }));
-  return {
-    kind: 'topic',
-    name: labelBySlug.get(slug) ?? category,
-    meta: `${count} ${count === 1 ? 'guide' : 'guides'}`,
-    entries,
-    cta: 'Browse the topic',
-    ctaUrl: withBase(`/categories/${slug}/`),
-  };
-});
-
-const paths = [...seriesPaths, ...topicPaths];
+const { paths } = Astro.props;
 ---
 
 {paths.length > 0 && (
@@ -97,7 +39,7 @@ const paths = [...seriesPaths, ...topicPaths];
                 <a
                   href={entry.url}
                   data-astro-prefetch
-                  class="text-sm font-medium leading-snug text-gray-700 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors line-clamp-2"
+                  class="py-0.5 text-sm font-medium leading-snug text-gray-700 dark:text-gray-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors line-clamp-2"
                 >
                   {entry.title}
                 </a>

@@ -2,10 +2,11 @@
 /**
  * SeriesBadge Component
  *
- * Displays a visual indicator for posts that are part of a series
- * Can be used in list views to highlight series posts
+ * Displays a visual indicator for posts that are part of a series.
+ * Links to the series entry on /series/ (anchored by series name) so the
+ * badge lands on the series instead of a generic index.
  */
-import { withBase } from "@utils/slug";
+import { slugify, withBase } from "@utils/slug";
 
 export interface Props {
   seriesName: string;
@@ -19,32 +20,25 @@ const {
   size = 'md'
 } = Astro.props;
 
+const seriesUrl = withBase(`/series/#${slugify(seriesName)}`);
+
 // Size classes
 const sizeClasses = {
-  sm: 'text-xs py-0.5 px-1.5',
-  md: 'text-sm py-1 px-2',
+  sm: 'text-xs py-0.5 px-2',
+  md: 'text-sm py-1 px-2.5',
   lg: 'text-base py-1.5 px-3'
 };
-
-const badgeClasses = `
-  inline-flex items-center rounded-md 
-  bg-blue-50 dark:bg-blue-900/30 
-  text-blue-700 dark:text-blue-300
-  border border-blue-100 dark:border-blue-800
-  ${sizeClasses[size]}
-  transition-all duration-300 hover:bg-blue-100 dark:hover:bg-blue-800/50
-  group
-`;
 ---
 
-<a href={withBase(`/series/`)} class={badgeClasses}>
-  <span class="flex items-center">
-    <svg xmlns="http://www.w3.org/2000/svg" class="mr-1 h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
-    </svg>
-    <span class="font-medium truncate max-w-[120px] group-hover:underline">{seriesName}</span>
-  </span>
-  <span class="ml-1.5 inline-flex items-center justify-center rounded-full bg-blue-200 dark:bg-blue-700 px-1.5 py-0.5 text-xs font-medium text-blue-800 dark:text-blue-200 min-w-[20px]">
-    {seriesPosition}
-  </span>
+<a
+  href={seriesUrl}
+  title={`${seriesName} - Part ${seriesPosition}`}
+  class={`inline-flex max-w-full items-center gap-1.5 rounded-full bg-accent-50 text-accent-700 ring-1 ring-inset ring-accent-100 transition-colors hover:bg-accent-100 dark:bg-accent-900/30 dark:text-accent-300 dark:ring-accent-900 dark:hover:bg-accent-900/60 ${sizeClasses[size]}`}
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+  </svg>
+  <span class="truncate font-medium">{seriesName}</span>
+  <span class="shrink-0 text-accent-400 dark:text-accent-500" aria-hidden="true">&middot;</span>
+  <span class="shrink-0 font-semibold">Part {seriesPosition}</span>
 </a>

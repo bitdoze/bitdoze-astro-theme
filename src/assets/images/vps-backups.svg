@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#7c3aed" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#7c3aed" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#7c3aed" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#7c3aed" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#7c3aed" stroke-width="3" />
+
+    <ellipse cx="400" cy="330" rx="96" ry="26" fill="#7c3aed" opacity="0.85" />
+    <path d="M304 330 v80 a96 26 0 0 0 192 0 v-80" fill="#7c3aed" opacity="0.22" />
+    <ellipse cx="400" cy="410" rx="96" ry="26" fill="#7c3aed" opacity="0.4" />
+    <path d="M304 370 a96 26 0 0 0 192 0" fill="none" stroke="#7c3aed" stroke-width="4" />
+    <path d="M536 300 a72 72 0 1 1 -20 -50" fill="none" stroke="#7c3aed" stroke-width="7" stroke-linecap="round" />
+    <path d="M516 232 l6 26 26 -8 z" fill="#7c3aed" />
+    <rect x="240" y="310" width="42" height="12" rx="6" fill="#e2e8f0" />
+    <rect x="518" y="310" width="42" height="12" rx="6" fill="#e2e8f0" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#7c3aed" opacity="0.25" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">Backups and Monitoring</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">Part 4: Sleep Well at Night</text>
+</svg>

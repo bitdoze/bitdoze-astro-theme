@@ -7,7 +7,7 @@ import { formatDate } from "@utils/date";
 export interface Props {
     tags?: string[];
     postsPerTag?: number;
-    /** Slugs of posts already shown elsewhere on the page; excluded here to avoid repeats. */
+    /** Slugs of posts shown elsewhere on the page; columns prefer other posts first. */
     excludeSlugs?: string[];
 }
 
@@ -17,24 +17,32 @@ const { tags = ["Jamstack", "astro", "ai"], postsPerTag = 5, excludeSlugs = [] }
 const sortedPosts = sortPostsByDate(await getPublishedPosts());
 
 // Collapse duplicate tag labels into route identities ("astro"/"Astro" merge).
-// Each column prefers posts not already shown in the hero or Latest grid, but
-// backfills from shown posts when the tag would otherwise come up empty: on a
-// small blog a hollow section is worse than a repeat. Tags with no posts at
-// all are dropped entirely.
+// Each column prefers posts not already shown elsewhere on the page, then
+// backfills with the tag's most recent posts so a configured topic still
+// renders on a small archive. A post never appears in two columns, and a tag
+// with fewer than two posts is dropped entirely.
 const shownSlugs = new Set(excludeSlugs);
+const usedSlugs = new Set<string>();
 const tagPosts = normalizeTaxonomy(tags)
     .map(({ slug, label }) => {
         const matching = sortedPosts.filter((post) =>
             post.data.tags?.some((t: string) => taxonomySlug(t) === slug),
         );
-        const fresh = matching.filter((post) => !shownSlugs.has(getPostSlug(post)));
-        const posts = [...fresh, ...matching.filter((post) => shownSlugs.has(getPostSlug(post)))].slice(
-            0,
-            postsPerTag,
-        );
+        const ordered = [
+            ...matching.filter((post) => !shownSlugs.has(getPostSlug(post))),
+            ...matching,
+        ];
+        const posts: typeof matching = [];
+        for (const post of ordered) {
+            const postSlug = getPostSlug(post);
+            if (usedSlugs.has(postSlug) || posts.some((p) => getPostSlug(p) === postSlug)) continue;
+            posts.push(post);
+            if (posts.length >= postsPerTag) break;
+        }
+        posts.forEach((post) => usedSlugs.add(getPostSlug(post)));
         return { slug, label, posts };
     })
-    .filter(({ posts }) => posts.length > 0);
+    .filter(({ posts }) => posts.length >= 2);
 ---
 
 {tagPosts.length > 0 && (
@@ -50,7 +58,7 @@ const tagPosts = normalizeTaxonomy(tags)
                     Popular Topics
                 </h2>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    The stacks readers come here for
+                    Browse posts by topic
                 </p>
             </div>
         </div>
@@ -73,19 +81,19 @@ const tagPosts = normalizeTaxonomy(tags)
                                     data-astro-prefetch
                                     class="group flex items-center gap-3 py-3"
                                 >
-                                    <div class="relative aspect-video w-16 shrink-0 overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
-                                        {post.data.image && (
+                                    {post.data.image && (
+                                        <div class="relative aspect-video w-16 shrink-0 overflow-hidden rounded-md border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
                                             <Image
                                                 src={post.data.image}
-                                                alt={post.data.title}
+                                                alt=""
                                                 width={64}
                                                 height={36}
-                                                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                class="h-full w-full object-cover transition-[filter] duration-300 group-hover:brightness-105"
                                                 loading="lazy"
                                                 decoding="async"
                                             />
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                     <div class="min-w-0 grow">
                                         <h4 class="line-clamp-2 text-sm font-medium leading-snug text-gray-800 transition-colors duration-200 group-hover:text-accent-600 dark:text-gray-200 dark:group-hover:text-accent-400">
                                             {post.data.title}

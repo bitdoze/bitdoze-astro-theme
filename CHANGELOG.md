@@ -4,6 +4,28 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-09-10
+
+A design-identity pass based on the 2026-09-10 design critique, plus expanded demo content, a Featured Posts section, and a brand-anchored accent ramp. Routing contracts are unchanged; the content schema gains one optional field (`featured`).
+
+### Added
+
+- **Brand-anchored accent ramp**: `accent-*` is now an owned azure scale anchored on the logo (`#009cef`) rather than a copy of Tailwind's default blue. Link, button, chip, and dark-mode pairs are enforced by the contrast test.
+- **Display face for headings**: self-hosted `Bricolage Grotesque Variable` (`@fontsource-variable/bricolage-grotesque`) exposed as the `--font-display` token; body copy stays on the system stack.
+- **Series anchors**: each series on `/series/` has an `id`, so series badges on cards link straight to their series entry.
+- **Expanded demo content**: twelve new fully written posts with original SVG covers — Astro series Parts 4–5, two new series ("VPS Hosting for Developers", 4 parts, and "Blogging That Works", 3 parts), and standalone SEO, Core Web Vitals, and self-hosted analytics guides — plus the cover `introduction-to-cloud-computing` was missing.
+- **Featured Posts section**: optional `featured` frontmatter flag and a `homepage.showFeaturedPosts` toggle. The homepage renders up to three editor's picks in the same three-column card grid as Latest, newest first, never repeating the hero post.
+- **Popular Topics restored**: columns prefer posts not shown elsewhere on the page, then backfill with the tag's most recent posts so configured topics render on small archives; a post never appears in two columns.
+
+### Changed
+
+- **Homepage dedupe**: every surface owns a distinct slice of the archive (hero → latest non-series posts → series learning path → topic paths → Popular Topics), and Popular Topics drops columns with fewer than two unseen posts instead of repeating shown ones. Path building moved to `src/utils/learningPaths.ts`.
+- **Card language**: one category chip in the meta row, series as a small label above the title, covers default to `imageFit: "contain"` so baked-in cover titles are never cropped, and image hover is a brightness shift instead of `scale-105`.
+- **One content width**: header, footer, hero, and homepage sections share the same `max-w-5xl` container; the contact page no longer nests its own container.
+- **Breadcrumbs**: middle crumbs collapse on mobile (`Home / current`), the current title truncates with an ellipsis instead of a hard clip, and the accent pill is now plain ink.
+- **Focus and contrast fixes**: contact inputs use the global focus ring, "Follow along" text and the mobile TOC icon were corrected, footer headings are `h2`, and the nested TOC list gained inset padding.
+- **Popular Topics subline** changed to "Browse posts by topic".
+
 ## [1.2.0] - 2026-09-09
 
 A design release bringing the theme's reading and homepage experience in line with bitdoze.com: a sticky table-of-contents rail, a featured-post hero with learning paths, and a full token and card-language cleanup. No content or configuration contract changes.

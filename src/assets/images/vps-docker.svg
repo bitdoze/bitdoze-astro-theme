@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#0ea5e9" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#0ea5e9" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#0ea5e9" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#0ea5e9" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#0ea5e9" stroke-width="3" />
+
+    <rect x="240" y="430" width="100" height="58" rx="10" fill="#0ea5e9" opacity="0.85" />
+    <rect x="350" y="430" width="100" height="58" rx="10" fill="#0ea5e9" opacity="0.65" />
+    <rect x="460" y="430" width="100" height="58" rx="10" fill="#0ea5e9" opacity="0.45" />
+    <rect x="295" y="362" width="100" height="58" rx="10" fill="#0ea5e9" opacity="0.5" />
+    <rect x="405" y="362" width="100" height="58" rx="10" fill="#0ea5e9" opacity="0.35" />
+    <rect x="350" y="294" width="100" height="58" rx="10" fill="#0ea5e9" opacity="0.25" />
+    <circle cx="290" cy="459" r="7" fill="#ffffff" />
+    <circle cx="400" cy="459" r="7" fill="#ffffff" />
+    <circle cx="510" cy="459" r="7" fill="#ffffff" />
+    <circle cx="345" cy="391" r="7" fill="#ffffff" />
+    <path d="M600 300 a60 60 0 1 1 -42 18" fill="none" stroke="#0ea5e9" stroke-width="6" stroke-linecap="round" opacity="0.5" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#0ea5e9" opacity="0.25" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">Docker and Caddy on a VPS</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">Part 3: Deploying with Confidence</text>
+</svg>

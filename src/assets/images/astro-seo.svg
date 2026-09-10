@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#ff5d01" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#ff5d01" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#ff5d01" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#ff5d01" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#ff5d01" stroke-width="3" />
+
+    <rect x="240" y="300" width="180" height="130" rx="12" fill="#e2e8f0" />
+    <rect x="262" y="326" width="136" height="12" rx="6" fill="#64748b" />
+    <rect x="262" y="352" width="104" height="12" rx="6" fill="#cbd5e1" />
+    <rect x="262" y="378" width="120" height="12" rx="6" fill="#cbd5e1" />
+    <circle cx="470" cy="392" r="52" fill="#ffffff" stroke="#ff5d01" stroke-width="8" />
+    <path d="M470 356 a36 36 0 0 1 0 72" fill="none" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round" />
+    <line x1="508" y1="430" x2="552" y2="474" stroke="#ff5d01" stroke-width="10" stroke-linecap="round" />
+    <path d="M508 340 a60 60 0 0 1 44 44" fill="none" stroke="#ff5d01" stroke-width="6" stroke-linecap="round" opacity="0.55" />
+    <path d="M520 322 a82 82 0 0 1 62 62" fill="none" stroke="#ff5d01" stroke-width="6" stroke-linecap="round" opacity="0.3" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#ff5d01" opacity="0.25" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">Astro SEO and Feeds</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">Sitemaps, RSS, and Social Cards</text>
+</svg>

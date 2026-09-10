@@ -4,15 +4,15 @@
 /* Dark mode variant for class-based toggling */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Prose link wash accents (light/dark twins) */
+/* Prose link wash accents (light/dark twins), derived from the brand ramp */
 :root {
-  --color-link-highlight: rgba(125, 190, 255, 0.22);
-  --color-link-highlight-strong: rgba(80, 146, 233, 0.35);
+  --color-link-highlight: color-mix(in oklab, var(--color-accent-400) 28%, transparent);
+  --color-link-highlight-strong: color-mix(in oklab, var(--color-accent-500) 42%, transparent);
 }
 
 .dark {
-  --color-link-highlight: rgba(60, 130, 246, 0.32);
-  --color-link-highlight-strong: rgba(60, 110, 246, 0.42);
+  --color-link-highlight: color-mix(in oklab, var(--color-accent-400) 30%, transparent);
+  --color-link-highlight-strong: color-mix(in oklab, var(--color-accent-400) 45%, transparent);
 }
 
 /* Theme configuration */
@@ -30,23 +30,28 @@
   --color-primary-900: #1e3a8a;
   --color-primary-950: #172554;
 
-  /* Semantic accent scale. Values are copied 1:1 from Tailwind v4's default
-     blue palette, so `accent-*` renders pixel-identically to the `blue-*`
-     classes it replaces across components. Brand/interactive color goes
-     through `accent-*`; neutral grays intentionally stay literal (`gray-*`)
-     because they encode surface/text hierarchy rather than brand identity and
-     would gain nothing from an extra alias. */
-  --color-accent-50: oklch(97% 0.014 254.604);
-  --color-accent-100: oklch(93.2% 0.032 255.585);
-  --color-accent-200: oklch(88.2% 0.059 254.128);
-  --color-accent-300: oklch(80.9% 0.105 251.813);
-  --color-accent-400: oklch(70.7% 0.165 254.624);
-  --color-accent-500: oklch(62.3% 0.214 259.815);
-  --color-accent-600: oklch(54.6% 0.245 262.881);
-  --color-accent-700: oklch(48.8% 0.243 264.376);
-  --color-accent-800: oklch(42.4% 0.199 265.638);
-  --color-accent-900: oklch(37.9% 0.146 265.522);
-  --color-accent-950: oklch(28.2% 0.091 267.935);
+  /* Semantic accent scale, anchored on the logo's azure (#009cef), not on a
+     Tailwind default. `accent-500` is the logo hue; steps are tuned so every
+     rendered pair passes WCAG AA:
+       - accent-600 as link/button text on white: 4.8:1
+       - white on accent-600 solid buttons: 4.8:1
+       - accent-400 as dark-mode link text: 6.7:1 on gray-900, 5.5:1 on gray-800
+       - accent-700 on accent-100 chips: 5.7:1
+       - accent-300 on accent-900 dark chips: 6.3:1
+     Brand/interactive color goes through `accent-*`; neutral grays
+     intentionally stay literal (`gray-*`) because they encode surface/text
+     hierarchy rather than brand identity. */
+  --color-accent-50: oklch(97.7% 0.013 236.62);
+  --color-accent-100: oklch(95.1% 0.026 236.824);
+  --color-accent-200: oklch(90.1% 0.058 230.902);
+  --color-accent-300: oklch(82.8% 0.111 230.318);
+  --color-accent-400: oklch(69.13% 0.155 235);
+  --color-accent-500: oklch(65.5% 0.175 238);
+  --color-accent-600: oklch(53.74% 0.215 245);
+  --color-accent-700: oklch(46.87% 0.195 246);
+  --color-accent-800: oklch(41.82% 0.165 247);
+  --color-accent-900: oklch(36.13% 0.135 247);
+  --color-accent-950: oklch(31.1% 0.095 248);
 
   /* Page surfaces. `bg-surface` adapts to dark mode via the .dark override
      below; `surface-dark` pins the dark value explicitly. Values match the
@@ -83,10 +88,13 @@
   --color-info-800: oklch(42.4% 0.199 265.638);
   --color-info-900: oklch(37.9% 0.146 265.522);
 
-  /* Fonts */
+  /* Fonts. Body copy stays on the system stack for speed and neutrality;
+     headings carry the brand voice through the self-hosted display face
+     (imported in Layout.astro). */
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Base styles */
@@ -103,6 +111,19 @@ html {
 
 body {
   font-family: var(--font-sans);
+}
+
+/* Display face for headings: one identity decision, inherited everywhere
+   (including .prose). Kept in the base layer so per-heading font and
+   tracking utilities still win. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
 }
 
 /* Dark mode colors */
@@ -141,7 +162,7 @@ body {
 .prose {
   --tw-prose-body: theme(colors.gray.700);
   --tw-prose-headings: theme(colors.gray.900);
-  --tw-prose-links: theme(colors.blue.600);
+  --tw-prose-links: var(--color-accent-600);
   --tw-prose-code: theme(colors.gray.900);
   --tw-prose-pre-bg: theme(colors.gray.100);
 }
@@ -149,7 +170,7 @@ body {
 .dark .prose {
   --tw-prose-body: theme(colors.gray.300);
   --tw-prose-headings: theme(colors.white);
-  --tw-prose-links: theme(colors.blue.400);
+  --tw-prose-links: var(--color-accent-400);
   --tw-prose-code: theme(colors.gray.100);
   --tw-prose-pre-bg: theme(colors.gray.800);
 }

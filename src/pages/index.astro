@@ -2,20 +2,58 @@
 import Hero from "@components/widgets/Hero.astro";
 import Layout from "@layouts/Layout.astro";
 import PostCard from "@components/blog/PostCard.astro";
+import FeaturedPosts from "@components/blog/FeaturedPosts.astro";
 import PopularTopics from "@components/blog/PopularTopics.astro";
 import LearningPaths from "@components/blog/LearningPaths.astro";
 import { siteConfig } from "@config/site";
 import { getPublishedPosts, sortPostsByDate } from "@utils/content";
 import { getPostSlug, withBase } from "@utils/slug";
+import { buildLearningPaths } from "@utils/learningPaths";
 
 // Get all blog posts and sort by date (newest first)
 const sortedPosts = sortPostsByDate(await getPublishedPosts());
 
-// The hero spotlights the newest post; the Latest grid shows what follows
-// so the front page never repeats itself.
+// Each homepage surface owns a distinct slice of the archive so no post
+// renders twice: the hero takes the newest post, Featured Posts shows the
+// editor's picks, Learning Paths owns the series, and the Latest grid shows
+// the newest remaining posts.
 const featuredPost = sortedPosts[0];
-const latestPosts = featuredPost ? sortedPosts.slice(1, 7) : [];
-const latestSlugs = sortedPosts.slice(0, 7).map((post) => getPostSlug(post));
+const featuredSlug = featuredPost ? getPostSlug(featuredPost) : undefined;
+const seriesSlugs = sortedPosts
+  .filter((post) => post.data.series)
+  .map((post) => getPostSlug(post));
+
+// Flagged posts, newest first. The hero already spotlights the newest post
+// overall, so it is dropped here to keep the grid free of repeats.
+const pickedPosts = sortedPosts
+  .filter((post) => post.data.featured && getPostSlug(post) !== featuredSlug)
+  .slice(0, 3);
+const pickedSlugs = pickedPosts.map((post) => getPostSlug(post));
+
+const latestPosts = sortedPosts
+  .filter((post) => {
+    const slug = getPostSlug(post);
+    return (
+      slug !== featuredSlug &&
+      !seriesSlugs.includes(slug) &&
+      !pickedSlugs.includes(slug)
+    );
+  })
+  .slice(0, 6);
+
+const learningPaths = buildLearningPaths(sortedPosts, [
+  ...(featuredSlug ? [featuredSlug] : []),
+  ...pickedSlugs,
+  ...latestPosts.map((post) => getPostSlug(post)),
+]);
+
+// Every slug already rendered above; Popular Topics must not repeat them.
+const shownSlugs = [
+  ...(featuredSlug ? [featuredSlug] : []),
+  ...pickedSlugs,
+  ...latestPosts.map((post) => getPostSlug(post)),
+  ...learningPaths.flatMap((path) => path.entries.map((entry) => entry.slug)),
+];
 
 const stats = {
   guides: sortedPosts.length,
@@ -23,7 +61,7 @@ const stats = {
   authors: new Set(sortedPosts.flatMap((post) => post.data.authors ?? [])).size,
 };
 
-const { showTaxonomyCards, showPopularTopics } = siteConfig.homepage;
+const { showFeaturedPosts, showTaxonomyCards, showPopularTopics } = siteConfig.homepage;
 
 const exploreCards = [
     {
@@ -54,7 +92,10 @@ const exploreCards = [
 >
   <div class="w-full py-8">
     <!-- Hero Section -->
-    <Hero post={featuredPost} stats={stats} />
+    <Hero post={featuredPost} stats={stats} hasLearningPaths={learningPaths.length > 0} />
+
+    <!-- Featured Posts Section (editor's picks, deduped against the hero) -->
+    {showFeaturedPosts && <FeaturedPosts posts={pickedPosts} />}
 
     <!-- Latest Articles Section -->
     {latestPosts.length > 0 && (
@@ -78,7 +119,7 @@ const exploreCards = [
     )}
 
     <!-- Learning Paths Section (series + top topics, with entry points) -->
-    <LearningPaths />
+    <LearningPaths paths={learningPaths} />
 
     <!-- Explore Section (compact taxonomy row) -->
     {showTaxonomyCards && (
@@ -109,9 +150,9 @@ const exploreCards = [
       </section>
     )}
 
-    <!-- Popular Topics Section (deduped against the hero and Latest grid) -->
+    <!-- Popular Topics Section (prefers posts not shown above, backfills per topic) -->
     {showPopularTopics && (
-      <PopularTopics tags={["Jamstack", "astro", "ai"]} postsPerTag={5} excludeSlugs={latestSlugs} />
+      <PopularTopics tags={["Astro", "VPS", "Blogging"]} postsPerTag={4} excludeSlugs={shownSlugs} />
     )}
   </div>
 </Layout>

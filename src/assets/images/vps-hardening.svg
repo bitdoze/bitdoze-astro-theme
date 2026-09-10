@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#16a34a" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#16a34a" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#16a34a" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#16a34a" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#16a34a" stroke-width="3" />
+
+    <path d="M400 292 l96 34 v74 c0 56 -42 92 -96 108 c-54 -16 -96 -52 -96 -108 v-74 z" fill="#16a34a" opacity="0.14" stroke="#16a34a" stroke-width="4" />
+    <rect x="368" y="380" width="64" height="54" rx="10" fill="#16a34a" />
+    <path d="M380 380 v-14 a20 20 0 0 1 40 0 v14" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round" />
+    <circle cx="400" cy="406" r="7" fill="#ffffff" />
+    <rect x="240" y="330" width="96" height="14" rx="7" fill="#e2e8f0" />
+    <rect x="240" y="358" width="70" height="14" rx="7" fill="#e2e8f0" />
+    <rect x="240" y="440" width="96" height="14" rx="7" fill="#e2e8f0" />
+    <rect x="240" y="468" width="70" height="14" rx="7" fill="#e2e8f0" />
+    <rect x="520" y="330" width="44" height="14" rx="7" fill="#e2e8f0" />
+    <rect x="520" y="358" width="30" height="14" rx="7" fill="#e2e8f0" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#16a34a" opacity="0.25" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">Hardening a Fresh Server</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">Part 2: SSH, Firewall, and Updates</text>
+</svg>

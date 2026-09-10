@@ -1,5 +1,6 @@
 ---
 import "@styles/global.css";
+import "@fontsource-variable/bricolage-grotesque";
 import Header from "@components/common/Header.astro";
 import SEO from "@components/common/SEO.astro";
 import { withBase } from "@utils/slug";
@@ -108,7 +109,7 @@ const {
     
     <!-- Main content area with conditional width -->
     <main id="main-content" class="grow w-full" tabindex="-1">
-      <div class={wideContent ? "w-full" : "max-w-5xl mx-auto px-4 sm:px-6"}>
+      <div class={wideContent ? "w-full" : "max-w-5xl mx-auto px-4 sm:px-6 lg:px-8"}>
         <slot />
       </div>
     </main>

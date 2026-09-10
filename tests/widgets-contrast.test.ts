@@ -38,6 +38,17 @@ for (const m of themeCss.matchAll(/--color-([a-z]+-\d+):\s*oklch\(([\d.]+)%\s+([
   palette[m[1]] = oklchLuminance(Number(m[2]) / 100, Number(m[3]), Number(m[4]));
 }
 
+// The brand ramp is project-owned (see src/styles/global.css), not Tailwind's
+// default blue, so the widget contracts below must read the actual tokens.
+const globalCss = readFileSync(
+  new URL("../src/styles/global.css", import.meta.url),
+  "utf8",
+);
+const accent: Record<string, number> = {};
+for (const m of globalCss.matchAll(/--color-accent-(\d+):\s*oklch\(([\d.]+)%\s+([\d.]+)\s+([\d.]+)\)/g)) {
+  accent[m[1]] = oklchLuminance(Number(m[2]) / 100, Number(m[3]), Number(m[4]));
+}
+
 const WHITE = 1; // light body surface: bg-white
 const DARK = palette["gray-900"]; // dark body surface: dark:bg-gray-900
 const DARK_CARD = palette["gray-800"]; // dark card surface: dark:bg-gray-800
@@ -59,9 +70,9 @@ const button = readFileSync(
 
 describe("widget contrast (WCAG 1.4.3 text >= 4.5:1, 1.4.11 UI >= 3:1)", () => {
   it("active tab label passes in both modes on body and card surfaces", () => {
-    expect(contrastRatio(palette["blue-700"], WHITE)).toBeGreaterThanOrEqual(4.5);
-    expect(contrastRatio(palette["blue-400"], DARK)).toBeGreaterThanOrEqual(4.5);
-    expect(contrastRatio(palette["blue-400"], DARK_CARD)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(accent["700"], WHITE)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(accent["400"], DARK)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(accent["400"], DARK_CARD)).toBeGreaterThanOrEqual(4.5);
   });
 
   it("inactive tab label passes in both modes", () => {
@@ -70,31 +81,52 @@ describe("widget contrast (WCAG 1.4.3 text >= 4.5:1, 1.4.11 UI >= 3:1)", () => {
   });
 
   it("solid button white text passes on every color in both modes", () => {
-    for (const bg of ["blue-600", "green-700", "red-600", "purple-600", "gray-600"]) {
-      expect(contrastRatio(WHITE, palette[bg])).toBeGreaterThanOrEqual(4.5);
+    const bgs = [accent["600"], accent["700"], palette["green-700"], palette["red-600"], palette["purple-600"], palette["gray-600"]];
+    for (const bg of bgs) {
+      expect(contrastRatio(WHITE, bg)).toBeGreaterThanOrEqual(4.5);
     }
   });
 
   it("outline button text passes on light surfaces", () => {
-    for (const fg of ["blue-600", "green-700", "red-600", "purple-600", "gray-600"]) {
-      expect(contrastRatio(palette[fg], WHITE)).toBeGreaterThanOrEqual(4.5);
+    const fgs = [accent["600"], palette["green-700"], palette["red-600"], palette["purple-600"], palette["gray-600"]];
+    for (const fg of fgs) {
+      expect(contrastRatio(fg, WHITE)).toBeGreaterThanOrEqual(4.5);
     }
   });
 
   it("outline button text passes on dark body and card surfaces", () => {
-    for (const fg of ["blue-400", "green-400", "red-400", "purple-400", "gray-400"]) {
-      expect(contrastRatio(palette[fg], DARK)).toBeGreaterThanOrEqual(4.5);
-      expect(contrastRatio(palette[fg], DARK_CARD)).toBeGreaterThanOrEqual(4.5);
+    const fgs = [accent["400"], palette["green-400"], palette["red-400"], palette["purple-400"], palette["gray-400"]];
+    for (const fg of fgs) {
+      expect(contrastRatio(fg, DARK)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(fg, DARK_CARD)).toBeGreaterThanOrEqual(4.5);
     }
   });
 
   it("outline button borders stay visible (>= 3:1) in both modes", () => {
-    for (const fg of ["blue-600", "green-700", "red-600", "purple-600", "gray-600"]) {
-      expect(contrastRatio(palette[fg], WHITE)).toBeGreaterThanOrEqual(3);
+    const lightFgs = [accent["600"], palette["green-700"], palette["red-600"], palette["purple-600"], palette["gray-600"]];
+    const darkFgs = [accent["400"], palette["green-400"], palette["red-400"], palette["purple-400"], palette["gray-400"]];
+    for (const fg of lightFgs) {
+      expect(contrastRatio(fg, WHITE)).toBeGreaterThanOrEqual(3);
     }
-    for (const fg of ["blue-400", "green-400", "red-400", "purple-400", "gray-400"]) {
-      expect(contrastRatio(palette[fg], DARK)).toBeGreaterThanOrEqual(3);
+    for (const fg of darkFgs) {
+      expect(contrastRatio(fg, DARK)).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  it("brand ramp pairs used across the theme stay AA", () => {
+    // Links and solid buttons.
+    expect(contrastRatio(accent["600"], WHITE)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(WHITE, accent["600"])).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(WHITE, accent["700"])).toBeGreaterThanOrEqual(4.5);
+    // Dark-mode link text on body and card surfaces.
+    expect(contrastRatio(accent["400"], DARK)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(accent["400"], DARK_CARD)).toBeGreaterThanOrEqual(4.5);
+    // Chips: accent-700 on accent-100 (light), accent-300 on accent-900 (dark).
+    expect(contrastRatio(accent["700"], accent["100"])).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(accent["300"], accent["900"])).toBeGreaterThanOrEqual(4.5);
+    // Icons keep the logo hue visible on both surfaces (UI >= 3:1).
+    expect(contrastRatio(accent["500"], WHITE)).toBeGreaterThanOrEqual(3);
+    expect(contrastRatio(accent["500"], DARK)).toBeGreaterThanOrEqual(3);
   });
 });
 

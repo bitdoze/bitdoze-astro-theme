@@ -1,0 +1,129 @@
+---
+title: "VPS Hosting for Developers - Part 3: Docker and Caddy"
+meta_title: "Deploying to a VPS with Docker Compose and Caddy"
+description: "Ship a containerized site to your VPS with a reproducible Compose file, automatic HTTPS from Caddy, and a deploy script you can actually remember."
+date: 2026-05-12
+image: "../../assets/images/vps-docker.svg"
+imageAlt: "Illustration of stacked containers connected to a reverse proxy"
+authors: ["dragos"]
+categories: ["VPS Hosting"]
+tags: ["vps", "docker", "caddy", "deployment"]
+series:
+  name: "VPS Hosting for Developers"
+  position: 3
+---
+
+The server is hardened and nothing on it is visible to the internet yet. In this part we put a real site behind it: a multi-stage build, a Compose file that describes the whole stack, and Caddy handling TLS so certificates stop being a chore.
+
+<Notice type="info" title="Prerequisites">
+You need Parts 1 and 2 of this series: a running VPS, a non-root user with `sudo`, and a firewall that allows ports 80 and 443. You also need a domain whose A/AAAA record points at the server.
+</Notice>
+
+## Install Docker
+
+Use Docker's official repository rather than the distribution packages, which tend to lag:
+
+```bash
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+```
+
+Log out and back in for the group change to apply, then confirm:
+
+```bash
+docker version
+docker compose version
+```
+
+## A Site That Builds Itself
+
+The example below builds a static Astro site in one stage and serves it from a Caddy image in the second. The final image contains no Node.js, no `node_modules`, and no build tools:
+
+```dockerfile
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM caddy:2-alpine
+COPY --from=build /app/dist /srv
+COPY Caddyfile /etc/caddy/Caddyfile
+```
+
+If your app needs a running Node server instead, keep the build stage and change the final stage to `node:22-alpine`, then point Caddy at it with `reverse_proxy`.
+
+## The Caddyfile
+
+Caddy's headline feature is automatic HTTPS: it provisions and renews certificates for any hostname in the config. For a static site the whole file is four lines:
+
+```
+example.com {
+  encode zstd gzip
+  root * /srv
+  file_server
+}
+```
+
+For a Node app, replace `root`/`file_server` with:
+
+```
+example.com {
+  encode zstd gzip
+  reverse_proxy app:4321
+}
+```
+
+`app` is the Compose service name; Docker's internal DNS resolves it.
+
+## One Compose File for Everything
+
+Compose gives the server a declarative description of what should be running:
+
+```yaml
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
+```
+
+The two volumes matter. `/data` stores certificates and ACME account keys; deleting it forces Caddy to re-issue everything and can hit rate limits. Back it up with the rest of your server in Part 4.
+
+## Deploying Changes
+
+A deploy is three commands, plus a prune so old image layers do not fill the disk:
+
+```bash
+git pull --ff-only
+docker compose build
+docker compose up -d
+docker image prune -f
+```
+
+Run them from a small script or a CI job that SSHes in. Because the build happens on the server, keep image builds light; if they get slow, move the build step to CI and push the image to a registry instead.
+
+## Logs and Routine Maintenance
+
+```bash
+docker compose ps          # what is running
+docker compose logs -f web # follow logs
+docker compose pull        # newer base images
+docker compose up -d       # recreate with the new images
+```
+
+Set a log cap in the daemon config (`/etc/docker/daemon.json`) so a noisy container cannot fill the disk, and update base images monthly.
+
+## Conclusion
+
+Docker makes the server reproducible, and Caddy makes TLS invisible. Together they turn "deploy" from an afternoon into a command. Part 4 closes the series with the part everyone skips until they need it: backups, monitoring, and a restore you have actually tested.

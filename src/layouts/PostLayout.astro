@@ -131,7 +131,7 @@ const hasSeries = Boolean(series);
           </div>
 
           {image && (
-            <div class={`mt-8 overflow-hidden rounded-lg border border-gray-200 shadow-sm aspect-video dark:border-gray-700 ${imageFit === "contain" ? "bg-gray-100 dark:bg-gray-900" : ""}`}>
+            <div class={`mt-8 overflow-hidden rounded-lg border border-gray-200 shadow-sm aspect-video dark:border-gray-700 ${imageFit === "contain" ? "bg-gray-50 dark:bg-gray-900" : ""}`}>
               <Image src={image} alt={imageAlt ?? title} class={`w-full h-full ${imageFit === "contain" ? "object-contain" : "object-cover"}`} widths={[480, 768, 1024, 1280]} sizes="(max-width: 1280px) calc(100vw - 2rem), (max-width: 1536px) 720px, 752px" width={1280} height={720} loading="eager" decoding="async" fetchpriority="high" />
             </div>
           )}
@@ -140,7 +140,7 @@ const hasSeries = Boolean(series);
         {hasSeries && series && <SeriesNav currentSlug={getPostSlug(post)} seriesName={series.name} seriesPosition={series.position} />}
 
         <div
-          class="prose prose-lg dark:prose-invert prose-blue prose-headings:font-bold prose-a:text-accent-600 dark:prose-a:text-accent-400 prose-img:rounded-lg w-full max-w-none!"
+          class="prose prose-lg dark:prose-invert prose-headings:font-bold prose-a:text-accent-600 dark:prose-a:text-accent-400 prose-img:rounded-lg w-full max-w-none!"
           data-reading-body
         >
           <slot />

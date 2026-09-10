@@ -1,8 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-  <rect width="800" height="600" fill="#f0f8ff" />
-  <path d="M400 200 Q500 150 550 200 Q600 250 550 300 Q500 350 400 300 Q300 350 250 300 Q200 250 250 200 Q300 150 400 200" fill="#6ca0fc" />
-  <path d="M350 250 L450 250 L450 350 L350 350 Z" fill="#ffffff" />
-  <circle cx="400" cy="300" r="20" fill="#3d7be4" />
-  <path d="M380 270 L420 270 L420 280 L380 280 Z" fill="#3d7be4" />
-  <path d="M380 290 L420 290 L420 300 L380 300 Z" fill="#3d7be4" />
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#0ea5e9" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#0ea5e9" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#0ea5e9" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#0ea5e9" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#0ea5e9" stroke-width="3" />
+
+    <path d="M300 400 a56 56 0 0 1 8 -111 a72 72 0 0 1 138 -18 a50 50 0 0 1 46 129 z" fill="#0ea5e9" opacity="0.2" stroke="#0ea5e9" stroke-width="4" />
+    <rect x="286" y="430" width="228" height="46" rx="10" fill="#e2e8f0" />
+    <circle cx="316" cy="453" r="8" fill="#0ea5e9" />
+    <rect x="340" y="447" width="120" height="12" rx="6" fill="#94a3b8" />
+    <rect x="286" y="486" width="228" height="0" rx="10" fill="#e2e8f0" />
+    <line x1="286" y1="410" x2="514" y2="410" stroke="#0ea5e9" stroke-width="3" opacity="0.4" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#0ea5e9" opacity="0.25" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">Introduction to Cloud Computing</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">Models, Providers, and Tradeoffs</text>
 </svg>

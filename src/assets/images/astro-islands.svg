@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb" />
+
+  <circle cx="130" cy="140" r="28" fill="#ff5d01" opacity="0.14" />
+  <circle cx="672" cy="160" r="20" fill="#ff5d01" opacity="0.14" />
+  <circle cx="116" cy="470" r="36" fill="#ff5d01" opacity="0.12" />
+  <circle cx="690" cy="455" r="26" fill="#ff5d01" opacity="0.12" />
+
+  <!-- Illustration -->
+
+  <rect x="200" y="250" width="400" height="260" rx="24" fill="#ffffff" stroke="#ff5d01" stroke-width="3" />
+
+    <rect x="240" y="300" width="150" height="170" rx="14" fill="#e2e8f0" />
+    <rect x="262" y="326" width="106" height="12" rx="6" fill="#94a3b8" />
+    <rect x="262" y="352" width="78" height="12" rx="6" fill="#cbd5e1" />
+    <circle cx="368" cy="440" r="14" fill="#ff5d01" />
+    <rect x="420" y="300" width="140" height="120" rx="14" fill="#ff5d01" opacity="0.16" />
+    <rect x="440" y="326" width="100" height="12" rx="6" fill="#ff5d01" opacity="0.7" />
+    <rect x="440" y="352" width="72" height="12" rx="6" fill="#ff5d01" opacity="0.45" />
+    <rect x="420" y="440" width="140" height="30" rx="10" fill="#e2e8f0" />
+    <circle cx="446" cy="455" r="7" fill="#ff5d01" />
+    <circle cx="472" cy="455" r="7" fill="#cbd5e1" />
+    <circle cx="498" cy="455" r="7" fill="#cbd5e1" />
+
+  <rect x="200" y="250" width="400" height="14" rx="7" fill="#ff5d01" opacity="0.25" />
+  <path d="M400 228 l10 22 24 3 -18 17 5 24 -21 -12 -21 12 5 -24 -18 -17 24 -3 z" fill="#ff5d01" opacity="0.85" />
+
+  <!-- Title -->
+  <text x="400" y="140" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#0f172a">Astro Islands</text>
+
+  <!-- Subtitle -->
+  <text x="400" y="182" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#475569">Adding Interactivity on Your Terms</text>
+</svg>

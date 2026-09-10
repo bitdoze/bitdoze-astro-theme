@@ -1,20 +1,22 @@
 # Bitdoze Astro Blog Theme
 
-A modern, responsive blog theme for Astro with support for tags, categories, and series. This theme is designed to be fast, SEO-friendly, and easy to customize.
+A modern, responsive blog theme for Astro with support for tags, categories, series, and featured posts. This theme is designed to be fast, SEO-friendly, and easy to customize.
 
 ## Features
 
 - 🚀 **Built with Astro** - Benefit from Astro's speed and flexibility
 - 📱 **Fully Responsive** - Looks great on all devices
-- 🎨 **Customizable** - Easy to adapt to your brand
+- 🎨 **Customizable** - One logo-anchored accent ramp and swappable font tokens drive links, buttons, focus rings, and chips in both themes
 - 🔍 **SEO Optimized** - Meta tags, Open Graph, and JSON-LD
 - 📝 **Blog Ready** - Support for posts, categories, tags, and series
+- ⭐ **Featured Posts** - An optional `featured` flag surfaces editor's picks in a three-column homepage grid
+- 🧩 **Homepage Sections** - Hero, Featured, Latest, Learning paths, Explore, and Popular Topics, with the hero, featured, and latest posts deduped automatically
 - 🔎 **Search Functionality** - Client-side search with Fuse.js
 - 📊 **Pagination** - For blog posts, categories, tags, and authors
 - 📰 **RSS Feed** - Automatically generated RSS feed
 - 🗺️ **Sitemap** - Automatically generated sitemap
 - 🖋️ **MDX Support** - Use components in your markdown
-- 🔤 **Typography** - Beautiful typography with Tailwind CSS
+- 🔤 **Typography** - Self-hosted display face for headings, system stack for body copy, balanced prose with Tailwind CSS
 - 🌙 **Icons** - Easy icon usage with Astro Icon
 - 💡 **FOUC Prevention** - Inline scripts to minimize flash of unstyled content and theme inconsistencies on load.
 
@@ -51,14 +53,15 @@ The theme includes several reusable components:
 - **Pagination**: For navigating through multiple pages of content
 - **Search**: Client-side search functionality (requires JavaScript; the index covers roughly the first 4,000 characters of each post body — full-text indexing is deferred, see `src/pages/search.json.ts`)
 - **Author Card**: Display author information
-- **Post Card**: Display post previews in lists
+- **Post Card**: Display post previews in lists, used by Latest, Featured, archives, and search
+- **Homepage Sections**: `FeaturedPosts`, `LearningPaths`, and `PopularTopics` compose the homepage from real content and the `homepage` flags in `src/config/site.ts`
 - **Tag/Category Cloud**: Display and filter by tags or categories
 
 ## Getting Started
 
 Work through the tasks below in order. Each step links to the reference section with the details.
 
-1. **Preview the theme.** Run `npm install && npm run dev` and open `http://localhost:4321`. Try the theme toggle, a mobile viewport, and the widget examples in the demo post `src/content/posts/artificial-intelligence-guide.mdx`.
+1. **Preview the theme.** Run `npm install && npm run dev` and open `http://localhost:4321`. Try the theme toggle, a mobile viewport, the Featured Posts grid, and the MDX widget examples in `src/content/posts/artificial-intelligence-guide.mdx`, `src/content/posts/vps-hosting-docker-and-caddy.mdx`, and `src/content/posts/developer-seo-checklist.mdx`.
 2. **Create your site.** The fastest path is GitHub's **Use this template** button; alternatively clone over HTTPS (`git clone https://github.com/bitdoze/bitdoze-astro-theme.git my-blog`). Install dependencies on Node 22.12 or newer (see [Installation](#installation)).
 3. **Rebrand.** Update `src/config/site.ts` (title, description, brand, hero and footer copy, `ogImage`, `postsPerPage`), then `src/config/menu.json` and `src/config/social.json` (see [Configuration](#configuration)).
 4. **Create your first content.** Add a post, an author, a series, and an ordinary page (see [Creating Content](#creating-content) and [Adding New Pages](#adding-new-pages)).
@@ -109,6 +112,7 @@ Tailor the theme to your needs by updating the following configuration files:
         *   Hero and footer descriptions.
         *   `ogImage`: Path to your default OpenGraph image.
         *   `postsPerPage`: Number of posts to display on paginated pages.
+        *   `homepage`: Toggles for the optional sections — `showFeaturedPosts`, `showTaxonomyCards`, and `showPopularTopics`.
 3.  **Menus**:
     *   Modify `src/config/menu.json` to define navigation links for the header and footer.
 4.  **Social Media Links**:
@@ -117,6 +121,19 @@ Tailor the theme to your needs by updating the following configuration files:
     *   Set `params.contact_form_action` to your form endpoint.
     *   Add only the public address, email, and phone details you want displayed.
     *   The default `"#"` action keeps the form disabled with a visible notice — see [Contact form](#contact-form).
+
+### Homepage
+
+The homepage is composed from real content in this order:
+
+1. **Hero** — the newest published post, with proof counts and entry points.
+2. **Featured Posts** — up to three posts flagged `featured: true` in a three-column grid, newest first (the hero post is skipped).
+3. **Latest Articles** — the newest remaining posts, excluding series and featured entries.
+4. **Learning paths** — series in position order plus the largest categories; each path needs at least two entries.
+5. **Explore Content** — links to categories, authors, and tags.
+6. **Popular Topics** — configured tags with their most recent posts. Columns prefer posts not shown above, then backfill so they still render on small archives, and a post never appears in two columns.
+
+Every optional section is controlled by the `homepage` flags in `src/config/site.ts`.
 
 ### Creating Content
 
@@ -140,10 +157,15 @@ series:
 slug: "optional/custom-path"
 canonical: "https://example.com/original-article/"
 draft: false
+featured: true
 ---
 
 Your post content goes here...
 ```
+
+Set `featured: true` to surface a post in the homepage **Featured Posts** grid
+(up to three, newest first, never repeating the hero post). The section is
+controlled by `homepage.showFeaturedPosts` in `src/config/site.ts`.
 
 #### Authors
 
@@ -176,6 +198,7 @@ This theme uses **Tailwind CSS v4** for styling, which emphasizes a CSS-first, m
     *   Tailwind's core styles (base, components, utilities) are imported via `@import "tailwindcss";`.
     *   The `@tailwindcss/typography` plugin is included using `@plugin "@tailwindcss/typography";`.
     *   You can customize the theme by modifying the CSS variables defined in this file, which control colors, fonts, and other aspects.
+    *   **Brand tokens**: `--color-accent-50…950` is the brand ramp (anchored on the logo azure) used for links, buttons, focus rings, chips, and text selection, and `--font-display` is the heading face (Bricolage Grotesque, self-hosted in `Layout.astro`). Body copy stays on the system stack. Override either token in the `@theme` block to rebrand.
     *   You can also add your own custom CSS rules here.
 
 *   **`astro.config.mjs`**: The `@tailwindcss/vite` plugin is integrated here, but typically requires no direct configuration for v4 unless you have very specific needs.
@@ -186,7 +209,7 @@ Tailwind CSS v4 is CSS-first and does **not** automatically detect a `tailwind.c
 
 ```css
 @theme {
-  --color-brand: #1d4ed8;
+  --color-brand: #009cef;
 }
 ```
 
@@ -240,9 +263,9 @@ Three things to configure on your host before going live:
 
 ## Performance
 
-The theme stays lean by default: fully static pages, no client framework runtime, system font stacks, syntax highlighting done at build time, responsive covers that lazy-load in cards (the article cover loads eagerly), and a click-to-load facade for YouTube embeds instead of immediate iframes.
+The theme stays lean by default: fully static pages, no client framework runtime, a system font stack for body copy plus one self-hosted variable display face for headings, syntax highlighting done at build time, responsive covers that lazy-load in cards (the article cover loads eagerly), and a click-to-load facade for YouTube embeds instead of immediate iframes.
 
-Budget snapshot of the demo build, September 2026 (gzip estimates): shared CSS ~11 KB, and the client-side search bundle ~11 KB plus its JSON index (index size grows with your longest posts). The search page carries that bundle and is heavier than ordinary pages. These are build-output snapshots, not Core Web Vitals results; measure your own deployment.
+Budget snapshot of the demo build, September 2026 (gzip estimates): shared CSS ~13 KB, and the client-side search bundle ~11 KB plus its JSON index (~33 KB for the 21-post demo — the index grows with the number and length of your posts). The search page carries that bundle and is heavier than ordinary pages. These are build-output snapshots, not Core Web Vitals results; measure your own deployment.
 
 ## Security
 
